@@ -1,0 +1,26 @@
+import ArrayString from "../../../Abstracts/ArrayString";
+import GettextFlagsInterface from "../../../Interfaces/Gettext/Metadata/Attributes/GettextFlagsInterface";
+
+export default class Flags extends ArrayString implements GettextFlagsInterface {
+
+    /**
+     * @inheritDoc
+     */
+    public get unique(): true {
+        return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public get flags(): Array<string> {
+        return this.all;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public clone(): GettextFlagsInterface {
+        return new (this.constructor as any)(...this.all);
+    }
+}
