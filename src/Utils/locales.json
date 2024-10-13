@@ -1397,13 +1397,13 @@
         "count": 1,
         "expression": "0"
     },
-    "zh_Hans": {
+    "zh_hans": {
         "id": "zh_Hans",
         "name": "Simplified Chinese",
         "count": 1,
         "expression": "0"
     },
-    "zh_Hant": {
+    "zh_hant": {
         "id": "zh_Hant",
         "name": "Traditional Chinese",
         "count": 1,

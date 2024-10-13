@@ -1,15 +1,16 @@
-import GettextFlagsInterface from "../../Interfaces/Gettext/Metadata/Attributes/GettextFlagsInterface";
-import GettextCommentsInterface from "../../Interfaces/Gettext/Metadata/Attributes/GettextCommentsInterface";
-import Flags from "./Attributes/Flags";
-import Comments from "./Attributes/Comments";
-import References from "./Attributes/References";
-import GettextReferencesInterface from "../../Interfaces/Gettext/Metadata/Attributes/GettextReferencesInterface";
-import GettextTranslationAttributesInterface
-    from "../../Interfaces/Gettext/Metadata/GettextTranslationAttributesInterface";
-import GettextExtractedCommentsInterface
-    from "../../Interfaces/Gettext/Metadata/Attributes/GettextExtractedCommentsInterface";
-import ExtractedComments from "./Attributes/ExtractedComments";
+import GettextFlagsInterface from '../Interfaces/Metadata/Attributes/GettextFlagsInterface';
+import GettextCommentsInterface from '../Interfaces/Metadata/Attributes/GettextCommentsInterface';
+import Flags from './Attributes/Flags';
+import Comments from './Attributes/Comments';
+import References from './Attributes/References';
+import GettextReferencesInterface from '../Interfaces/Metadata/Attributes/GettextReferencesInterface';
+import GettextTranslationAttributesInterface from '../Interfaces/Metadata/GettextTranslationAttributesInterface';
+import GettextExtractedCommentsInterface from '../Interfaces/Metadata/Attributes/GettextExtractedCommentsInterface';
+import ExtractedComments from './Attributes/ExtractedComments';
 
+/**
+ * Class to handle translation attributes
+ */
 export default class TranslationAttributes implements GettextTranslationAttributesInterface {
 
     /**
@@ -48,7 +49,7 @@ export default class TranslationAttributes implements GettextTranslationAttribut
      * @param {GettextExtractedCommentsInterface} extractedComments
      * @param {GettextReferencesInterface} references
      */
-    constructor(
+    public constructor(
         flags?: GettextFlagsInterface,
         comments?: GettextCommentsInterface,
         extractedComments?: GettextExtractedCommentsInterface,

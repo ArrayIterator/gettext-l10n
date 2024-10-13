@@ -1,11 +1,16 @@
-import GettextPluralFormInterface from "src/Interfaces/Gettext/Metadata/GettextPluralFormInterface";
-import GettextTranslationInterface from "../Interfaces/Gettext/GettextTranslationInterface";
-import {PositiveInteger} from "../Utils/Type";
-import {is_string, is_undefined} from "../Utils/Helper";
-import GettextTranslationAttributesInterface
-    from "../Interfaces/Gettext/Metadata/GettextTranslationAttributesInterface";
-import TranslationAttributes from "./Metadata/TranslationAttributes";
+import GettextPluralFormInterface from 'src/Gettext/Interfaces/Metadata/GettextPluralFormInterface';
+import GettextTranslationInterface from './Interfaces/GettextTranslationInterface';
+import {PositiveInteger} from '../Utils/Type';
+import {
+    is_string,
+    is_undefined
+} from '../Utils/Helper';
+import GettextTranslationAttributesInterface from './Interfaces/Metadata/GettextTranslationAttributesInterface';
+import TranslationAttributes from './Metadata/TranslationAttributes';
 
+/**
+ * Translation storage class to handle translation for gettext
+ */
 export default class GettextTranslation implements GettextTranslationInterface {
 
     /**
@@ -85,7 +90,7 @@ export default class GettextTranslation implements GettextTranslationInterface {
         this._context = context;
         this._original = original;
         this._id = `${context}\x04${original}` as string;
-        this.plural = plural;
+        this.pluralTranslation = plural;
         this.translation = translation;
         this.pluralTranslations = pluralTranslations;
         this.pluralForm = pluralForm;
@@ -109,6 +114,13 @@ export default class GettextTranslation implements GettextTranslationInterface {
     /**
      * @inheritDoc
      */
+    public getId(): string {
+        return this._id;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public get id(): string {
         return this._id;
     }
@@ -123,8 +135,22 @@ export default class GettextTranslation implements GettextTranslationInterface {
     /**
      * @inheritDoc
      */
+    public getContext(): string {
+        return this._context;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public get context(): string {
         return this._context;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getOriginal(): string {
+        return this._original;
     }
 
     /**
@@ -137,14 +163,21 @@ export default class GettextTranslation implements GettextTranslationInterface {
     /**
      * @inheritDoc
      */
-    public get plural(): string | undefined {
+    public getPluralTranslation(): string | undefined {
         return this._plural;
     }
 
     /**
      * @inheritDoc
      */
-    public set plural(plural: string | undefined) {
+    public get pluralTranslation(): string | undefined {
+        return this._plural;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setPluralTranslation(plural: string | undefined) : void {
         if (is_undefined(plural) || is_string(plural)) {
             this._plural = plural;
         }
@@ -153,14 +186,28 @@ export default class GettextTranslation implements GettextTranslationInterface {
     /**
      * @inheritDoc
      */
-    public get translation(): string | undefined {
+    public set pluralTranslation(plural: string | undefined) {
+        this.setPluralTranslation(plural);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getTranslation(): string | undefined {
         return this._translation;
     }
 
     /**
      * @inheritDoc
      */
-    public set translation(translation: string | undefined) {
+    public get translation(): string | undefined {
+        return this.getTranslation();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setTranslation(translation: string | undefined) : void {
         if (is_undefined(translation) || is_string(translation)) {
             this._translation = translation;
         }
@@ -169,14 +216,28 @@ export default class GettextTranslation implements GettextTranslationInterface {
     /**
      * @inheritDoc
      */
-    public get pluralTranslations(): Array<string> {
+    public set translation(translation: string | undefined) {
+        this.setTranslation(translation);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getPluralTranslations(): Array<string> {
         return [...this._pluralTranslations];
     }
 
     /**
      * @inheritDoc
      */
-    public set pluralTranslations(pluralTranslations: string[]) {
+    public get pluralTranslations(): Array<string> {
+        return this.getPluralTranslations();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setPluralTranslations(pluralTranslations: string[]) : void {
         if (Array.isArray(pluralTranslations)) {
             this._pluralTranslations = Array.from(pluralTranslations);
         }
@@ -185,29 +246,50 @@ export default class GettextTranslation implements GettextTranslationInterface {
     /**
      * @inheritDoc
      */
-    public get pluralForm(): GettextPluralFormInterface | undefined {
+    public set pluralTranslations(pluralTranslations: string[]) {
+        this.setPluralTranslations(pluralTranslations);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getPluralForm(): GettextPluralFormInterface | undefined {
         return this._pluralForm;
     }
 
     /**
      * @inheritDoc
      */
-    public set pluralForm(pluralForm: GettextPluralFormInterface | undefined) {
+    public get pluralForm(): GettextPluralFormInterface | undefined {
+        return this.getPluralForm();
+    }
+    /**
+     * @inheritDoc
+     */
+    public setPluralForm(pluralForm: GettextPluralFormInterface | undefined) : void {
         this._pluralForm = pluralForm;
     }
 
     /**
      * @inheritDoc
      */
-    public getPluralTranslation(index: PositiveInteger): string | undefined {
+    public set pluralForm(pluralForm: GettextPluralFormInterface | undefined) {
+        this.setPluralForm(pluralForm);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getPluralTranslationIndex(index: PositiveInteger): string | undefined {
         return this._pluralTranslations[index];
     }
 
     /**
      * @inheritDoc
      */
-    public getPluralTranslations(pluralSize: PositiveInteger): Array<string> {
-        return this._pluralTranslations.slice(0, pluralSize);
+    public get translationIndex(): (n: number) => string | undefined
+    {
+        return (n: number) => this._pluralTranslations[n];
     }
 
     /**
@@ -217,7 +299,7 @@ export default class GettextTranslation implements GettextTranslationInterface {
         return new (this.constructor as any)(
             context,
             is_undefined(original) ? this.original : original,
-            plural === null ? this.plural : plural,
+            plural === null ? this.pluralTranslation : plural,
             this.translation,
             is_undefined(pluralForm) ? this.pluralForm : pluralForm,
             ...this.pluralTranslations
@@ -228,27 +310,27 @@ export default class GettextTranslation implements GettextTranslationInterface {
      * @inheritDoc
      */
     public withPluralForm(pluralForm: GettextPluralFormInterface): GettextTranslationInterface {
-        return this.with(this.context, this.original, this.plural, pluralForm);
+        return this.with(this.context, this.original, this.pluralTranslation, pluralForm);
     }
 
     /**
      * @inheritDoc
      */
     public withContext(context: string): GettextTranslationInterface {
-        return this.with(context, this.original, this.plural, this.pluralForm);
+        return this.with(context, this.original, this.pluralTranslation, this.pluralForm);
     }
 
     /**
      * @inheritDoc
      */
     public withOriginal(original: string, plural: string | undefined | null = null): GettextTranslationInterface {
-        return this.with(this.context, original, plural === null ? this.plural : plural, this.pluralForm);
+        return this.with(this.context, original, plural === null ? this.pluralTranslation : plural, this.pluralForm);
     }
 
     /**
      * @inheritDoc
      */
     public clone(): GettextTranslationInterface {
-        return this.with(this.context, this.original, this.plural, this.pluralForm?.clone());
+        return this.with(this.context, this.original, this.pluralTranslation, this.pluralForm?.clone());
     }
 }

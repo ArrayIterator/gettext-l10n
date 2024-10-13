@@ -1,4 +1,4 @@
-import PluralForm from "./PluralForm";
+import PluralForm from './PluralForm';
 import {
     is_numeric,
     is_object,
@@ -7,11 +7,14 @@ import {
     is_undefined,
     normalizeHeaderName,
     normalizeHeaderValue
-} from "../../Utils/Helper";
-import {getLocaleInfo, LocaleItem} from "../../Utils/Locale";
-import {parsePluralForm} from "../../Utils/PluralParser";
-import {Scalar} from "../../Utils/Type";
-import GettextHeadersInterface from "../../Interfaces/Gettext/Metadata/GettextHeadersInterface";
+} from '../../Utils/Helper';
+import {
+    getLocaleInfo,
+    LocaleItem
+} from '../../Utils/Locale';
+import {parsePluralForm} from '../Utils/PluralParser';
+import {Scalar} from '../../Utils/Type';
+import GettextHeadersInterface from '../Interfaces/Metadata/GettextHeadersInterface';
 import {
     DEFAULT_HEADERS,
     HEADER_DOMAIN_KEY,
@@ -20,10 +23,15 @@ import {
     HEADER_PLURAL_KEY,
     HEADER_PROJECT_ID_VERSION_KEY,
     HeaderRecords
-} from "../../Utils/GettextDefinitions/Headers";
-import {DEFAULT_PLURAL_COUNT, DEFAULT_PLURAL_EXPRESSION} from "../../Utils/GettextDefinitions/Form";
+} from '../Definitions/HeaderDefinitions';
+import {
+    DEFAULT_PLURAL_COUNT,
+    DEFAULT_PLURAL_EXPRESSION
+} from '../Definitions/FormDefinitions';
 
-
+/**
+ * The gettext headers
+ */
 export default class Headers implements GettextHeadersInterface {
 
     /**
@@ -79,7 +87,7 @@ export default class Headers implements GettextHeadersInterface {
     /**
      * @inheritDoc
      */
-    public set pluralForm(pluralForm: PluralForm) {
+    public set pluralForm(pluralForm: PluralForm|any) {
         this._pluralForm = pluralForm instanceof PluralForm ? pluralForm : this._pluralForm;
     }
 
@@ -239,7 +247,7 @@ export default class Headers implements GettextHeadersInterface {
     /**
      * @inheritDoc
      */
-    clone(): GettextHeadersInterface {
+    public clone(): GettextHeadersInterface {
         return new (this.constructor as any)(this.headers);
     }
 }

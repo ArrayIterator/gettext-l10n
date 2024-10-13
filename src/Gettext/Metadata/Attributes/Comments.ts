@@ -1,6 +1,9 @@
-import GettextCommentsInterface from "../../../Interfaces/Gettext/Metadata/Attributes/GettextCommentsInterface";
-import ArrayString from "../../../Abstracts/ArrayString";
+import GettextCommentsInterface from '../../Interfaces/Metadata/Attributes/GettextCommentsInterface';
+import ArrayString from '../../../Abstracts/ArrayString';
 
+/**
+ * Comments storage class to handle comments data
+ */
 export default class Comments extends ArrayString implements GettextCommentsInterface {
     /**
      * List of comments

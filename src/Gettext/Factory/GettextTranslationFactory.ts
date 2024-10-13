@@ -1,8 +1,11 @@
-import GettextPluralFormInterface from "src/Interfaces/Gettext/Metadata/GettextPluralFormInterface";
-import GettextTranslationInterface from "src/Interfaces/Gettext/GettextTranslationInterface";
-import GettextTranslationFactoryInterface from "../../Interfaces/Gettext/Factory/GettextTranslationFactoryInterface";
-import GettextTranslation from "../GettextTranslation";
+import GettextPluralFormInterface from 'src/Gettext/Interfaces/Metadata/GettextPluralFormInterface';
+import GettextTranslationInterface from 'src/Gettext/Interfaces/GettextTranslationInterface';
+import GettextTranslationFactoryInterface from '../Interfaces/Factory/GettextTranslationFactoryInterface';
+import GettextTranslation from '../GettextTranslation';
 
+/**
+ * Factory to create GettextTranslation
+ */
 export default class GettextTranslationFactory implements GettextTranslationFactoryInterface {
     /**
      * @inheritDoc

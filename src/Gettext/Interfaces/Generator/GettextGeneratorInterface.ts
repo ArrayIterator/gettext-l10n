@@ -1,4 +1,4 @@
-import GettextTranslationsInterface from "../GettextTranslationsInterface";
+import GettextTranslationsInterface from '../GettextTranslationsInterface';
 
 export default interface GettextGeneratorInterface {
 

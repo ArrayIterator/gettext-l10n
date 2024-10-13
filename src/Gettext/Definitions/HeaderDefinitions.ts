@@ -1,4 +1,8 @@
-import {DEFAULT_PLURAL_FORM, PLURAL_HEADER_KEY} from "./Form";
+import {
+    DEFAULT_PLURAL_FORM,
+    PLURAL_HEADER_KEY
+} from './FormDefinitions';
+import {DEFAULT_LANGUAGE} from '../../Utils/Locale';
 
 export type HeaderRecords = {
     [HEADER_PROJECT_ID_VERSION_KEY]: string;
@@ -43,7 +47,7 @@ export const DEFAULT_HEADERS: {
     [HEADER_PROJECT_ID_VERSION_KEY]: '',
     [HEADER_LAST_TRANSLATOR_KEY]: '',
     [HEADER_LANGUAGE_TEAM_KEY]: '',
-    [HEADER_LANGUAGE_KEY]: 'en',
+    [HEADER_LANGUAGE_KEY]: DEFAULT_LANGUAGE,
     [HEADER_PLURAL_KEY]: DEFAULT_PLURAL_FORM,
     [HEADER_MIME_VERSION_KEY]: '1.0',
     [HEADER_CONTENT_TRANSFER_ENCODING_KEY]: '8bit',

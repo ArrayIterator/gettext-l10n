@@ -1,7 +1,15 @@
-import GettextReferencesInterface from "../../../Interfaces/Gettext/Metadata/Attributes/GettextReferencesInterface";
-import {is_bigint, is_numeric_integer, normalize_number} from "../../../Utils/Helper";
-import {PositiveInteger} from "../../../Utils/Type";
+import GettextReferencesInterface from '../../Interfaces/Metadata/Attributes/GettextReferencesInterface';
+import {
+    is_bigint,
+    is_numeric_integer,
+    normalize_number
+} from '../../../Utils/Helper';
+import {PositiveInteger} from '../../../Utils/Type';
+import InvalidArgumentException from '../../../Exceptions/InvalidArgumentException';
 
+/**
+ * Reference storage class to handle references data
+ */
 export default class References implements GettextReferencesInterface {
 
     /**
@@ -35,7 +43,7 @@ export default class References implements GettextReferencesInterface {
             return;
         }
         if (!is_numeric_integer(line)) {
-            throw new Error("Line number must be an integer.");
+            throw new Error('Line number must be an integer.');
         }
         line = normalize_number(line) as PositiveInteger;
         if (is_bigint(line) || line < 1) {
@@ -73,6 +81,11 @@ export default class References implements GettextReferencesInterface {
      * @inheritDoc
      */
     public mergeWith(references: References): References {
+        if (!(references instanceof this.constructor)) {
+            throw new InvalidArgumentException(
+                `Invalid argument type. Expected object class of "${this.constructor.name}", but got ${typeof references}`
+            );
+        }
         let newReference = new References();
         for (const [file, lines] of this.entries()) {
             newReference.add(file, ...lines);

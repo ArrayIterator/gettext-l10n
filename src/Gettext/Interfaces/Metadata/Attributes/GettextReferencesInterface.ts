@@ -1,6 +1,6 @@
-import LengthInterface from "../../../LengthInterface";
-import {PositiveInteger} from "../../../../Utils/Type";
-import CloneableInterface from "../../../CloneableInterface";
+import LengthInterface from '../../../../Interfaces/LengthInterface';
+import {PositiveInteger} from '../../../../Utils/Type';
+import CloneableInterface from '../../../../Interfaces/CloneableInterface';
 
 export default interface GettextReferencesInterface extends LengthInterface, CloneableInterface, Iterable<[string, PositiveInteger[]]> {
 
@@ -41,6 +41,7 @@ export default interface GettextReferencesInterface extends LengthInterface, Clo
      * @param {GettextReferencesInterface} references - another instance
      *
      * @return {GettextReferencesInterface} new instance of ReferenceInterface
+     * @throws {InvalidArgumentException} if the instance is not self class or sub
      */
     mergeWith(references: GettextReferencesInterface): GettextReferencesInterface;
 
@@ -58,7 +59,6 @@ export default interface GettextReferencesInterface extends LengthInterface, Clo
      */
     get all(): Record<string, PositiveInteger[]>;
 
-
     /**
      * Get length of string data
      *
@@ -73,4 +73,3 @@ export default interface GettextReferencesInterface extends LengthInterface, Clo
      */
     clone(): GettextReferencesInterface;
 }
-

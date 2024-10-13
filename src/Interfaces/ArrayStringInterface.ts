@@ -1,4 +1,4 @@
-import LengthInterface from "./LengthInterface";
+import LengthInterface from './LengthInterface';
 
 export default interface ArrayStringInterface extends LengthInterface, Iterable<string> {
 
@@ -45,9 +45,10 @@ export default interface ArrayStringInterface extends LengthInterface, Iterable<
     /**
      * Merge with another instance
      *
-     * @param {ArrayStringInterface} array - another instance
+     * @param {ArrayStringInterface} instance - another instance
+     * @throws {InvalidArgumentException} if data is not valid
      */
-    mergeWith(array: ArrayStringInterface): ArrayStringInterface;
+    mergeWith(instance: ArrayStringInterface): ArrayStringInterface;
 
     /**
      * Implement Iterable, return iterator of string data

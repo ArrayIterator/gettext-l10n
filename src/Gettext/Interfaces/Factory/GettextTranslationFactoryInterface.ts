@@ -1,5 +1,5 @@
-import GettextTranslationInterface from "../GettextTranslationInterface";
-import GettextPluralFormInterface from "../Metadata/GettextPluralFormInterface";
+import GettextTranslationInterface from '../GettextTranslationInterface';
+import GettextPluralFormInterface from '../Metadata/GettextPluralFormInterface';
 
 export default interface GettextTranslationFactoryInterface {
 

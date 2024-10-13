@@ -1,14 +1,23 @@
-import GettextTranslationsInterface from "../Interfaces/Gettext/GettextTranslationsInterface";
-import GettextHeadersInterface from "../Interfaces/Gettext/Metadata/GettextHeadersInterface";
-import GettextFlagsInterface from "../Interfaces/Gettext/Metadata/Attributes/GettextFlagsInterface";
-import GettextTranslationInterface from "../Interfaces/Gettext/GettextTranslationInterface";
-import Headers from "./Metadata/Headers";
-import Flags from "./Metadata/Attributes/Flags";
-import {is_numeric_integer, is_object, is_string} from "../Utils/Helper";
-import GettextTranslationFactoryInterface from "../Interfaces/Gettext/Factory/GettextTranslationFactoryInterface";
-import GettextTranslationFactory from "./Factory/GettextTranslationFactory";
-import GettextPluralFormInterface from "../Interfaces/Gettext/Metadata/GettextPluralFormInterface";
+import GettextTranslationsInterface from './Interfaces/GettextTranslationsInterface';
+import GettextHeadersInterface from './Interfaces/Metadata/GettextHeadersInterface';
+import GettextFlagsInterface from './Interfaces/Metadata/Attributes/GettextFlagsInterface';
+import GettextTranslationInterface from './Interfaces/GettextTranslationInterface';
+import Headers from './Metadata/Headers';
+import Flags from './Metadata/Attributes/Flags';
+import {
+    is_numeric_integer,
+    is_object,
+    is_string
+} from '../Utils/Helper';
+import GettextTranslationFactoryInterface from './Interfaces/Factory/GettextTranslationFactoryInterface';
+import GettextTranslationFactory from './Factory/GettextTranslationFactory';
+import GettextPluralFormInterface from './Interfaces/Metadata/GettextPluralFormInterface';
+import GettextTranslation from './GettextTranslation';
+import TranslationEntryInterface from 'src/Translations/Interfaces/TranslationEntryInterface';
 
+/**
+ * Gettext translations contain collection of translation objects
+ */
 export default class GettextTranslations implements GettextTranslationsInterface {
 
     /**
@@ -37,7 +46,7 @@ export default class GettextTranslations implements GettextTranslationsInterface
      *
      * @private
      */
-    private readonly _translations: Record<string, GettextTranslationInterface>;
+    private _translations: Record<string, GettextTranslationInterface>;
 
     /**
      * Translation factory
@@ -75,15 +84,29 @@ export default class GettextTranslations implements GettextTranslationsInterface
     /**
      * @inheritDoc
      */
-    public get revision(): number {
+    public getRevision(): number {
         return this._revision;
     }
 
     /**
      * @inheritDoc
      */
+    public get revision(): number {
+        return this.getRevision();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setRevision(revision: number) : void {
+        this._revision = is_numeric_integer(revision) ? parseInt(revision + '') : this._revision;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public set revision(revision: number) {
-        this._revision = revision;
+        this.setRevision(revision);
     }
 
     /**
@@ -131,8 +154,15 @@ export default class GettextTranslations implements GettextTranslationsInterface
     /**
      * @inheritDoc
      */
-    public get translations(): Record<string, GettextTranslationInterface> {
+    public getEntries(): Record<string, GettextTranslationInterface> {
         return Object.assign({}, this._translations);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public get entries(): Record<string, GettextTranslationInterface> {
+        return this.getEntries();
     }
 
     /**
@@ -140,6 +170,13 @@ export default class GettextTranslations implements GettextTranslationsInterface
      */
     public get length(): number {
         return Object.keys(this._translations).length;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public clear(): void {
+        this._translations = {};
     }
 
     /**
@@ -159,18 +196,33 @@ export default class GettextTranslations implements GettextTranslationsInterface
     /**
      * @inheritDoc
      */
-    public merge(...translations: GettextTranslationInterface[]): void {
+    public merge(...translations: GettextTranslationInterface[]): number {
         let pluralForm = this.headers.pluralForm;
+        let number = 0;
         translations.forEach((translation) => {
-            this.add(translation.withPluralForm(pluralForm));
+            if (this.add(translation.withPluralForm(pluralForm))) {
+                number++;
+            }
         });
+        return number;
     }
 
     /**
      * @inheritDoc
      */
-    public add(translation: GettextTranslationInterface): void {
-        this._translations[translation.id] = translation;
+    public add(translation: GettextTranslationInterface): boolean {
+        if (translation instanceof GettextTranslation) {
+            this._translations[translation.id] = translation;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public entry(entry: GettextTranslationInterface | string): TranslationEntryInterface | undefined {
+        return this.get(entry);
     }
 
     /**
@@ -196,20 +248,21 @@ export default class GettextTranslations implements GettextTranslationsInterface
     /**
      * @inheritDoc
      */
-    public remove(id: string | GettextTranslationInterface): void {
+    public remove(id: string | GettextTranslationInterface): boolean {
         let translation = this.get(id);
         if (!translation) {
-            return;
+            return false;
         }
         delete this._translations[translation.id];
+        return true;
     }
 
     /**
      * @inheritDoc
      */
-    public setTranslationsPluralForm(pluralForm: GettextPluralFormInterface) {
+    public setEntriesPluralForm(pluralForm: GettextPluralFormInterface) : void {
         this.headers.pluralForm = pluralForm;
-        Object.values(this.translations).forEach((translation) => {
+        Object.values(this.entries).forEach((translation) => {
             translation.pluralForm = pluralForm;
         });
     }
@@ -223,7 +276,7 @@ export default class GettextTranslations implements GettextTranslationsInterface
             this.translationFactory,
             this.headers.clone(),
             this.flags.clone(),
-            ...Object.values(this.translations).map((translation) => translation.clone())
+            ...Object.values(this.entries).map((translation) => translation.clone())
         );
     }
 }

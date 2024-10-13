@@ -1,5 +1,5 @@
-import ArrayStringInterface from "../../../ArrayStringInterface";
-import CloneableInterface from "../../../CloneableInterface";
+import ArrayStringInterface from '../../../../Interfaces/ArrayStringInterface';
+import CloneableInterface from '../../../../Interfaces/CloneableInterface';
 
 export default interface GettextCommentsInterface extends ArrayStringInterface, CloneableInterface {
     /**

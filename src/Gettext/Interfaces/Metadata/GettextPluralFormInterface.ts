@@ -1,5 +1,5 @@
-import {PluralExpressions} from "../../../Utils/PluralParser";
-import CloneableInterface from "../../CloneableInterface";
+import {PluralExpressions} from '../../Utils/PluralParser';
+import CloneableInterface from '../../../Interfaces/CloneableInterface';
 
 export default interface GettextPluralFormInterface extends CloneableInterface {
     /**

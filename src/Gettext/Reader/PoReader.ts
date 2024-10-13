@@ -1,12 +1,15 @@
 // noinspection JSUnusedGlobalSymbols
 
-import GettextReaderInterface from "../../Interfaces/Gettext/Reader/GettextReaderInterface";
-import GettextTranslationsInterface from "../../Interfaces/Gettext/GettextTranslationsInterface";
-import GettextTranslations from "../GettextTranslations";
-import {is_array_buffer_like, is_string} from "../../Utils/Helper";
-import InvalidArgumentException from "../../Exceptions/InvalidArgumentException";
-import IterableArray from "../../Utils/IterableArray";
-import {PositiveInteger} from "../../Utils/Type";
+import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
+import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
+import GettextTranslations from '../GettextTranslations';
+import {
+    is_array_buffer_like_or_view,
+    is_string
+} from '../../Utils/Helper';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import IterableArray from '../../Utils/IterableArray';
+import {PositiveInteger} from '../../Utils/Type';
 import {
     ATTRIBUTE_COMMENTED_TRANSLATIONS,
     ATTRIBUTE_COMMENTS,
@@ -17,24 +20,27 @@ import {
     ATTRIBUTE_MESSAGE_ID_PLURAL,
     ATTRIBUTE_MESSAGE_STR,
     ATTRIBUTE_REFERENCES
-} from "../../Utils/GettextDefinitions/Attributes";
+} from '../Definitions/AttributeDefinitions';
 
+/**
+ * The gettext po reader
+ */
 export default class PoReader implements GettextReaderInterface {
 
     /**
      * @inheritDoc
      */
     public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
-        if (!is_string(content) && !is_array_buffer_like(content)) {
+        if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
             throw new InvalidArgumentException(
                 `The content must be a string or an ArrayBufferLike, ${typeof content} given`
             );
         }
         content = is_string(content) ? content : new TextDecoder().decode(content);
-        content = content.trim().replace(/\r\n/g, "\n"); // trim and normalize line endings
+        content = content.trim().replace(/\r\n/g, '\n'); // trim and normalize line endings
 
         const translations = new GettextTranslations();
-        const lines = new IterableArray(content.split("\n"));
+        const lines = new IterableArray(content.split('\n'));
         let line = lines.current();
         let translation = translations.createTranslation('', '');
         let lastHeaderKey = '';
@@ -52,7 +58,7 @@ export default class PoReader implements GettextReaderInterface {
                 && nextLine !== false
                 && nextLine !== ''
                 && (nextLine.startsWith('"') || nextLine.startsWith('#~ "'))
-                ) {
+            ) {
                 if (nextLine.startsWith('"')) {
                     line = line.slice(0, -1) + nextLine.slice(1);
                 } else if (nextLine.startsWith('#~ "')) {
@@ -105,7 +111,7 @@ export default class PoReader implements GettextReaderInterface {
                     }
                     break;
                 case ATTRIBUTE_MESSAGE_ID_PLURAL:
-                    translation.plural = this.normalize(trans);
+                    translation.pluralTranslation = this.normalize(trans);
                     break;
                 case ATTRIBUTE_MESSAGE_STR + '[0]':
                     translation.translation = this.normalize(trans);
@@ -171,7 +177,7 @@ export default class PoReader implements GettextReaderInterface {
                             translations.headers.set(headers[0], headers[1]);
                         } else if (lastHeaderKey) {
                             let value = translations.headers.get(lastHeaderKey);
-                            translations.headers.set(lastHeaderKey, value + "\n" + headers[0]);
+                            translations.headers.set(lastHeaderKey, value + '\n' + headers[0]);
                         }
                         break;
                     }
@@ -198,15 +204,15 @@ export default class PoReader implements GettextReaderInterface {
             value = value.substring(1, -1);
         }
         let replacer = {
-            '\\t': "\t",
-            '\\r': "\r",
-            '\\n': "\n",
-            '\\v': "\v",
-            '\\f': "\f",
-            '\\e': "\e",
-            '\\a': "\x07",
-            "\\b": "\x08",
-            '\\\\': "\\",
+            '\\t': '\t',
+            '\\r': '\r',
+            '\\n': '\n',
+            '\\v': '\v',
+            '\\f': '\f',
+            '\\e': '\e',
+            '\\a': '\x07',
+            '\\b': '\x08',
+            '\\\\': '\\',
             '\\"': '"',
         };
         for (let [key, val] of Object.entries(replacer)) {

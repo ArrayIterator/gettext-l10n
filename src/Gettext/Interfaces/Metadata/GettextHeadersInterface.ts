@@ -1,7 +1,7 @@
-import GettextPluralFormInterface from "./GettextPluralFormInterface";
-import {Scalar} from "../../../Utils/Type";
-import {HeaderRecords} from "../../../Utils/GettextDefinitions/Headers";
-import CloneableInterface from "../../CloneableInterface";
+import GettextPluralFormInterface from './GettextPluralFormInterface';
+import {Scalar} from '../../../Utils/Type';
+import {HeaderRecords} from '../../Definitions/HeaderDefinitions';
+import CloneableInterface from '../../../Interfaces/CloneableInterface';
 
 export default interface GettextHeadersInterface extends CloneableInterface {
 

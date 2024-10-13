@@ -1,6 +1,10 @@
-import ArrayStringInterface from "../Interfaces/ArrayStringInterface";
-import {ArrayPositiveInteger} from "../Utils/Type";
+import ArrayStringInterface from '../Interfaces/ArrayStringInterface';
+import {is_string} from '../Utils/Helper';
+import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 
+/**
+ * Abstract ArrayString class to handle array of string
+ */
 export default abstract class ArrayString implements ArrayStringInterface {
 
     /**
@@ -8,13 +12,18 @@ export default abstract class ArrayString implements ArrayStringInterface {
      *
      * @private
      */
-    private _strings: ArrayPositiveInteger<string> = [];
+    private _strings: Array<string> = [];
 
     /**
      * constructor.
      */
     public constructor(...string: string[]) {
         for (const str of string) {
+            if (!is_string(str)) {
+                throw new InvalidArgumentException(
+                    `The content must be a string, ${typeof str} given`
+                )
+            }
             this.add(str);
         }
     }
@@ -39,7 +48,7 @@ export default abstract class ArrayString implements ArrayStringInterface {
      * @inheritDoc
      */
     public remove(string: string): void {
-        this._strings = this._strings.filter(f => f !== string) as ArrayPositiveInteger<string>;
+        this._strings = this._strings.filter(f => f !== string);
     }
 
     /**
@@ -61,13 +70,13 @@ export default abstract class ArrayString implements ArrayStringInterface {
      */
     public mergeWith(instance: ArrayString): ArrayString {
         if (!(instance instanceof this.constructor)) {
-            throw new Error(
+            throw new InvalidArgumentException(
                 `Invalid argument type. Expected object class of "${this.constructor.name}", but got ${typeof instance}`
             );
         }
         let newObject = new (this.constructor as any)(...this.all);
         for (const string of instance) {
-            this.add(string);
+            newObject.add(string);
         }
         return newObject;
     }

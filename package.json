@@ -11,15 +11,32 @@
         "clean:module": "rm -rf build",
         "clean:types": "rm -rf @types",
         "clean:all": "npm run clean:module && npm run clean:dist && npm run clean:types",
-        "build:types": "npm run clean:types && tsc --declaration --declarationDir @types",
-        "build:dist": "npm run clean:dist && webpack --mode=production --config webpack.config.js",
-        "build:module": "npm run clean:module && tsc --outDir build",
-        "build:all": "npm run build:module && npm run build:dist && npm run build:types"
+        "build:types": "tsc --declaration --declarationDir @types",
+        "build:dist": "webpack --mode=production --config webpack.config.js",
+        "build:module": "tsc --outDir build",
+        "lint": "eslint",
+        "jest": "jest",
+        "test": "npm run lint && npm run jest",
+        "build": "npm run test && npm run code:all && npm run build:module && npm run build:dist && npm run build:types"
+    },
+    "jest": {
+        "preset": "ts-jest",
+        "testMatch": [
+            "**/__tests__/**/*.test.ts"
+        ]
     },
     "main": "build/gettext-l10n.js",
     "types": "@types/**/*.d.ts",
     "devDependencies": {
+        "@types/jest": "^29.5.13",
+        "@typescript-eslint/eslint-plugin": "^8.8.1",
+        "@typescript-eslint/parser": "^8.8.1",
+        "eslint": "^9.12.0",
+        "eslint-plugin-import-newlines": "^1.4.0",
+        "eslint-plugin-jsdoc": "^50.3.2",
+        "jest": "^29.7.0",
         "terser-webpack-plugin": "^5.3.10",
+        "ts-jest": "^29.2.5",
         "ts-loader": "^9.5.1",
         "typescript": "^5.6.3",
         "webpack": "^5.95.0",

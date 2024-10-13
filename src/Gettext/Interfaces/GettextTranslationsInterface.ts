@@ -1,13 +1,10 @@
-import GettextHeadersInterface from "./Metadata/GettextHeadersInterface";
-import GettextFlagsInterface from "./Metadata/Attributes/GettextFlagsInterface";
-import GettextTranslationInterface from "./GettextTranslationInterface";
-import LengthInterface from "../LengthInterface";
-import GettextTranslationFactoryInterface from "./Factory/GettextTranslationFactoryInterface";
-import CloneableInterface from "../CloneableInterface";
-import GettextPluralFormInterface from "./Metadata/GettextPluralFormInterface";
+import GettextHeadersInterface from './Metadata/GettextHeadersInterface';
+import GettextFlagsInterface from './Metadata/Attributes/GettextFlagsInterface';
+import GettextTranslationInterface from './GettextTranslationInterface';
+import GettextTranslationFactoryInterface from './Factory/GettextTranslationFactoryInterface';
+import TranslationEntriesInterface from '../../Translations/Interfaces/TranslationEntriesInterface';
 
-export default interface GettextTranslationsInterface extends CloneableInterface, LengthInterface {
-
+export default interface GettextTranslationsInterface extends TranslationEntriesInterface {
     /**
      * The revision
      *
@@ -65,11 +62,11 @@ export default interface GettextTranslationsInterface extends CloneableInterface
     set language(language: string);
 
     /**
-     * Get the translation translations
+     * Gets all translation entries in the collection.
      *
-     * @return {Record<string, GettextTranslationInterface} Translations
+     * @return {Record<string, GettextTranslationInterface>} An array of all translation entries.
      */
-    get translations(): Record<string, GettextTranslationInterface>;
+    get entries(): Record<string, GettextTranslationInterface>;
 
     /**
      * Get translation count
@@ -99,15 +96,16 @@ export default interface GettextTranslationsInterface extends CloneableInterface
      * Merge translations
      *
      * @param {GettextTranslationInterface<string, TFile, NonNegativeInteger[]} translations Translations
+     * @return {number} total translations added
      */
-    merge(...translations: GettextTranslationInterface[]): void;
+    merge(...translations: GettextTranslationInterface[]): number;
 
     /**
      * Add a translation
      *
      * @param {GettextTranslationInterface} translation Translation
      */
-    add(translation: GettextTranslationInterface): void;
+    add(translation: GettextTranslationInterface): boolean;
 
     /**
      * Find a translation
@@ -129,15 +127,9 @@ export default interface GettextTranslationsInterface extends CloneableInterface
      * Remove a translation
      *
      * @param {string} id Translation identifier
+     * @return {boolean} true if success
      */
-    remove(id: string | GettextTranslationInterface): void;
-
-    /**
-     * Set translations plural form - update all translations
-     *
-     * @param {GettextPluralFormInterface} pluralForm Plural form
-     */
-    setTranslationsPluralForm(pluralForm: GettextPluralFormInterface): void;
+    remove(id: string | GettextTranslationInterface): boolean;
 
     /**
      * Create deep clone of translations

@@ -1,11 +1,29 @@
-import RuntimeException from "../../Exceptions/RuntimeException";
-import {parseExpression, PLURAL_OPERATOR, PLURAL_VALUE, PLURAL_VAR, PluralExpressions} from "../../Utils/PluralParser";
-import {is_bigint, is_integer, is_numeric, is_string, normalize_number} from "../../Utils/Helper";
-import IndexOutOfRangeException from "../../Exceptions/IndexOutOfRangeException";
-import InvalidArgumentException from "../../Exceptions/InvalidArgumentException";
-import GettextPluralFormInterface from "../../Interfaces/Gettext/Metadata/GettextPluralFormInterface";
-import {DEFAULT_PLURAL_COUNT, DEFAULT_PLURAL_EXPRESSION} from "../../Utils/GettextDefinitions/Form";
+import RuntimeException from '../../Exceptions/RuntimeException';
+import {
+    parseExpression,
+    PLURAL_OPERATOR,
+    PLURAL_VALUE,
+    PLURAL_VAR,
+    PluralExpressions
+} from '../Utils/PluralParser';
+import {
+    is_bigint,
+    is_integer,
+    is_numeric,
+    is_string,
+    normalize_number
+} from '../../Utils/Helper';
+import IndexOutOfRangeException from '../../Exceptions/IndexOutOfRangeException';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import GettextPluralFormInterface from '../Interfaces/Metadata/GettextPluralFormInterface';
+import {
+    DEFAULT_PLURAL_COUNT,
+    DEFAULT_PLURAL_EXPRESSION
+} from '../Definitions/FormDefinitions';
 
+/**
+ * The plural form object definition
+ */
 export default class PluralForm implements GettextPluralFormInterface {
 
     /**
@@ -222,7 +240,7 @@ export default class PluralForm implements GettextPluralFormInterface {
     /**
      * @inheritDoc
      */
-    clone(): GettextPluralFormInterface {
+    public clone(): GettextPluralFormInterface {
         return new (this.constructor as any)(this.pluralCount, this.expression);
     }
 }

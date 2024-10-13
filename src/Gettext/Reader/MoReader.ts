@@ -1,11 +1,14 @@
 // noinspection JSUnusedGlobalSymbols
 
-import GettextReaderInterface from "../../Interfaces/Gettext/Reader/GettextReaderInterface";
-import GettextTranslationsInterface from "../../Interfaces/Gettext/GettextTranslationsInterface";
-import {is_array_buffer_like, is_string} from "../../Utils/Helper";
-import InvalidArgumentException from "../../Exceptions/InvalidArgumentException";
-import GettextTranslations from "../GettextTranslations";
-import StreamBuffer from "../../Utils/StreamBuffer";
+import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
+import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
+import {
+    is_array_buffer_like_or_view,
+    is_string
+} from '../../Utils/Helper';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import GettextTranslations from '../GettextTranslations';
+import StreamBuffer from '../../Utils/StreamBuffer';
 
 /**
  * low endian
@@ -16,6 +19,9 @@ const MAGIC1 = 0x950412de;
  */
 const MAGIC2 = 0xde120495;
 
+/**
+ * The gettext mo reader
+ */
 export default class MoReader implements GettextReaderInterface {
     /**
      * Read the content and return the translations
@@ -23,7 +29,7 @@ export default class MoReader implements GettextReaderInterface {
      * @param {string|ArrayBufferLike} content the content to read
      */
     public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
-        if (!is_string(content) && !is_array_buffer_like(content)) {
+        if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
             throw new InvalidArgumentException(
                 `The content must be a string or an ArrayBufferLike, ${typeof content} given`
             );
@@ -31,16 +37,16 @@ export default class MoReader implements GettextReaderInterface {
         let stream: StreamBuffer = new StreamBuffer(content);
 
         const magic = this.readInt(stream);
-        let format: "V" | "N";
+        let format: 'V' | 'N';
         if (magic === MAGIC1 || magic === (MAGIC1 & 0xffffffff)) {
             // low endian
-            format = "V";
+            format = 'V';
         } else if (magic === (MAGIC2 & 0xffffffff)) {
             // big endian
-            format = "N";
+            format = 'N';
         } else {
             throw new InvalidArgumentException(
-                `The stream is not gettext mo data`
+                'The stream is not gettext mo data'
             );
         }
 
@@ -56,7 +62,7 @@ export default class MoReader implements GettextReaderInterface {
         const translations = new GettextTranslations();
 
         translations.revision = revision;
-        let pluralForms = translations.headers.pluralForm;
+        let pluralForm = translations.headers.pluralForm;
         for (let i = 0; i < total; ++i) {
             let next = i * 2;
             stream.seek(originalTable[next + 2]);
@@ -67,7 +73,7 @@ export default class MoReader implements GettextReaderInterface {
             let translated = stream.read(translationTable[next + 1]);
 
             if (original === '') {
-                for (let header of translated.split("\n")) {
+                for (let header of translated.split('\n')) {
                     if (header.trim() === '') {
                         continue;
                     }
@@ -78,12 +84,12 @@ export default class MoReader implements GettextReaderInterface {
             }
             let context = null;
             let plural = null;
-            let chunks = original.split("\x04");
+            let chunks = original.split('\x04');
             if (chunks.length > 1) {
                 original = chunks[1];
                 context = chunks[0];
             }
-            chunks = original.split("\0");
+            chunks = original.split('\0');
             original = chunks[0];
             if (chunks.length > 1) {
                 plural = chunks[1];
@@ -96,25 +102,43 @@ export default class MoReader implements GettextReaderInterface {
                 original,
                 plural ?? undefined
             );
-            translation.pluralForm = pluralForms;
+            translation.pluralForm = pluralForm;
             translation.translation = translated;
             translations.add(translation);
             if (translated === '' || plural === null) {
                 continue;
             }
-            let v = translated.split("\0");
+            let v = translated.split('\0');
             v.shift();
             translation.pluralTranslations = v.filter((value) => value.trim() !== '');
         }
-        translations.setTranslationsPluralForm(translations.headers.pluralForm);
+        translations.setEntriesPluralForm(translations.headers.pluralForm);
         return translations;
     }
 
-    private readInt(buffer: StreamBuffer, mode: "V" | "N" = 'V'): number {
-        return buffer.readUint32(mode === "V");
+    /**
+     * Read integer from buffer
+     *
+     * @param {StreamBuffer} buffer
+     * @param {'V' | 'N'} mode
+     *
+     * @return {number} the integer
+     * @private
+     */
+    private readInt(buffer: StreamBuffer, mode: 'V' | 'N' = 'V'): number {
+        return buffer.readUint32(mode === 'V');
     }
 
-    private readIntArray(buffer: StreamBuffer, mode: "V" | "N", count: number): Array<number> {
+    /**
+     * Read integer array from buffer
+     *
+     * @param {StreamBuffer} buffer - the buffer to read
+     * @param {'V' | 'N'} mode - the mode of read format
+     * @param {number} count - the count of read format
+     *
+     * @private
+     */
+    private readIntArray(buffer: StreamBuffer, mode: 'V' | 'N', count: number): Array<number> {
         const data: Array<number> = [];
         for (let i = 0; i < count; i++) {
             data.push(this.readInt(buffer, mode));

@@ -1,7 +1,11 @@
-import RuntimeException from "../Exceptions/RuntimeException";
-import {is_string, strspn} from "./Helper";
-import InvalidArgumentException from "../Exceptions/InvalidArgumentException";
-import {PLURAL_HEADER_REGEX} from "./GettextDefinitions/Form";
+import RuntimeException from '../../Exceptions/RuntimeException';
+import {
+    is_string,
+    strspn,
+    substr
+} from '../../Utils/Helper';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
+import {PLURAL_HEADER_REGEX} from '../Definitions/FormDefinitions';
 
 export type PluralExpressions = Array<[typeof PLURAL_VAR] | [typeof PLURAL_OPERATOR, string] | [typeof PLURAL_VALUE, number]>;
 
@@ -50,6 +54,14 @@ export const OP_PRECEDENCE = {
 };
 Object.freeze(OP_PRECEDENCE);
 
+/**
+ * Parse the plural form
+ *
+ * @param {string} pluralForm
+ *
+ * @returns {{count: number, expression: string} | null}
+ * @throws {InvalidArgumentException} If the plural form is not a string
+ */
 export const parsePluralForm = (pluralForm: string): {
     count: number;
     expression: string
@@ -70,6 +82,13 @@ export const parsePluralForm = (pluralForm: string): {
     }
 }
 
+/**
+ * Parse the expression
+ *
+ * @param {string} pluralExpression
+ * @return {PluralExpressions} The parsed expression
+ * @throws {InvalidArgumentException} If the expression is empty
+ */
 export const parseExpression = (pluralExpression: string): PluralExpressions => {
     let expression = parsePluralForm(pluralExpression)?.expression ?? pluralExpression.trim();
     if (expression === '') {
@@ -80,46 +99,43 @@ export const parseExpression = (pluralExpression: string): PluralExpressions => 
     // Convert infix operators to postfix using the shunting-yard algorithm.
     const output: PluralExpressions = [];
     const stacks: Array<number | string> = [];
+    let found: boolean;
     while (pos < len) {
-        let next = expression[pos] || '';
+        let next = substr(expression, pos, 1);
         switch (next) {
             // Ignore whitespace.
             case ' ':
-            case "\t":
-                pos++;
+            case '\t':
+                ++pos;
                 break;
             // Variable (n).
             case 'n':
                 output.push([PLURAL_VAR]);
-                pos++;
+                ++pos;
                 break;
             // Parentheses.
             case '(':
                 stacks.push(next);
-                pos++;
+                ++pos;
                 break;
             case ')':
-                let found_parent: boolean = false;
+                found = false;
                 while (stacks.length > 0) {
-                    let stack = stacks[stacks.length - 1];
+                    let stack = stacks.pop();
                     if ('(' !== stack) {
-                        let val = stacks.pop();
-                        if (!is_string(val)) {
-                            throw new RuntimeException('Mismatched parentheses');
-                        }
-                        output.push([PLURAL_OPERATOR, val]);
+                        output.push([PLURAL_OPERATOR, stack as string]);
                         continue;
                     }
-
-                    // Discard open paren.
-                    stacks.pop();
-                    found_parent = true;
+                    // Discard open parent.
+                    found = true;
                     break;
                 }
-                if (!found_parent) {
+
+                if (!found) {
                     throw new RuntimeException('Mismatched parentheses');
                 }
-                pos++;
+
+                ++pos;
                 break;
             // Operators.
             case '|':
@@ -131,96 +147,57 @@ export const parseExpression = (pluralExpression: string): PluralExpressions => 
             case '%':
             case '?':
                 let end_operator = strspn(expression, OP_CHARS, pos);
-                let operator = expression.substring(pos, end_operator);
+                let operator = substr(expression, pos, end_operator) as keyof typeof OP_PRECEDENCE;
                 if (!OP_PRECEDENCE.hasOwnProperty(operator)) {
-                    throw new RuntimeException(
-                        `Unknown operator "${operator}"`
-                    );
+                    throw new RuntimeException(`Unknown operator "${operator}"`);
                 }
-                let isAssociative = '?:' === operator || '?' === operator;
                 while (stacks.length > 0) {
-                    let stack = stacks[stacks.length - 1];
-                    let precedenceOp = OP_PRECEDENCE[operator as keyof typeof OP_PRECEDENCE];
-                    let precedenceStack = OP_PRECEDENCE[stack as keyof typeof OP_PRECEDENCE];
-                    // Ternary is right-associative in C.
-                    if ((isAssociative && precedenceOp >= precedenceStack)
-                        || (!isAssociative && precedenceOp > precedenceStack)
-                    ) {
+                    let o2 = stacks[stacks.length - 1] as keyof typeof OP_PRECEDENCE;
+                    if ('?' === operator || '?:' === operator) {
+                        if (OP_PRECEDENCE[operator] >= OP_PRECEDENCE[o2]) {
+                            break;
+                        }
+                    } else if (OP_PRECEDENCE[operator] > OP_PRECEDENCE[o2]) {
                         break;
                     }
-                    let val = stacks.pop();
-                    if (!is_string(val)) {
-                        throw new RuntimeException(
-                            'Mismatched parentheses'
-                        );
-                    }
-                    output.push([PLURAL_OPERATOR, val]);
+                    output.push([PLURAL_OPERATOR, stacks.pop() as string]);
                 }
-
                 stacks.push(operator);
                 pos += end_operator;
                 break;
             // Ternary "else".
             case ':':
-                let found = false;
-                let s_pos: number = stacks.length - 1;
+                found = false;
+                let s_pos = stacks.length - 1;
                 while (s_pos >= 0) {
-                    let stack = stacks[s_pos];
-                    if ('?' !== stack) {
-                        let val = stacks.pop();
-                        if (!is_string(val)) {
-                            throw new RuntimeException(
-                                'Mismatched parentheses'
-                            );
-                        }
-                        output.push([PLURAL_OPERATOR, val]);
-                        s_pos--;
+                    let o2 = stacks[s_pos];
+                    if ('?' !== o2) {
+                        output.push([PLURAL_OPERATOR, stacks.pop() as string]);
+                        --s_pos;
                         continue;
                     }
-
                     // Replace.
                     stacks[s_pos] = '?:';
                     found = true;
                     break;
                 }
-
                 if (!found) {
-                    throw new RuntimeException(
-                        'Missing starting "?" ternary operator'
-                    );
+                    throw new RuntimeException('Missing starting "?" ternary operator');
                 }
-                pos++;
+                ++pos;
                 break;
             // Default - number or invalid.
             default:
-                let nextInt = parseInt(next + '');
+                let nextInt = parseInt(next);
                 if (nextInt >= 0 && nextInt <= 9) {
                     let span = strspn(expression, NUMERIC_CHARS, pos);
-                    output.push([PLURAL_VALUE, parseInt(expression.substring(pos, span))]);
+                    output.push([PLURAL_VALUE, parseInt(expression.substring(pos, span + pos))]);
                     pos += span;
                     break;
                 }
-                throw new RuntimeException(
-                    `Unknown symbol "${next}"`
-                );
+                throw new RuntimeException(`Unknown symbol "${next}"`);
         }
-    }
-
-    while (stacks.length > 0) {
-        let stack = stacks.pop();
-        if ('(' === stack || ')' === stack) {
-            throw new RuntimeException(
-                'Mismatched parentheses'
-            );
-        }
-        if (!is_string(stack)) {
-            throw new RuntimeException(
-                'Mismatched parentheses'
-            );
-        }
-        output.push([PLURAL_OPERATOR, stack]);
     }
 
     return output;
 }
-

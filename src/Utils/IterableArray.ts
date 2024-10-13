@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import {NegativeInteger, PositiveInteger} from "./Type";
+import ClearableInterface from '../Interfaces/ClearableInterface';
 
 /**
  * @template TValue
@@ -8,7 +8,7 @@ import {NegativeInteger, PositiveInteger} from "./Type";
  * @param {any} TValue
  * @param {any} U
  */
-export default class IterableArray<TValue extends any> {
+export default class IterableArray<TValue extends any> implements ClearableInterface {
 
     /**
      * Items
@@ -22,13 +22,13 @@ export default class IterableArray<TValue extends any> {
      *
      * @protected
      */
-    protected _current: PositiveInteger | NegativeInteger = 0;
+    protected _current: number = 0;
 
     /**
      * Constructor
      * @param {Array<TValue>} items the items
      */
-    constructor(items: Array<TValue>) {
+    public constructor(items: Array<TValue>) {
         this.items = Array.from(items);
     }
 
@@ -37,7 +37,7 @@ export default class IterableArray<TValue extends any> {
      *
      * @return {number} the length of the array
      */
-    get length(): number {
+    public get length(): number {
         return this.items.length;
     }
 
@@ -81,16 +81,16 @@ export default class IterableArray<TValue extends any> {
         if (this.length === 0) {
             return false;
         }
-        this._current = this.length - 1 as PositiveInteger;
+        this._current = this.length - 1;
         return this.current();
     }
 
     /**
      * Get the key of the current item
      *
-     * @return {PositiveInteger | false} the key of the current item or false if the current index is invalid
+     * @return {number | false} the key of the current item or false if the current index is invalid
      */
-    public key(): PositiveInteger | false {
+    public key(): number | false {
         if (this.valid()) {
             return this._current;
         }
@@ -124,9 +124,9 @@ export default class IterableArray<TValue extends any> {
     /**
      * Seek to a specific index
      *
-     * @param {PositiveInteger} index
+     * @param {number} index
      */
-    public seek(index: PositiveInteger): TValue | false {
+    public seek(index: number): TValue | false {
         this._current = index;
         if (this.valid()) {
             return this.current();
@@ -187,6 +187,52 @@ export default class IterableArray<TValue extends any> {
      */
     public filter(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): TValue[] {
         return this.items.filter(callback, thisArg);
+    }
+
+    /**
+     * Implement the find method
+     *
+     * @param {(value: TValue, index: number, array: TValue[]) => boolean} callback
+     * @param {TValue} initialValue
+     */
+    public reduce(callback: (previousValue: TValue, currentValue: TValue, currentIndex: number, array: TValue[]) => TValue, initialValue: TValue): TValue {
+        return this.items.reduce(callback, initialValue);
+    }
+
+    /**
+     * Implement the find method
+     *
+     * @param {(value: TValue, index: number, array: TValue[]) => boolean} callback
+     * @param {any} thisArg
+     *
+     * @return {TValue}
+     */
+    public find(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): TValue {
+        return this.items.find(callback, thisArg) as TValue;
+    }
+
+    /**
+     * Implement the every method
+     *
+     * @param {(value: TValue, index: number, array: TValue[]) => boolean} callback
+     * @param {any} thisArg
+     *
+     * @return {boolean}
+     */
+    public some(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): boolean {
+        return this.items.some(callback, thisArg);
+    }
+
+    /**
+     * Implement the every method
+     *
+     * @param {(value: TValue, index: number, array: TValue[]) => boolean} callback
+     * @param {any} thisArg
+     *
+     * @return {boolean}
+     */
+    public every(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): boolean {
+        return this.items.every(callback, thisArg);
     }
 
     /**

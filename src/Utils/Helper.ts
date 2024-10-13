@@ -1,4 +1,4 @@
-import {Scalar} from "./Type";
+import {Scalar} from './Type';
 
 const bigIntMax: bigint = BigInt(Number.MAX_SAFE_INTEGER);
 const bigIntMin: bigint = BigInt(Number.MIN_SAFE_INTEGER);
@@ -24,7 +24,7 @@ export const normalizeHeaderName = (name: string): string => {
         return p1 + p2.toUpperCase();
     });
     if (name.startsWith('Mime-')) {
-        name = 'MIME-' + name.substring(5);
+        name = 'MIME-' + substr(name, 5);
     }
     return name;
 }
@@ -38,69 +38,80 @@ export const normalizeHeaderValue = (value: any): string => {
     if (value === '') {
         return '';
     }
+    value = string_scalar_value(value);
     // replace non-acceptable characters
     const replacer: {
         [key: string]: string;
     } = {
-        "\t": ' ',
-        "\r": '',
-        "\n": ' ',
-        "\v": '',
-        "\f": '',
-        "\e": '',
-        "\x08": '',
-        "\x07": '',
+        '\x09': ' ', // horizontal tab (HT or 0x09 (9) in ASCII) = \t
+        '\x0d': '', // carriage return (CR or 0x0D (13) in ASCII) = \r
+        '\x0a': ' ', // linefeed (LF or 0x0A (10) in ASCII) = \n
+        '\x0b': '', // vertical tab (VT or 0x0B (11) in ASCII) = \v
+        '\f': '', // form feed (FF or 0x0C (12) in ASCII) = \f
+        '\x1B': '', // escape (ESC or 0x1B (27) in ASCII)
+        '\x08': '',
+        '\x07': '',
     };
     for (let key in replacer) {
-        value = value.replace(key, replacer[key]);
+        value = value.replaceAll(key, replacer[key])
     }
     return value;
 }
 
 /**
  * Finds the length of the initial segment of a string consisting entirely of characters contained within a given mask.
+ *
+ * @param {string} input - The input string.
+ * @param {string} mask - The mask of allowed characters.
+ * @param {number} [start=0] - The position in the string to start searching.
+ * @param {number} [length=str.length] - The length of the segment to consider.
+ * @return {number} The length of the initial segment containing only characters from the mask.
  */
-export const strspn = (string: string, characters: string, offset: number = 0, length: number | null = null): number => {
-    // check if the parameters are valid
-    if (!is_string(string)
-        || !is_string(characters)
-        || !is_numeric_integer(offset)
-        || (length !== null && !is_numeric_integer(length))
-        || string.length === 0 || characters.length === 0 // if the string or characters are empty
-    ) {
-        return 0; // return 0 for safe result
+export const strspn = (input : string, mask: string, start: number = 0, length: number = input.length) : number => {
+    // Ensure the start and length are within the bounds of the string
+    start = Math.max(0, start);
+    length = Math.min(input.length - start, length);
+
+    let count = 0;
+    for (let i = start; i < start + length; i++) {
+        if (mask.indexOf(input[i]) === -1) {
+            break;
+        }
+        count++;
+    }
+    return count;
+}
+
+/**
+ * Sub
+ * @param {string} input The input string.
+ * @param {number} start If start is non-negative, the returned string will start at the start position in string, counting from zero. For instance, in the string 'abcdef', the character at position 0 is 'a', the character at position 2 is 'c', and so forth.
+ * @param {number|null} length If length is given and is positive, the string returned will contain at most length characters beginning from start (depending on the length of string).
+ *
+ * @return Returns the portion of string specified by the offset and length parameters.
+ */
+export const substr = (input: string, start: number, length?: number): string => {
+    start = parseInt(start + '');
+    const inputLength = input.length
+    let end = inputLength
+
+    if (start < 0) {
+        start += end
     }
 
-    // convert the offset and length to integer
-    offset = !is_number(offset) ? parseInt(offset) : offset;
-
-    let found: number,
-        stringIndex: string,
-        stringSubIndex: string,
-        subIndex: number = 0,
-        index: number = 0;
-
-    offset = offset ? (offset < 0 ? string.length + offset : offset) : 0;
-    length = length ? (length < 0 ? string.length + length - offset : length) : string.length - offset;
-    string = string.substring(offset, length);
-
-    // process the both string and characters
-    for (; index < string.length; index++) {
-        found = 0;
-        stringIndex = string.substring(index, index + 1);
-        for (subIndex = 0; subIndex <= characters.length; subIndex++) {
-            stringSubIndex = characters.substring(subIndex, subIndex + 1);
-            if (stringIndex === stringSubIndex) {
-                found = 1;
-                break;
-            }
-        }
-        if (found !== 1) {
-            return index;
+    if (typeof length !== 'undefined') {
+        if (length < 0) {
+            end = length + end;
+        } else {
+            end = length + start;
         }
     }
 
-    return index;
+    if (start > inputLength || start < 0 || start > end) {
+        return '';
+    }
+
+    return input.slice(start, end);
 }
 
 /**
@@ -192,7 +203,7 @@ export const is_undefined = (param: any): param is undefined => {
  * Check if param is object and not null
  */
 export const is_object = (param: any): param is object => {
-    return param && typeof param === 'object';
+    return param !== null && typeof param === 'object';
 }
 
 /**
@@ -214,14 +225,19 @@ export const string_scalar_value = (param: any): string => {
 /**
  * Check if the parameter is an arraybuffer like
  */
-export const is_array_buffer_like = (param: any): param is ArrayBufferLike => {
-    return param instanceof ArrayBuffer;
+export const is_array_buffer_like_or_view = (param: any): param is ArrayBufferLike => {
+    return param instanceof ArrayBuffer || param instanceof SharedArrayBuffer || ArrayBuffer.isView(param);
 }
 
-export const deep_freeze = <T extends any|object>(o: T) : T => {
+/**
+ * @template T
+ * Deep freeze the object
+ * @param {T} o
+ * @return {T}
+ */
+export const deep_freeze = <T extends any | object>(o: T): T => {
     if (o && typeof o === 'object') {
         for (let i in o) {
-            console.log(i)
             if (o.hasOwnProperty(i)) {
                 o[i] = deep_freeze(o[i]);
             }

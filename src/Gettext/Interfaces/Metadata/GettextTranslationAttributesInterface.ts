@@ -1,8 +1,8 @@
-import GettextCommentsInterface from "./Attributes/GettextCommentsInterface";
-import GettextReferencesInterface from "./Attributes/GettextReferencesInterface";
-import GettextExtractedCommentsInterface from "./Attributes/GettextExtractedCommentsInterface";
-import GettextFlagsInterface from "./Attributes/GettextFlagsInterface";
-import CloneableInterface from "../../CloneableInterface";
+import GettextCommentsInterface from './Attributes/GettextCommentsInterface';
+import GettextReferencesInterface from './Attributes/GettextReferencesInterface';
+import GettextExtractedCommentsInterface from './Attributes/GettextExtractedCommentsInterface';
+import GettextFlagsInterface from './Attributes/GettextFlagsInterface';
+import CloneableInterface from '../../../Interfaces/CloneableInterface';
 
 export default interface GettextTranslationAttributesInterface extends CloneableInterface {
 
@@ -19,7 +19,6 @@ export default interface GettextTranslationAttributesInterface extends Cloneable
      * @return {GettextCommentsInterface} Gettext comments
      */
     get comments(): GettextCommentsInterface;
-
 
     /**
      * Extracted comments

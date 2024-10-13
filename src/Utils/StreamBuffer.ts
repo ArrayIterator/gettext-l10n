@@ -1,10 +1,16 @@
 // noinspection JSUnusedGlobalSymbols
 
-import {is_array_buffer_like, is_string} from "./Helper";
-import InvalidArgumentException from "../Exceptions/InvalidArgumentException";
+import {
+    is_array_buffer_like_or_view,
+    is_string
+} from './Helper';
+import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
+import ClearableInterface from '../Interfaces/ClearableInterface';
 
-export default class StreamBuffer {
-
+/**
+ * StreamBuffer - a buffer for reading streams
+ */
+export default class StreamBuffer implements ClearableInterface {
     /**
      * The buffer
      *
@@ -19,8 +25,13 @@ export default class StreamBuffer {
      */
     protected _offset: number = 0;
 
-    constructor(content: string | ArrayBufferLike) {
-        if (!is_string(content) && !is_array_buffer_like(content)) {
+    /**
+     * StreamBuffer constructor
+     *
+     * @param {string|ArrayBufferLike} content the content
+     */
+    public constructor(content: string | ArrayBufferLike) {
+        if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
             throw new InvalidArgumentException(
                 `The content must be a string or an ArrayBufferLike, ${typeof content} given`
             );
@@ -131,7 +142,7 @@ export default class StreamBuffer {
      *
      * @return {void}
      */
-    clear(): void {
+    public clear(): void {
         this._buffer = new Uint8Array();
         this._offset = 0;
     }

@@ -1,6 +1,10 @@
-import ArrayString from "../../../Abstracts/ArrayString";
-import GettextFlagsInterface from "../../../Interfaces/Gettext/Metadata/Attributes/GettextFlagsInterface";
+import ArrayString from '../../../Abstracts/ArrayString';
+import GettextFlagsInterface from '../../Interfaces/Metadata/Attributes/GettextFlagsInterface';
 
+/**
+ * Flags storage class to handle flags data
+ * Flags is a special comments that is used to store flags data
+ */
 export default class Flags extends ArrayString implements GettextFlagsInterface {
 
     /**
