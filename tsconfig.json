@@ -1,0 +1,42 @@
+{
+    "compileOnSave": false,
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs",
+            "tsBuildInfoFile": null
+        }
+    },
+    "compilerOptions": {
+        "baseUrl": "./",
+        "target": "ESNext",
+        "module": "ESNext",
+        "outDir": "./build",
+        "rootDir": "./src",
+        "strict": true,
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "noImplicitAny": true,
+        "tsBuildInfoFile": null,
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "types": [
+            "jest"
+        ],
+        "typeRoots": [
+            "./node_modules/@types"
+        ]
+    },
+    "include": [
+        "src/**/*",
+        "./src/declarations/json.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
