@@ -84,6 +84,13 @@ export default abstract class ArrayString implements ArrayStringInterface {
     /**
      * @inheritDoc
      */
+    public forEach(callback: (value: string, index: number, array: Array<string>) => void) : void {
+        this._strings.forEach(callback);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public [Symbol.iterator](): Iterator<string> {
         return this._strings[Symbol.iterator]();
     }

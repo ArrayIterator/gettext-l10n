@@ -1,16 +1,15 @@
 import LengthInterface from '../../../../Interfaces/LengthInterface';
-import {PositiveInteger} from '../../../../Utils/Type';
 import CloneableInterface from '../../../../Interfaces/CloneableInterface';
 
-export default interface GettextReferencesInterface extends LengthInterface, CloneableInterface, Iterable<[string, PositiveInteger[]]> {
+export default interface GettextReferencesInterface extends LengthInterface, CloneableInterface, Iterable<[string, number[]]> {
 
     /**
      * Add reference by string
      *
      * @param {string} file - the reference string of file
-     * @param {?PositiveInteger} line - line number
+     * @param {?number} line - line number
      */
-    add(file: string, line?: PositiveInteger | undefined | null): void;
+    add(file: string, line?: number | undefined | null): void;
 
     /**
      * Remove reference by string
@@ -31,9 +30,9 @@ export default interface GettextReferencesInterface extends LengthInterface, Clo
      *
      * @see Array.entries
      *
-     * @return {IteratorObject<[string, PositiveInteger[]]>}
+     * @return {IteratorObject<[string, number[]]>}
      */
-    entries(): IteratorObject<[string, PositiveInteger[]]>;
+    entries(): IteratorObject<[string, number[]]>;
 
     /**
      * Merge with another instance
@@ -48,16 +47,23 @@ export default interface GettextReferencesInterface extends LengthInterface, Clo
     /**
      * Implement Iterable, return iterator of string data
      *
-     * @return {Iterator<[string, PositiveInteger[]]>}
+     * @return {Iterator<[string, number[]]>}
      */
-    [Symbol.iterator](): Iterator<[string, PositiveInteger[]]>;
+    [Symbol.iterator](): Iterator<[string, number[]]>;
+
+    /**
+     * For each string data
+     *
+     * @param {(value: [string, number[]], index: number, array: [string, number[]][]) => void} callback - the callback function
+     */
+    forEach(callback: (value: [string, number[]], index: number, array: [string, number[]][]) => void): void;
 
     /**
      * Get list of string data
      *
-     * @return {Record<string, PositiveInteger[]>} list of string data
+     * @return {Record<string, number[]>} list of string data
      */
-    get all(): Record<string, PositiveInteger[]>;
+    get all(): Record<string, number[]>;
 
     /**
      * Get length of string data

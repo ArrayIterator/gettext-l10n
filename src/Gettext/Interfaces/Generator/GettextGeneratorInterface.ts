@@ -1,11 +1,14 @@
-import GettextTranslationsInterface from '../GettextTranslationsInterface';
+import TranslationEntriesInterface from '../../../Translations/Interfaces/TranslationEntriesInterface';
+import StreamBuffer from '../../../Utils/StreamBuffer';
 
 export default interface GettextGeneratorInterface {
 
     /**
      * Generate the content from translations
      *
-     * @param {GettextTranslationsInterface} translations the translations
+     * @param {TranslationEntriesInterface} translations the translations
+     *
+     * @return {StreamBuffer} the generated content
      */
-    generate(translations: GettextTranslationsInterface): string;
+    generate(translations: TranslationEntriesInterface): StreamBuffer;
 }

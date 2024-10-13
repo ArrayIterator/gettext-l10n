@@ -43,14 +43,14 @@ export const normalizeHeaderValue = (value: any): string => {
     const replacer: {
         [key: string]: string;
     } = {
-        '\x09': ' ', // horizontal tab (HT or 0x09 (9) in ASCII) = \t
-        '\x0d': '', // carriage return (CR or 0x0D (13) in ASCII) = \r
-        '\x0a': ' ', // linefeed (LF or 0x0A (10) in ASCII) = \n
-        '\x0b': '', // vertical tab (VT or 0x0B (11) in ASCII) = \v
-        '\f': '', // form feed (FF or 0x0C (12) in ASCII) = \f
-        '\x1B': '', // escape (ESC or 0x1B (27) in ASCII)
-        '\x08': '',
-        '\x07': '',
+        '\x09' : ' ', // horizontal tab (HT or 0x09 (9) in ASCII) = \t
+        '\x0d' : '', // carriage return (CR or 0x0D (13) in ASCII) = \r
+        '\x0a' : ' ', // linefeed (LF or 0x0A (10) in ASCII) = \n
+        '\x0b' : '', // vertical tab (VT or 0x0B (11) in ASCII) = \v
+        '\f'   : '', // form feed (FF or 0x0C (12) in ASCII) = \f
+        '\x1B' : '', // escape (ESC or 0x1B (27) in ASCII)
+        '\x08' : '',
+        '\x07' : '',
     };
     for (let key in replacer) {
         value = value.replaceAll(key, replacer[key])

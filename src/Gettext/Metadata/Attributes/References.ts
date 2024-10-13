@@ -4,7 +4,6 @@ import {
     is_numeric_integer,
     normalize_number
 } from '../../../Utils/Helper';
-import {PositiveInteger} from '../../../Utils/Type';
 import InvalidArgumentException from '../../../Exceptions/InvalidArgumentException';
 
 /**
@@ -19,13 +18,13 @@ export default class References implements GettextReferencesInterface {
      *
      * @protected
      */
-    protected _references: Map<string, PositiveInteger[]> = new Map<string, PositiveInteger[]>();
+    protected _references: Map<string, number[]> = new Map<string, number[]>();
 
     /**
      * @inheritDoc
      */
-    public get all(): Record<string, PositiveInteger[]> {
-        const object: Record<string, PositiveInteger[]> = {} as Record<string, PositiveInteger[]>;
+    public get all(): Record<string, number[]> {
+        const object: Record<string, number[]> = {} as Record<string, number[]>;
         this.entries().forEach(([file, numbers]) => {
             object[file] = numbers;
         })
@@ -35,7 +34,7 @@ export default class References implements GettextReferencesInterface {
     /**
      * @inheritDoc
      */
-    public add(file: string, line: PositiveInteger | undefined | null = undefined): void {
+    public add(file: string, line: number | undefined | null = undefined): void {
         if (line === null || line === undefined) {
             if (!this._references.has(file)) {
                 this._references.set(file, []);
@@ -45,11 +44,11 @@ export default class References implements GettextReferencesInterface {
         if (!is_numeric_integer(line)) {
             throw new Error('Line number must be an integer.');
         }
-        line = normalize_number(line) as PositiveInteger;
+        line = normalize_number(line) as number;
         if (is_bigint(line) || line < 1) {
             return; // ignore invalid line number
         }
-        const reference: Array<PositiveInteger> = this._references.has(file)
+        const reference: Array<number> = this._references.has(file)
             ? (this._references.get(file) || [])
             : [];
         reference.push(line);
@@ -73,7 +72,7 @@ export default class References implements GettextReferencesInterface {
     /**
      * @inheritDoc
      */
-    public entries(): MapIterator<[string, PositiveInteger[]]> {
+    public entries(): MapIterator<[string, number[]]> {
         return this._references.entries();
     }
 
@@ -99,8 +98,19 @@ export default class References implements GettextReferencesInterface {
     /**
      * @inheritDoc
      */
-    public [Symbol.iterator](): Iterator<[string, PositiveInteger[]]> {
-        return this._references[Symbol.iterator]() as Iterator<[string, PositiveInteger[]]>;
+    public forEach(callback: (value: [string, number[]], index: number, array: [string, number[]][]) => void): void {
+        let index = 0;
+        for (const [file, lines] of this.entries()) {
+            callback([file, lines], index, Array.from(this.entries()));
+            index++;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public [Symbol.iterator](): Iterator<[string, number[]]> {
+        return this._references[Symbol.iterator]() as Iterator<[string, number[]]>;
     }
 
     /**

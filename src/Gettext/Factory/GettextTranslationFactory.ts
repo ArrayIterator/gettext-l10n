@@ -11,7 +11,7 @@ export default class GettextTranslationFactory implements GettextTranslationFact
      * @inheritDoc
      */
     public createTranslation(
-        context: string,
+        context: string|undefined,
         original: string,
         plural?: string,
         translation?: string,

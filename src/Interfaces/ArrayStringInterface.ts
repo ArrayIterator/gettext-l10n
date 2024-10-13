@@ -58,6 +58,11 @@ export default interface ArrayStringInterface extends LengthInterface, Iterable<
     [Symbol.iterator](): Iterator<string>;
 
     /**
+     * Implement Iterable, return iterator of string data
+     */
+    forEach(callback: (value: string, index: number, array: Array<string>) => void): void;
+
+    /**
      * Get list of string data
      *
      * @return {Array<string>} list of string data

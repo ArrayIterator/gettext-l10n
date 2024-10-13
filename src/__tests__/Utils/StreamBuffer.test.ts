@@ -29,6 +29,16 @@ describe('StreamBuffer', () => {
     });
 
     /**
+     * Test write method of StreamBuffer.
+     */
+    test('should write a string', () => {
+        const buffer = new StreamBuffer('hello');
+        buffer.write(' world');
+        expect(buffer.size).toBe(11);
+        expect(buffer.toString()).toBe('hello world');
+    });
+
+    /**
      * Test to check if StreamBuffer seeks to a specific offset.
      */
     test('should seek to a specific offset', () => {

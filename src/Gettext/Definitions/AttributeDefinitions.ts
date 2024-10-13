@@ -21,7 +21,7 @@ export const ATTRIBUTE_MESSAGE_CONTEXT = 'msgctx';
 /**
  * Comment identifier
  */
-export const ATTRIBUTE_COMMENTS = '#';
+export const ATTRIBUTE_COMMENT = '#';
 
 /**
  * Commented translations
@@ -31,7 +31,7 @@ export const ATTRIBUTE_COMMENTED_TRANSLATIONS = '#~';
 /**
  * Extracted comments
  */
-export const ATTRIBUTE_EXTRACTED_COMMENTS = '#.';
+export const ATTRIBUTE_EXTRACTED_COMMENT = '#.';
 
 /**
  * Flags

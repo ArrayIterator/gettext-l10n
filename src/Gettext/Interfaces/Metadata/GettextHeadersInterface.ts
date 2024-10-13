@@ -6,6 +6,41 @@ import CloneableInterface from '../../../Interfaces/CloneableInterface';
 export default interface GettextHeadersInterface extends CloneableInterface {
 
     /**
+     * Get the fallback language
+     *
+     * @return {string} the fallback language
+     */
+    getFallbackLanguage(): string;
+
+    /**
+     * Get the fallback language
+     *
+     * @return {string} the fallback language
+     */
+    get fallbackLanguage(): string;
+
+    /**
+     * Set the fallback language
+     *
+     * @param {string} language - the fallback language
+     */
+    setFallbackLanguage(language: string): void;
+
+    /**
+     * Set the fallback language
+     *
+     * @param {string} language - the fallback language
+     */
+    set fallbackLanguage(language: string);
+
+    /**
+     * Get headers
+     *
+     * @return {HeaderRecords} the headers
+     */
+    getHeaders(): HeaderRecords;
+
+    /**
      * Get all headers
      *
      * @return {HeaderRecords} the headers
@@ -15,9 +50,23 @@ export default interface GettextHeadersInterface extends CloneableInterface {
     /**
      * Get plural form
      *
-     * @return {PluralForm} the plural form
+     * @return {GettextPluralFormInterface} the plural form
+     */
+    getPluralForm(): GettextPluralFormInterface;
+
+    /**
+     * Get plural form
+     *
+     * @return {GettextPluralFormInterface} the plural form
      */
     get pluralForm(): GettextPluralFormInterface;
+
+    /**
+     * Set plural form
+     *
+     * @param {GettextPluralFormInterface} pluralForm - the plural form
+     */
+    setPluralForm(pluralForm: GettextPluralFormInterface): void;
 
     /**
      * Set plural form
@@ -29,9 +78,23 @@ export default interface GettextHeadersInterface extends CloneableInterface {
     /**
      * Get language
      *
+     * @return {string} the language if undefined, return the fallback language
+     */
+    getLanguage(): string;
+
+    /**
+     * Get language
+     *
      * @return {string | undefined} the language
      */
-    get language(): string | undefined;
+    get language(): string;
+
+    /**
+     * Set language
+     *
+     * @param {string} language - the language
+     */
+    setLanguage(language: string): void;
 
     /**
      * Set language
@@ -43,9 +106,23 @@ export default interface GettextHeadersInterface extends CloneableInterface {
     /**
      * Get domain
      *
+     * @return {string} the domain
+     */
+    getDomain(): string | undefined;
+
+    /**
+     * Get domain
+     *
      * @return {string | undefined} the domain
      */
     get domain(): string | undefined;
+
+    /**
+     * Set domain
+     *
+     * @param {string} domain - the domain
+     */
+    setDomain(domain: string): void
 
     /**
      * Set domain
@@ -59,7 +136,21 @@ export default interface GettextHeadersInterface extends CloneableInterface {
      *
      * @return {string} the project id version
      */
+    getVersion(): string | undefined;
+
+    /**
+     * Get project id version
+     *
+     * @return {string} the project id version
+     */
     get version(): string | undefined;
+
+    /**
+     * Set project id version
+     *
+     * @param {string} version - the project id version
+     */
+    setVersion(version: string): void;
 
     /**
      * Set project id version
@@ -73,7 +164,21 @@ export default interface GettextHeadersInterface extends CloneableInterface {
      *
      * @return {string} the generator
      */
+    getGenerator(): string | undefined;
+
+    /**
+     * Get generator
+     *
+     * @return {string} the generator
+     */
     get generator(): string | undefined;
+
+    /**
+     * Set generator
+     *
+     * @param {string} generator - the generator
+     */
+    setGenerator(generator: string): void;
 
     /**
      * Set generator
@@ -81,6 +186,13 @@ export default interface GettextHeadersInterface extends CloneableInterface {
      * @param {string|undefined|null} generator - the generator - undefined or null will remove the generator
      */
     set generator(generator: string | undefined | null);
+
+    /**
+     * Get header
+     *
+     * @return {string} the header
+     */
+    getHeader(): string;
 
     /**
      * Get printed headers
@@ -123,6 +235,13 @@ export default interface GettextHeadersInterface extends CloneableInterface {
      * @return {this} the current instance
      */
     remove(name: string): this;
+
+    /**
+     * For each header call the callback
+     *
+     * @param {(value: string, key: string, headers: HeaderRecords) => void} callback - the callback
+     */
+    forEach(callback: (value: string, key: string, headers: HeaderRecords) => void): void;
 
     /**
      * Clone headers

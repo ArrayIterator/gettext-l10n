@@ -1,10 +1,54 @@
 import GettextPluralFormInterface from '../../Gettext/Interfaces/Metadata/GettextPluralFormInterface';
 import CloneableInterface from '../../Interfaces/CloneableInterface';
+import GettextTranslationAttributesInterface from '../../Gettext/Interfaces/Metadata/GettextTranslationAttributesInterface';
 
 /**
  * Interface representing a translation entry.
  */
 export default interface TranslationEntryInterface extends CloneableInterface {
+
+    /**
+     * Gettext attributes
+     *
+     * @return {GettextTranslationAttributesInterface} Gettext attributes
+     */
+    getAttributes(): GettextTranslationAttributesInterface;
+
+    /**
+     * Get Attributes
+     *
+     * @return {GettextTranslationAttributesInterface} the attributes
+     */
+    get attributes(): GettextTranslationAttributesInterface;
+
+    /**
+     * Get translation enabled
+     *
+     * @return {boolean} the translation enabled
+     */
+    isEnabled(): boolean;
+
+    /**
+     * Get translation enabled
+     *
+     * @return {boolean} the translation enabled
+     */
+    get enabled(): boolean;
+
+    /**
+     * Set translation enabled
+     *
+     * @param {boolean} enabled the translation enabled
+     */
+    setEnabled(enabled: boolean): void;
+
+    /**
+     * Set translation enabled, this mean is commented translation
+     *
+     * @param {boolean} enabled the translation enabled
+     */
+    set enabled(enabled: boolean);
+
     /**
      * Gets the context of the translation entry.
      * @return {string | undefined} The context of the translation entry.
@@ -63,28 +107,28 @@ export default interface TranslationEntryInterface extends CloneableInterface {
      *
      * @return {string | undefined} The plural form of the original string.
      */
-    getPluralTranslation(): string | undefined;
+    getPlural(): string | undefined;
 
     /**
      * Get plural translation
      *
      * @return {string|undefined} the plural, returning undefined if the object does not have translation
      */
-    get pluralTranslation(): string | undefined;
+    get plural(): string | undefined;
 
     /**
      * Set plural translation
      *
      * @param {string|undefined} plural
      */
-    setPluralTranslation(plural: string | undefined) : void;
+    setPlural(plural: string | undefined) : void;
 
     /**
      * Set plural translation
      *
      * @param {string|undefined} plural
      */
-    set pluralTranslation(plural: string | undefined);
+    set plural(plural: string | undefined);
 
     /**
      * Set plural translations

@@ -11,7 +11,21 @@ export default interface GettextTranslationAttributesInterface extends Cloneable
      *
      * @return {GettextFlagsInterface} Gettext flags
      */
+    getFlags(): GettextFlagsInterface;
+
+    /**
+     * Gettext flags
+     *
+     * @return {GettextFlagsInterface} Gettext flags
+     */
     get flags(): GettextFlagsInterface;
+
+    /**
+     * Gettext comments
+     *
+     * @return {GettextCommentsInterface} Gettext comments
+     */
+    getComments(): GettextCommentsInterface;
 
     /**
      * Gettext comments
@@ -21,11 +35,25 @@ export default interface GettextTranslationAttributesInterface extends Cloneable
     get comments(): GettextCommentsInterface;
 
     /**
+     * Gettext extracted comments
+     *
+     * @return {GettextExtractedCommentsInterface} Extracted comments
+     */
+    getExtractedComments(): GettextExtractedCommentsInterface;
+
+    /**
      * Extracted comments
      *
      * @return {GettextExtractedCommentsInterface} Extracted comments
      */
     get extractedComments(): GettextExtractedCommentsInterface;
+
+    /**
+     * Gettext references
+     *
+     * @return {GettextReferencesInterface} Gettext references
+     */
+    getReferences(): GettextReferencesInterface;
 
     /**
      * Gettext references

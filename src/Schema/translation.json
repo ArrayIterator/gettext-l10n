@@ -1,0 +1,171 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Gettext JSON Schema",
+    "description": "The Gettext JSON Schema is used to validate the structure of a Gettext translation file. The primary required key is translations, which contains the translations object.",
+    "type": "object",
+    "definitions": {
+        "flags": {
+            "type": "array",
+            "description": "The flags array contains flags that are used to mark the translation file.",
+            "items": {
+                "type": "string",
+                "uniqueItems": true,
+                "pattern": "^([a-z]+([a-z-]*[a-z]+)?|range:[0-9]+-[0-9]+)$"
+            }
+        },
+        "references": {
+            "type": "array",
+            "description": "The references array contains references to the original source of the translations.",
+            "items": {
+                "type": "string",
+                "uniqueItems": true,
+                "pattern": "^.+(:[0-9]+)?$"
+            }
+        },
+        "comments": {
+            "description": "The comments object contains comments about the translation file.",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "translation": {
+            "type": "object",
+            "description": "The translation object contains the translation of a single message.",
+            "properties": {
+                "comments": {
+                    "$ref": "#/definitions/comments"
+                },
+                "references": {
+                    "$ref": "#/definitions/references"
+                },
+                "flags": {
+                    "$ref": "#/definitions/flags"
+                },
+                "enable": {
+                    "type": "boolean",
+                    "description": "The enabled key is used to enable or disable the translation. If the key is not present, the translation is enabled by default."
+                },
+                "msgid": {
+                    "type": "string",
+                    "description": "The msgid key is the original message that needs to be translated."
+                },
+                "msgid_plural": {
+                    "type": "string",
+                    "description": "The msgid_plural key is the plural form of the original message that needs to be translated."
+                },
+                "msgstr": {
+                    "type": "array",
+                    "description": "The msgstr array contains the translated messages.",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "msgid",
+                "msgstr"
+            ]
+        }
+    },
+    "properties": {
+        "revision": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "flags": {
+            "$ref": "#/definitions/flags"
+        },
+        "references": {
+            "$ref": "#/definitions/references"
+        },
+        "comments": {
+            "$ref": "#/definitions/comments"
+        },
+        "headers": {
+            "type": "object",
+            "additionalItems": true,
+            "description": "The headers object contains metadata about the translation file. The required language key is used to identify the language of the translation.",
+            "properties": {
+                "project-id-version": {
+                    "type": "string"
+                },
+                "pot-creation-date": {
+                    "type": "string"
+                },
+                "po-revision-date": {
+                    "type": "string"
+                },
+                "last-translator": {
+                    "type": "string"
+                },
+                "language-team": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "mime-version": {
+                    "type": "string"
+                },
+                "content-type": {
+                    "type": "string"
+                },
+                "content-transfer-encoding": {
+                    "type": "string"
+                },
+                "plural-forms": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "language"
+            ]
+        },
+        "translations": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "description": "This is a translation object. The key is context, and the value is the translation object.",
+                    "type": [
+                        "array",
+                        "object"
+                    ],
+                    "items": {
+                        "$ref": "#/definitions/translation"
+                    },
+                    "patternProperties": {
+                        ".*": {
+                            "type": "object",
+                            "$ref": "#/definitions/translation"
+                        }
+                    }
+                },
+                "^$": {
+                    "type": "object",
+                    "description": "This is a translation object. The key is context, and the value is the translation object.",
+                    "patternProperties": {
+                        "^$": {
+                            "type": "object",
+                            "$ref": "#/definitions/translation"
+                        },
+                        ".*": {
+                            "type": "object",
+                            "$ref": "#/definitions/translation"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "translations"
+    ]
+}

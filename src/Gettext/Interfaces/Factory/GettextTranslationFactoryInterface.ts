@@ -5,7 +5,7 @@ export default interface GettextTranslationFactoryInterface {
 
     /**
      * Create a new translation
-     * @param {string} context
+     * @param {string|undefined} context
      * @param {string} original
      * @param {string|undefined} plural
      * @param {string|undefined} translation
@@ -13,7 +13,7 @@ export default interface GettextTranslationFactoryInterface {
      * @param {string[]} pluralTranslations
      */
     createTranslation(
-        context: string,
+        context: string|undefined,
         original: string,
         plural?: string,
         translation?: string,

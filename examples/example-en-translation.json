@@ -1,0 +1,71 @@
+{
+    "title": "The translation file for the English language.",
+    "description": "This is an example translation file for the English language.",
+    "type": "object",
+    "revision": 1,
+    "flags": ["fuzzy", "c-format"],
+    "references": ["src/file.js:10"],
+    "comments": "This is a comment about the translation file.",
+    "headers": {
+        "project-id-version": "My Project 1.0",
+        "pot-creation-date": "2023-10-01 12:00+0000",
+        "po-revision-date": "2023-10-01 12:00+0000",
+        "last-translator": "John Doe <john.doe@example.com>",
+        "language-team": "English <en@example.com>",
+        "language": "en",
+        "language-name": "English",
+        "mime-version": "1.0",
+        "content-type": "text/plain; charset=UTF-8",
+        "content-transfer-encoding": "8bit",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+    },
+    "translations": {
+        "": {
+            "": {
+                "msgid": "",
+                "msgstr": [
+                    "Content-Type: text/plain; charset=UTF-8\n"
+                ],
+                "comments": "This is a comment for the translator as a string."
+            },
+            "as a key reference": {
+                "msgid": "as a key reference",
+                "msgstr": [
+                    "as a key reference"
+                ],
+                "comments": "This is a comment for the translator as a string."
+            }
+        },
+        "context1": [
+            {
+                "msgid": "Hello, world!",
+                "msgstr": ["Hello, world!"],
+                "comments": "This is a comment for the translator as a string.",
+                "references": ["src/file.js:10"],
+                "flags": ["fuzzy"]
+            }
+        ],
+        "context2withObject": {
+            "Hello world!": {
+                "msgid": "Hello, world!",
+                "msgstr": ["Hello, world!"],
+                "comments": [
+                    "the key is the msgid",
+                    "the key will ignore or just be as a key reference"
+                ],
+                "references": ["src/file.js:10"],
+                "flags": ["fuzzy"]
+            },
+            "Hello, world!": {
+                "msgid": "Hello, world!",
+                "msgstr": ["Hello, world!"],
+                "enable": false,
+                "comments": [
+                    "this translation is disabled or just as commented translation like po file with: #~ msgid \"Hello, world!\""
+                ],
+                "references": ["src/file.js:10"],
+                "flags": ["fuzzy"]
+            }
+        }
+    }
+}

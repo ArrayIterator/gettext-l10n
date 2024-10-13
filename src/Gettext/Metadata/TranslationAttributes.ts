@@ -64,29 +64,57 @@ export default class TranslationAttributes implements GettextTranslationAttribut
     /**
      * @inheritDoc
      */
-    public get flags(): GettextFlagsInterface {
+    public getFlags(): GettextFlagsInterface {
         return this._flags;
     }
 
     /**
      * @inheritDoc
      */
-    public get comments(): GettextCommentsInterface {
+    public get flags(): GettextFlagsInterface {
+        return this.getFlags();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getComments(): GettextCommentsInterface {
         return this._comments;
     }
 
     /**
      * @inheritDoc
      */
-    public get extractedComments(): GettextExtractedCommentsInterface {
+    public get comments(): GettextCommentsInterface {
+        return this.getComments();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getExtractedComments(): GettextExtractedCommentsInterface {
         return this._extractedComments;
     }
 
     /**
      * @inheritDoc
      */
-    public get references(): GettextReferencesInterface {
+    public get extractedComments(): GettextExtractedCommentsInterface {
+        return this.getExtractedComments();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getReferences(): GettextReferencesInterface {
         return this._references;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public get references(): GettextReferencesInterface {
+        return this.getReferences();
     }
 
     /**

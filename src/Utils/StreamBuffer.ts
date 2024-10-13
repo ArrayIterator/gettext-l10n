@@ -44,6 +44,16 @@ export default class StreamBuffer implements ClearableInterface {
     }
 
     /**
+     * Append a string
+     *
+     * @param {string} string the string to append
+     */
+    public write(string: string): void {
+        const buffer = new TextEncoder().encode(string);
+        this._buffer = new Uint8Array([...this._buffer, ...buffer]);
+    }
+
+    /**
      * Get the size of the buffer
      *
      * @return {number} the size of the buffer
