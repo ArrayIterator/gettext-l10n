@@ -23,8 +23,8 @@ import GettextTranslationInterface from '../Interfaces/GettextTranslationInterfa
  *     "comments": "This is a comment about the translation file.",
  *     "headers": {
  *         "project-id-version": "My Project 1.0",
- *         "pot-creation-date": "2023-10-01 12:00+0000",
- *         "po-revision-date": "2023-10-01 12:00+0000",
+ *         "creation-date": "2023-10-01 12:00+0000",
+ *         "revision-date": "2023-10-01 12:00+0000",
  *         "last-translator": "John Doe <john.doe@example.com>",
  *         "language-team": "English <en@example.com>",
  *         "language": "en",
@@ -95,13 +95,22 @@ export default class JsonReader implements GettextReaderInterface {
         }
         let revision = is_numeric_integer(object.revision) ? normalize_number(object.revision) as number : 0;
         const translations = new GettextTranslations(revision);
-        const headers : {
+        const headers: {
             [key: string]: string;
         } = object.headers;
         if (is_object(headers)) {
             for (let key in headers) {
                 if (!headers.hasOwnProperty(key)) {
                     continue;
+                }
+                // normalize key
+                switch (key) {
+                    case 'creation-date':
+                        key = 'pot-creation-date';
+                        break;
+                    case 'revision-date':
+                        key = 'po-revision-date';
+                        break;
                 }
                 const value = headers[key];
                 translations.headers.set(key, value);
@@ -112,7 +121,8 @@ export default class JsonReader implements GettextReaderInterface {
             msgid_plural?: string;
             msgstr: string[];
             reference?: Array<string>;
-            comments?: Array<string>|string;
+            'extracted-comments'?: Array<string>;
+            comments?: Array<string> | string;
             flags?: Array<string>;
             enable?: boolean;
         };
@@ -143,12 +153,18 @@ export default class JsonReader implements GettextReaderInterface {
             // the msgid is empty and msgstr is an array of strings
             if (msgid === '' && Array.isArray(msgstr) && msgstr.every(is_string)) {
                 for (let header of msgstr) {
-                    if (header.trim() === '') {
+                    header = header.trim();
+                    if (header === '') {
                         continue;
                     }
-                    let [key, value] = header.split(':', 2);
-                    key = key.trim();
-                    value = value.trim();
+                    // should start with a letter and can contain letters, numbers, and hyphens
+                    // and end with a letter or number
+                    let match = header.match(/^([a-z]+([a-z0-9-]*[a-z0-9]+))\s*:(.+)$/i);
+                    if (!match) {
+                        continue;
+                    }
+                    let key = match[1].trim();
+                    let value = match[2].trim();
                     if (key === '' || value === '') {
                         continue;
                     }
@@ -156,6 +172,7 @@ export default class JsonReader implements GettextReaderInterface {
                 }
             }
         }
+
         /**
          * Parse flags
          * @param {any} flags
@@ -167,7 +184,9 @@ export default class JsonReader implements GettextReaderInterface {
             flags = Array.isArray(flags) ? flags : [];
             // filter valid flags : /^([a-z]+([a-z-]*[a-z]+)?|range:[0-9]+-[0-9]+)$/i
             return flags
-                .filter((flag: string) => is_string(flag) && flag.trim() !== '' && /^([a-z]+([a-z-]*[a-z]+)?|range:[0-9]+-[0-9]+)$$/i.test(flag));
+                .filter((flag: string) => {
+                    return (is_string(flag) && flag.trim() !== '' && flag.match(/^([a-z]+([a-z-]*[a-z]+)?|range:[0-9]+-[0-9]+)$/i) !== null)
+                });
         }
         /**
          * Parse comments
@@ -262,6 +281,9 @@ export default class JsonReader implements GettextReaderInterface {
             });
             parse_flags(translationObject.flags).forEach((flag: string) => {
                 gettextTranslation.attributes.flags.add(flag);
+            });
+            parse_comments(translationObject['extracted-comments']).forEach((comment: string) => {
+                gettextTranslation.attributes.extractedComments.add(comment);
             });
             parse_references(translationObject.reference).forEach((ref: {
                 file: string;

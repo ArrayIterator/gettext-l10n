@@ -23,9 +23,10 @@ export const normalizeHeaderName = (name: string): string => {
     name = name.toLowerCase().replace(/(^|-)([a-z])/g, (_m, p1, p2) => {
         return p1 + p2.toUpperCase();
     });
-    if (name.startsWith('Mime-')) {
-        name = 'MIME-' + substr(name, 5);
-    }
+    // po, pot & mime to uppercase
+    name = name.replace(/^(mime|pot?)-/i, (m, p1) => {
+        return p1.toUpperCase() + '-';
+    });
     return name;
 }
 

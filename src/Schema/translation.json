@@ -2,36 +2,73 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Gettext JSON Schema",
     "description": "The Gettext JSON Schema is used to validate the structure of a Gettext translation file. The primary required key is translations, which contains the translations object.",
+    "version": "1.0.0",
     "type": "object",
     "definitions": {
         "flags": {
-            "type": "array",
-            "description": "The flags array contains flags that are used to mark the translation file.",
-            "items": {
-                "type": "string",
-                "uniqueItems": true,
-                "pattern": "^([a-z]+([a-z-]*[a-z]+)?|range:[0-9]+-[0-9]+)$"
-            }
-        },
-        "references": {
-            "type": "array",
-            "description": "The references array contains references to the original source of the translations.",
-            "items": {
-                "type": "string",
-                "uniqueItems": true,
-                "pattern": "^.+(:[0-9]+)?$"
-            }
-        },
-        "comments": {
-            "description": "The comments object contains comments about the translation file.",
+            "type": [
+                "array",
+                "string"
+            ],
+            "description": "The flags used to mark the translation file.",
             "oneOf": [
                 {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The flag is used to mark the translation file. The flag is case-insensitive.",
+                    "pattern": "^([a-z]+([a-z-]*[a-z]+)?|range:\\s*([0-9]+-[0-9]+)?)$"
                 },
                 {
                     "type": "array",
+                    "description": "The flags array contains flags that are used to mark the translation file.",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "uniqueItems": true,
+                        "description": "The flags are used to mark the translation file. The flags are case-insensitive.",
+                        "pattern": "^([a-z]+([a-z-]*[a-z]+)?|range:\\s*([0-9]+-[0-9]+)?)\\s*$"
+                    }
+                }
+            ]
+        },
+        "references": {
+            "type": [
+                "array",
+                "string"
+            ],
+            "description": "The references used to identify the original source of the translations.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "description": "The reference is used to identify the original source of the translations.",
+                    "pattern": "^[^:]+(:(0|[1-9][0-9]*))?$"
+                },
+                {
+                    "type": "array",
+                    "description": "The references array contains references to the original source of the translations.",
+                    "items": {
+                        "type": "string",
+                        "description": "The references are used to identify the original source of the translations.",
+                        "pattern": "^[^:]+(:(0|[1-9][0-9]*))?$"
+                    }
+                }
+            ]
+        },
+        "comments": {
+            "description": "The comments used to provide additional information about the translation file.",
+            "type": [
+                "string",
+                "array"
+            ],
+            "oneOf": [
+                {
+                    "type": "string",
+                    "description": "The comment is used to provide additional information about the translation file."
+                },
+                {
+                    "type": "array",
+                    "description": "The comments array contains comments about the translation file.",
+                    "items": {
+                        "type": "string",
+                        "description": "The comments are used to provide additional information about the translation file."
                     }
                 }
             ]
@@ -41,6 +78,9 @@
             "description": "The translation object contains the translation of a single message.",
             "properties": {
                 "comments": {
+                    "$ref": "#/definitions/comments"
+                },
+                "extracted-comments": {
                     "$ref": "#/definitions/comments"
                 },
                 "references": {
@@ -62,11 +102,24 @@
                     "description": "The msgid_plural key is the plural form of the original message that needs to be translated."
                 },
                 "msgstr": {
-                    "type": "array",
-                    "description": "The msgstr array contains the translated messages.",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": [
+                        "string",
+                        "array"
+                    ],
+                    "description": "The msgstr used to store the translated message.",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "description": "The msgstr field contains the translated message."
+                        },
+                        {
+                            "type": "array",
+                            "description": "The msgstr array contains the translated messages.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
                 }
             },
             "required": [
@@ -78,6 +131,7 @@
     "properties": {
         "revision": {
             "type": "integer",
+            "description": "The revision number of the translation file.",
             "minimum": 0
         },
         "flags": {
@@ -95,34 +149,54 @@
             "description": "The headers object contains metadata about the translation file. The required language key is used to identify the language of the translation.",
             "properties": {
                 "project-id-version": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The project-id-version key is the name and version of the project."
                 },
-                "pot-creation-date": {
-                    "type": "string"
+                "creation-date": {
+                    "type": "string",
+                    "description": "The pot-creation-date key is the date and time when the POT file was created."
                 },
-                "po-revision-date": {
-                    "type": "string"
+                "revision-date": {
+                    "type": "string",
+                    "description": "The po-revision-date key is the date and time when the PO file was last revised."
                 },
                 "last-translator": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The last-translator key is the name and email address of the last translator."
                 },
                 "language-team": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The language-team key is the language and email address of the translation team."
                 },
                 "language": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The language key is the language code of the translation.",
+                    "pattern": "^[a-zA-Z]+([a-zA-Z0-9_-]*[a-zA-Z0-9])?$",
                 },
                 "mime-version": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The mime-version key is the MIME version of the translation file."
                 },
                 "content-type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The content-type key is the content type of the translation file.",
+                    "pattern": "^text/plain\\s*;\\s*charset=\\s*([a-zA-Z0-9_-]+)\\s*$"
                 },
                 "content-transfer-encoding": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The content-transfer-encoding key is the content transfer encoding of the translation file.",
+                    "enum": [
+                        "7bit",
+                        "8bit",
+                        "quoted-printable",
+                        "base64",
+                        "binary"
+                    ]
                 },
                 "plural-forms": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The plural-forms key is the plural forms of the translation file.",
+                    "pattern": "^\\s*nplurals=\\s*([0-9]+)\\s*;\\s*plural=\\s*([^;]+)\\s*;?\\s*$"
                 }
             },
             "required": [

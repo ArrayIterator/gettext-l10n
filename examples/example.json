@@ -6,10 +6,13 @@
     "flags": ["fuzzy", "c-format"],
     "references": ["src/file.js:10"],
     "comments": "This is a comment about the translation file.",
+    "extracted_comments": [
+        "This is an extracted comment about the translation file."
+    ],
     "headers": {
         "project-id-version": "My Project 1.0",
-        "pot-creation-date": "2023-10-01 12:00+0000",
-        "po-revision-date": "2023-10-01 12:00+0000",
+        "creation-date": "2023-10-01 12:00+0000",
+        "revision-date": "2023-10-01 12:00+0000",
         "last-translator": "John Doe <john.doe@example.com>",
         "language-team": "English <en@example.com>",
         "language": "en",
@@ -39,7 +42,11 @@
         "context1": [
             {
                 "msgid": "Hello, world!",
-                "msgstr": ["Hello, world!"],
+                "msgid_plural": "Hello, worlds!",
+                "msgstr": [
+                    "Hello, world!",
+                    "Hello, worlds!"
+                ],
                 "comments": "This is a comment for the translator as a string.",
                 "references": ["src/file.js:10"],
                 "flags": ["fuzzy"]
@@ -47,8 +54,12 @@
         ],
         "context2withObject": {
             "Hello world!": {
-                "msgid": "Hello, world!",
-                "msgstr": ["Hello, world!"],
+                "msgid": "The Cat",
+                "msgid_plural": "The Cats",
+                "msgstr": [
+                    "The Cat",
+                    "The Cats"
+                ],
                 "comments": [
                     "the key is the msgid",
                     "the key will ignore or just be as a key reference"

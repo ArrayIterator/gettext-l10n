@@ -17,6 +17,10 @@ import GettextTranslationAttributesInterface from '../Interfaces/Metadata/Gettex
 import PoReader from '../Reader/PoReader';
 import {is_string} from '../../Utils/Helper';
 import StreamBuffer from '../../Utils/StreamBuffer';
+import {
+    DEFAULT_HEADERS,
+    HEADER_CONTENT_TYPE_KEY
+} from '../Definitions/HeaderDefinitions';
 
 /**
  * The translation generator for PO files
@@ -24,9 +28,8 @@ import StreamBuffer from '../../Utils/StreamBuffer';
 export default class PoGenerator implements GettextGeneratorInterface {
     /**
      * Generate the PO file content
-     *
-     * @param {TranslationEntriesInterface} translations the translations
-     * @return {StreamBuffer} the generated content
+     * @inheritDoc
+     * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
     public generate(translations: TranslationEntriesInterface): StreamBuffer {
         if (!(translations instanceof TranslationEntries)) {
@@ -77,8 +80,20 @@ export default class PoGenerator implements GettextGeneratorInterface {
         // append attributes
         append_attributes(translations.getAttributes());
 
+        const headers = translations.getHeaders().clone();
+        if (!headers.has(HEADER_CONTENT_TYPE_KEY)) {
+            headers.set(HEADER_CONTENT_TYPE_KEY, DEFAULT_HEADERS[HEADER_CONTENT_TYPE_KEY]);
+        }
         // add headers
         translations.getHeaders().forEach((header, key) => {
+            if (key === HEADER_CONTENT_TYPE_KEY) {
+                if (!is_string(header) || header === '') {
+                    header = DEFAULT_HEADERS[HEADER_CONTENT_TYPE_KEY];
+                }
+                // get charset
+                let matchCharset = header.match(/charset=\s*([a-zA-Z0-9-]+)\s*/i);
+                header = `text/plain; charset=${matchCharset ? matchCharset[1] : 'UTF-8'}`;
+            }
             contents.push(`${key}: ${header}\\n`); // add \\n to escape new line
         });
 

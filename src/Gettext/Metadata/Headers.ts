@@ -18,6 +18,7 @@ import {Scalar} from '../../Utils/Type';
 import GettextHeadersInterface from '../Interfaces/Metadata/GettextHeadersInterface';
 import {
     DEFAULT_HEADERS,
+    HEADER_CONTENT_TRANSFER_ENCODING_KEY,
     HEADER_DOMAIN_KEY,
     HEADER_GENERATOR_KEY,
     HEADER_LANGUAGE_KEY,
@@ -301,28 +302,45 @@ export default class Headers implements GettextHeadersInterface {
         }
         const normalizedName = normalizeHeaderName(name);
         value = normalizeHeaderValue(value);
-        if (normalizedName === HEADER_PLURAL_KEY) {
-            let pluralParser = parsePluralForm(value);
-            let language = this.language;
-            if (!pluralParser?.expression && language) {
-                let info = getLocaleInfo(language);
-                if (info) {
-                    this.pluralForm = new PluralForm(info.count, info.expression);
+        switch (normalizedName) {
+            case HEADER_LANGUAGE_KEY:
+                let pluralParser = parsePluralForm(value);
+                let language = this.language;
+                if (!pluralParser?.expression && language) {
+                    let info = getLocaleInfo(language);
+                    if (info) {
+                        this.pluralForm = new PluralForm(info.count, info.expression);
+                    } else {
+                        this.pluralForm = new PluralForm(
+                            DEFAULT_PLURAL_COUNT,
+                            DEFAULT_PLURAL_EXPRESSION
+                        );
+                    }
                 } else {
                     this.pluralForm = new PluralForm(
-                        DEFAULT_PLURAL_COUNT,
-                        DEFAULT_PLURAL_EXPRESSION
+                        pluralParser?.count ?? DEFAULT_PLURAL_COUNT,
+                        pluralParser?.expression ?? DEFAULT_PLURAL_EXPRESSION
                     );
                 }
-            } else {
-                this.pluralForm = new PluralForm(
-                    pluralParser?.count ?? DEFAULT_PLURAL_COUNT,
-                    pluralParser?.expression ?? DEFAULT_PLURAL_EXPRESSION
-                );
-            }
-            this._headers[normalizedName] = this.pluralForm.header;
-        } else {
-            this._headers[normalizedName] = value;
+                this._headers[normalizedName] = this.pluralForm.header;
+                break;
+            case HEADER_CONTENT_TRANSFER_ENCODING_KEY:
+                value = value.trim().toLowerCase();
+                const transferEncodings = ['7bit', '8bit', 'binary', 'quoted-printable', 'base64'];
+                if (transferEncodings.includes(value)) {
+                    this._headers[normalizedName] = value;
+                }
+                break;
+            // case 'Creation-Date':
+            //     // normalize
+            //     this._headers['POT-Creation-Date'] = value;
+            //     break;
+            // case 'Revision-Date':
+            //     // normalize
+            //     this._headers['PO-Revision-Date'] = value;
+            //     break;
+            default:
+                this._headers[normalizedName] = value;
         }
         return this;
     }
@@ -363,7 +381,7 @@ export default class Headers implements GettextHeadersInterface {
     /**
      * @inheritDoc
      */
-    public forEach(callback: (value: string, key: string, headers: HeaderRecords) => void) : void {
+    public forEach(callback: (value: string, key: string, headers: HeaderRecords) => void): void {
         for (let key in this._headers) {
             callback(this._headers[key], key, this._headers);
         }

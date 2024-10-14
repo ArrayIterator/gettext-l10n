@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translation
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../src/Schema/translation.xsd"
+        revision="1"
+>
+    <flags>
+        <item>fuzzy</item>
+        <item>c-format</item>
+    </flags>
+    <references>
+        <item>src/file.js:10</item>
+    </references>
+    <comments>
+        <item>This is a comment about the translation file.</item>
+    </comments>
+    <headers>
+        <project-id-version>My Project 1.0</project-id-version>
+        <creation-date>2023-10-01 12:00+0000</creation-date>
+        <revision-date>2023-10-01 12:00+0000</revision-date>
+        <last-translator>John Doe &lt;john.doe@example.com&gt;</last-translator>
+        <language-team>English &lt;en@example.com&gt;</language-team>
+        <language>en</language>
+        <mime-version>1.0</mime-version>
+        <content-type>text/plain; charset=UTF-8</content-type>
+        <content-transfer-encoding>8bit</content-transfer-encoding>
+        <plural-forms>nplurals=2; plural=(n != 1);</plural-forms>
+    </headers>
+    <translations>
+        <context name="">
+            <item>
+                <comments>
+                    <item>This is a comment for the translator as a string.</item>
+                </comments>
+                <disabled/>
+                <msgid>as a key reference</msgid>
+                <msgid_plural/>
+                <msgstr/>
+            </item>
+            <item>
+                <comments/>
+                <references/>
+                <flags/>
+                <msgid/>
+                <msgid_plural>Hello, worlds!</msgid_plural>
+                <msgstr>
+                    <item>Hello, world!</item>
+                    <item>Hello, worlds!</item>
+                </msgstr>
+            </item>
+            <item>
+                <comments>
+                    <item>the key is the msgid</item>
+                    <item>the key will ignore or just be as a key reference</item>
+                </comments>
+                <references>
+                    <item>src/file.js:10</item>
+                </references>
+                <flags>
+                    <item>fuzzy</item>
+                </flags>
+                <msgid>The Cat</msgid>
+                <msgid_plural>The Cats</msgid_plural>
+                <msgstr>
+                    <item>The Cat</item>
+                    <item>The Cats</item>
+                </msgstr>
+            </item>
+            <item>
+                <comments>
+                    <item>this translation is disabled or just as commented translation like po file with: #~ msgid
+                        "Hello, world!"
+                    </item>
+                </comments>
+                <references>
+                    <item>src/file.js:10</item>
+                </references>
+                <flags>
+                    <item>fuzzy</item>
+                    <item>fuzzy</item>
+                </flags>
+                <enable>false</enable>
+                <msgid>Hello, world!</msgid>
+                <msgstr>
+                    <item>Hello, world!</item>
+                </msgstr>
+            </item>
+        </context>
+    </translations>
+</translation>
