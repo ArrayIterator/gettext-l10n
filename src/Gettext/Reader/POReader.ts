@@ -3,10 +3,6 @@
 import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
 import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
 import GettextTranslations from '../GettextTranslations';
-import {
-    is_array_buffer_like_or_view,
-    is_string
-} from '../../Utils/Helper';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import IterableArray from '../../Utils/IterableArray';
 import {
@@ -20,24 +16,21 @@ import {
     ATTRIBUTE_MESSAGE_STR,
     ATTRIBUTE_REFERENCES
 } from '../Definitions/AttributeDefinitions';
+import StreamBuffer from '../../Utils/StreamBuffer';
 
 /**
  * The gettext po reader
  */
-export default class PoReader implements GettextReaderInterface {
+export default class POReader implements GettextReaderInterface {
 
     /**
      * @inheritDoc
      */
     public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
-        if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
-            throw new InvalidArgumentException(
-                `The content must be a string or an ArrayBufferLike, ${typeof content} given`
-            );
-        }
-        content = is_string(content) ? content : new TextDecoder().decode(content);
-        content = content.trim().replace(/\r\n/g, '\n'); // trim and normalize line endings
-
+        content = (new StreamBuffer(content))
+            .toString()
+            .trim()
+            .replace(/\r\n/g, '\n'); // trim and normalize line endings
         const translations = new GettextTranslations();
         const lines = new IterableArray(content.split('\n'));
         let line = lines.current();
@@ -122,10 +115,10 @@ export default class PoReader implements GettextReaderInterface {
                     }
                     break;
                 case ATTRIBUTE_MESSAGE_ID_PLURAL:
-                    translation.plural = PoReader.normalizeValue(trans);
+                    translation.plural = POReader.normalizeValue(trans);
                     break;
                 case ATTRIBUTE_MESSAGE_STR + '[0]':
-                    translation.translation = PoReader.normalizeValue(trans);
+                    translation.translation = POReader.normalizeValue(trans);
                     break;
                 case ATTRIBUTE_MESSAGE_CONTEXT:
                     // only allow this
@@ -141,7 +134,7 @@ export default class PoReader implements GettextReaderInterface {
                             `Po file should start with msgid "" and msgstr "", ${originalLine} given`
                         );
                     }
-                    translation = translation.withContext(PoReader.normalizeValue(trans));
+                    translation = translation.withContext(POReader.normalizeValue(trans));
                     break;
                 case ATTRIBUTE_MESSAGE_ID:
                     msgidCount++;
@@ -155,7 +148,7 @@ export default class PoReader implements GettextReaderInterface {
                             `Po file should start with msgid "" and msgstr "", ${originalLine} given`
                         );
                     }
-                    translation = translation.withOriginal(PoReader.normalizeValue(trans));
+                    translation = translation.withOriginal(POReader.normalizeValue(trans));
                     break;
                 case ATTRIBUTE_MESSAGE_STR:
                     // .po file should start with:
@@ -167,7 +160,7 @@ export default class PoReader implements GettextReaderInterface {
                         );
                     }
                     hasMsgstr = true;
-                    translation.translation = PoReader.normalizeValue(trans);
+                    translation.translation = POReader.normalizeValue(trans);
                     break;
                 case ATTRIBUTE_COMMENTED_TRANSLATIONS:
                     // skip commented translations
@@ -177,7 +170,7 @@ export default class PoReader implements GettextReaderInterface {
                 default:
                     if (key.startsWith(ATTRIBUTE_MESSAGE_STR + '[')) {
                         let p = translation.pluralTranslations;
-                        p.push(PoReader.normalizeValue(trans));
+                        p.push(POReader.normalizeValue(trans));
                         translation.pluralTranslations = p;
                         stillMeta = false;
                         break;
