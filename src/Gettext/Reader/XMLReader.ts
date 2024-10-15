@@ -2,6 +2,7 @@ import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface'
 import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
 import StreamBuffer from '../../Utils/StreamBuffer';
 import {
+    decode_entities,
     is_object,
     is_string
 } from '../../Utils/Helper';
@@ -178,7 +179,7 @@ export default class XMLReader implements GettextReaderInterface {
                         return;
                     }
                     let msgstr : string[] = rootItems('msgstr', itemElement?.children).map((node) => node.textContent) as string[];
-                    if (!msgstr.every(is_string)) {
+                    if (msgstr.length > 0 && !msgstr.every(is_string)) {
                         throw new RuntimeException(
                             'All the msgstr should be a string, msgstr contains non-string value'
                         );
