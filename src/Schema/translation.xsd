@@ -54,13 +54,14 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="flags" type="FlagsType" minOccurs="0">
-                    <xs:unique name="translation-unique-flag">
+                    <xs:unique name="translationUniqueFlag">
                         <xs:selector xpath="item"/>
                         <xs:field xpath="."/>
                     </xs:unique>
                 </xs:element>
                 <xs:element name="references" type="ReferencesType" minOccurs="0"/>
                 <xs:element name="comments" type="CommentsType" minOccurs="0"/>
+                <xs:element name="extracted-comments" type="CommentsType" minOccurs="0"/>
                 <xs:element name="headers" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
@@ -138,13 +139,29 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
+                            <xs:element name="header" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="key" type="xs:NCName" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
                         </xs:sequence>
                     </xs:complexType>
+                    <xs:unique name="uniqueHeaderKey">
+                        <xs:selector xpath="header"/>
+                        <xs:field xpath="@key"/>
+                    </xs:unique>
                 </xs:element>
                 <xs:element name="translations">
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="context">
+                                <xs:annotation>
+                                    <xs:documentation>The context of the translation file.</xs:documentation>
+                                </xs:annotation>
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="item" maxOccurs="unbounded">
@@ -160,7 +177,7 @@
                                                     </xs:element>
                                                     <xs:element name="references" type="ReferencesType" minOccurs="0"/>
                                                     <xs:element name="flags" type="FlagsType" minOccurs="0">
-                                                        <xs:unique name="translations-unique-flag">
+                                                        <xs:unique name="translationsUniqueFlag">
                                                             <xs:selector xpath="item"/>
                                                             <xs:field xpath="."/>
                                                         </xs:unique>
