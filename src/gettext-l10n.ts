@@ -1,5 +1,5 @@
 import {deep_freeze} from './Utils/Helper';
-import MoReader from './Gettext/Reader/MoReader';
+import MOReader from './Gettext/Reader/MOReader';
 import PoReader from './Gettext/Reader/PoReader';
 import GettextTranslation from './Gettext/GettextTranslation';
 import GettextTranslations from './Gettext/GettextTranslations';
@@ -15,7 +15,7 @@ export default deep_freeze({
         translation: GettextTranslation,
         translations: GettextTranslations,
         reader: {
-            mo: MoReader,
+            mo: MOReader,
             po: PoReader,
             json: JSONReader,
             xml: XMLReader
