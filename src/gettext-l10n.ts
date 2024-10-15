@@ -3,10 +3,13 @@ import MoReader from './Gettext/Reader/MoReader';
 import PoReader from './Gettext/Reader/PoReader';
 import GettextTranslation from './Gettext/GettextTranslation';
 import GettextTranslations from './Gettext/GettextTranslations';
-import JsonReader from './Gettext/Reader/JsonReader';
-import PoGenerator from './Gettext/Generator/PoGenerator';
+import JSONReader from './Gettext/Reader/JSONReader';
+import POGenerator from './Gettext/Generator/POGenerator';
+import XMLReader from './Gettext/Reader/XMLReader';
+import JSONGenerator from './Gettext/Generator/JSONGenerator';
 
 // export default and prevent any modification
+// noinspection JSUnusedGlobalSymbols
 export default deep_freeze({
     Gettext: {
         translation: GettextTranslation,
@@ -14,10 +17,12 @@ export default deep_freeze({
         reader: {
             mo: MoReader,
             po: PoReader,
-            json: JsonReader
+            json: JSONReader,
+            xml: XMLReader
         },
         generator: {
-            po: PoGenerator
+            po: POGenerator,
+            json: JSONGenerator
         }
     }
 });
