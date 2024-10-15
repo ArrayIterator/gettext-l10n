@@ -2,6 +2,7 @@
 
 import {
     is_array_buffer_like_or_view,
+    is_object,
     is_string
 } from './Helper';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
@@ -28,18 +29,30 @@ export default class StreamBuffer implements ClearableInterface {
     /**
      * StreamBuffer constructor
      *
-     * @param {string|ArrayBufferLike} content the content
+     * @param {string|ArrayBufferLike|{
+     *     buffer: ArrayBufferLike
+     * }} content the content
      */
-    public constructor(content: string | ArrayBufferLike) {
-        if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
-            throw new InvalidArgumentException(
-                `The content must be a string or an ArrayBufferLike, ${typeof content} given`
-            );
-        }
-        if (is_string(content)) {
-            this._buffer = new TextEncoder().encode(content);
+    public constructor(content: string | ArrayBufferLike | StreamBuffer) {
+        if (!(content instanceof StreamBuffer)) {
+            if (is_object(content)
+                && 'buffer' in content
+                && is_array_buffer_like_or_view(content.buffer)
+            ) {
+                content = content.buffer as ArrayBufferLike;
+            }
+            if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
+                throw new InvalidArgumentException(
+                    `The content must be a string or an ArrayBufferLike, ${typeof content} given`
+                );
+            }
+            if (is_string(content)) {
+                this._buffer = new TextEncoder().encode(content);
+            } else {
+                this._buffer = new Uint8Array(content);
+            }
         } else {
-            this._buffer = new Uint8Array(content);
+            this._buffer = new Uint8Array(content.buffer); // copy
         }
     }
 
