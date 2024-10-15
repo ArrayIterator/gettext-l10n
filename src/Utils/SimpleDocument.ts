@@ -1,5 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
+import {is_string} from './Helper';
+
 /**
  * The RegExp for attributes
  */
@@ -28,12 +30,16 @@ const normalize_attribute_name = (name: string): string => {
 const matchElement = <T extends ReadonlySimpleElement | undefined>(content: string, parent: T = undefined as T): T => {
     let matchAll: Array<RegExpExecArray> = content.matchAll(/<([a-zA-Z0-9_-]+)([^>]*)?>(.*?)<\/\1>/smg).toArray();
     if (!matchAll.length) {
+        // check self closed
+        matchAll = content.matchAll(/<([a-zA-Z0-9_-]+)([^>]*)?\/>/smg).toArray();
+    }
+    if (!matchAll.length) {
         return parent;
     }
     matchAll.forEach((match) => {
         let element = new ReadonlySimpleElement(match[0], parent);
         const children = element.innerHTML;
-        if (children.match(/<([a-zA-Z0-9_-]+)([^>]*)?>(.*?)<\/\1>/sm)) {
+        if (children.match(/<([a-zA-Z0-9_-]+)([^>]*)?>(.*?)<\/\1>|<([a-zA-Z0-9_-]+)([^>]*)?\/>/smg)) {
             matchElement(children, element);
         }
         if (parent instanceof ReadonlySimpleElement) {
@@ -137,11 +143,15 @@ export class ReadonlySimpleElement {
     public constructor(content: string | ReadonlySimpleElement, parent: ReadonlySimpleElement | SimpleDocumentFragment | undefined = undefined) {
         this._parentElement = parent instanceof ReadonlySimpleElement || parent instanceof SimpleDocumentFragment ? parent : undefined;
         content = content instanceof ReadonlySimpleElement ? content.outerHTML : content;
-        const match = content.match(/^\s*<([a-zA-Z0-9_-]+)([^>]*)?>(.*?)(?:\/\1)?$/sm);
+        let match = content.match(/^\s*<([a-zA-Z0-9_-]+)([^>]*)?>(.*?)(?:\/\1)?$/sm);
+        if (!match) {
+            // check self closed
+            match = content.match(/^\s*<([a-zA-Z0-9_-]+)([^>]*)?\/>$/sm);
+        }
         const attributes = parse_attributes(match ? match[2] : '');
         this._tagName = (match ? match[1] : '').toUpperCase();
         this._attributes = Object.assign({}, attributes);
-        this._innerHTML = match ? match[3] : content;
+        this._innerHTML = match ? (is_string(match[3]) ? match[3] : '') : '';
         this._allowChange = true;
         this._children = matchElement(this._innerHTML, this).children;
         this._allowChange = false;
