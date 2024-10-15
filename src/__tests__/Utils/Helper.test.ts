@@ -16,7 +16,9 @@ import {
     is_object,
     string_scalar_value,
     is_array_buffer_like_or_view,
-    deep_freeze
+    deep_freeze,
+    decode_entities,
+    encode_entities
 } from '../../Utils/Helper';
 
 describe('Helper functions', () => {
@@ -258,6 +260,34 @@ describe('Helper functions', () => {
         test('should return non-object values as is', () => {
             expect(deep_freeze(42)).toBe(42);
             expect(deep_freeze('string')).toBe('string');
+        });
+    });
+
+    describe('decode_entities', () => {
+        /**
+         * Test to check if HTML entities are decoded correctly.
+         */
+        test('should decode HTML entities correctly', () => {
+            expect(decode_entities('&amp;')).toBe('&');
+            expect(decode_entities('&lt;')).toBe('<');
+            expect(decode_entities('&gt;')).toBe('>');
+            expect(decode_entities('&quot;')).toBe('"');
+            expect(decode_entities('&#039;')).toBe('\'');
+            expect(decode_entities('&unknown;')).toBe('&unknown;'); // unknown entity should remain unchanged
+        });
+    });
+
+    describe('encode_entities', () => {
+        /**
+         * Test to check if special characters are encoded correctly.
+         */
+        test('should encode special characters correctly', () => {
+            expect(encode_entities('&')).toBe('&amp;');
+            expect(encode_entities('<')).toBe('&lt;');
+            expect(encode_entities('>')).toBe('&gt;');
+            expect(encode_entities('"')).toBe('&quot;');
+            expect(encode_entities('\'')).toBe('&apos;');
+            expect(encode_entities('normal text')).toBe('normal text'); // no special characters
         });
     });
 });
