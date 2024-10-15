@@ -2,10 +2,6 @@
 
 import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
 import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
-import {
-    is_array_buffer_like_or_view,
-    is_string
-} from '../../Utils/Helper';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import GettextTranslations from '../GettextTranslations';
 import StreamBuffer from '../../Utils/StreamBuffer';
@@ -22,20 +18,14 @@ const MAGIC2 = 0xde120495;
 /**
  * The gettext mo reader
  */
-export default class MoReader implements GettextReaderInterface {
+export default class MOReader implements GettextReaderInterface {
     /**
      * Read the content and return the translations
      *
      * @param {string|ArrayBufferLike} content the content to read
      */
     public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
-        if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
-            throw new InvalidArgumentException(
-                `The content must be a string or an ArrayBufferLike, ${typeof content} given`
-            );
-        }
         let stream: StreamBuffer = new StreamBuffer(content);
-
         const magic = this.readInt(stream);
         let format: 'V' | 'N';
         if (magic === MAGIC1 || magic === (MAGIC1 & 0xffffffff)) {
