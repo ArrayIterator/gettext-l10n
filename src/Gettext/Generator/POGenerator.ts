@@ -14,7 +14,7 @@ import {
 import TranslationEntriesInterface from '../../Translations/Interfaces/TranslationEntriesInterface';
 import TranslationEntries from '../../Translations/TranslationEntries';
 import GettextTranslationAttributesInterface from '../Interfaces/Metadata/GettextTranslationAttributesInterface';
-import PoReader from '../Reader/PoReader';
+import POReader from '../Reader/POReader';
 import {is_string} from '../../Utils/Helper';
 import StreamBuffer from '../../Utils/StreamBuffer';
 import {
@@ -108,24 +108,24 @@ export default class POGenerator implements GettextGeneratorInterface {
             const prefix = entry.enabled ? '' : `${ATTRIBUTE_COMMENTED_TRANSLATIONS} `;
             const context = entry.getContext();
             if (is_string(context)) {
-                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_CONTEXT} "${PoReader.escapeValue(context)}"`);
+                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_CONTEXT} "${POReader.escapeValue(context)}"`);
             }
 
             // add comment if exists
-            contents.push(`${prefix}${ATTRIBUTE_MESSAGE_ID} "${PoReader.escapeValue(entry.original)}"`);
+            contents.push(`${prefix}${ATTRIBUTE_MESSAGE_ID} "${POReader.escapeValue(entry.original)}"`);
             const plural = entry.getPlural();
             if (is_string(plural)) {
-                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_ID_PLURAL} "${PoReader.escapeValue(plural)}"`);
+                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_ID_PLURAL} "${POReader.escapeValue(plural)}"`);
             }
             const translation = entry.getTranslation();
             const translations = entry.getPluralTranslations();
             if (translations.length > 0) {
-                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR}[0] "${PoReader.escapeValue(translation === undefined ? '' : translation)}"`);
+                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR}[0] "${POReader.escapeValue(translation === undefined ? '' : translation)}"`);
                 translations.forEach((translation, index) => {
-                    contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR}[${index + 1}] "${PoReader.escapeValue(translation)}"`);
+                    contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR}[${index + 1}] "${POReader.escapeValue(translation)}"`);
                 });
             } else {
-                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR} "${PoReader.escapeValue(translation === undefined ? '' : translation)}"`);
+                contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR} "${POReader.escapeValue(translation === undefined ? '' : translation)}"`);
             }
 
             // add new line after each entry
