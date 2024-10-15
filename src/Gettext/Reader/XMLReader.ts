@@ -326,6 +326,8 @@ export default class XMLReader implements GettextReaderInterface {
     private parseFromString(content: string) : SimpleDocumentFragment|Document {
         let domParser : typeof DOMParser = (window?.DOMParser);
         if (!domParser) {
+            // noinspection TypeScriptUnresolvedReference
+            // @ts-expect-error ignore
             let _require = require || null;
             let jsDom = (_require ? _require('jsdom') : null)?.JSDOM;
             domParser = (typeof jsDom === 'function' ? (jsDom as {
