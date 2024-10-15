@@ -7,6 +7,8 @@ import JSONReader from './Gettext/Reader/JSONReader';
 import POGenerator from './Gettext/Generator/POGenerator';
 import XMLReader from './Gettext/Reader/XMLReader';
 import JSONGenerator from './Gettext/Generator/JSONGenerator';
+import MOGenerator from './Gettext/Generator/MOGenerator';
+import XMLGenerator from './Gettext/Generator/XMLGenerator';
 
 // export default and prevent any modification
 // noinspection JSUnusedGlobalSymbols
@@ -22,7 +24,9 @@ export default deep_freeze({
         },
         generator: {
             po: POGenerator,
-            json: JSONGenerator
+            json: JSONGenerator,
+            mo: MOGenerator,
+            xml: XMLGenerator
         }
     }
 });
