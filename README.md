@@ -5,13 +5,12 @@ Gettext L10n is a translation library that provides localization support using t
 
 ## TODO
 
-- [ ] Add tests (unit tests, integration tests, etc.)
-  - [ ] Unit Tests
-- [ ] Generator (json, po, mo, etc.)
+### DONE
+- [x] Generator (json, po, mo, xml)
   - [x] PO Generator
-  - [ ] MO Generator
+  - [x] MO Generator
   - [x] JSON Generator
-  - [ ] XML Generator
+  - [x] XML Generator
 - [x] Reader (json, po, mo, xml)
   - [x] PO Reader
   - [x] MO Reader
@@ -22,6 +21,14 @@ Gettext L10n is a translation library that provides localization support using t
   - [x] MO Example
   - [x] JSON Example
   - [x] XML Example
+
+### PROGRESS
+- [ ] Add global translator
+- [ ] Add support for more formats
+- [ ] Add tests (unit tests, integration tests, etc.)
+  - [ ] Unit Tests
+
+### PLANNED
 - [ ] Documentation (need help)
 
 
