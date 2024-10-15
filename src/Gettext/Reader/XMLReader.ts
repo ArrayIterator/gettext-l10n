@@ -312,9 +312,10 @@ export default class XMLReader implements GettextReaderInterface {
      */
     private cleanData(content: string) : string {
         if (content.trim().startsWith('<![CDATA[') && content.endsWith(']]>')) {
-            return content.trim().substring(9, content.length - 3);
+            content = content.trim().substring(9, content.length - 3);
         }
-        return content;
+        // decode entities
+        return decode_entities(content);
     }
 
     /**
