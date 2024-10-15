@@ -340,7 +340,7 @@ export default class Headers implements GettextHeadersInterface {
             //     this._headers['PO-Revision-Date'] = value;
             //     break;
             default:
-                this._headers[normalizedName] = value;
+                this._headers[normalizedName] = value.trim();
         }
         return this;
     }
