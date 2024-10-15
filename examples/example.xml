@@ -14,6 +14,9 @@
     <comments>
         <item>This is a comment about the translation file.</item>
     </comments>
+    <extracted-comments>
+        <item>This is an extracted comment about the translation file.</item>
+    </extracted-comments>
     <headers>
         <project-id-version>My Project 1.0</project-id-version>
         <creation-date>2023-10-01 12:00+0000</creation-date>
@@ -25,6 +28,7 @@
         <content-type>text/plain; charset=UTF-8</content-type>
         <content-transfer-encoding>8bit</content-transfer-encoding>
         <plural-forms>nplurals=2; plural=(n != 1);</plural-forms>
+        <header key="custom-header">custom header value</header>
     </headers>
     <translations>
         <context name="">
@@ -76,7 +80,6 @@
                     <item>src/file.js:10</item>
                 </references>
                 <flags>
-                    <item>fuzzy</item>
                     <item>fuzzy</item>
                 </flags>
                 <enable>false</enable>
