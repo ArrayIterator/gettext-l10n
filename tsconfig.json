@@ -33,7 +33,7 @@
     },
     "include": [
         "src/**/*",
-        "./src/declarations/json.d.ts"
+        "./src/Declarations/json.d.ts"
     ],
     "exclude": [
         "node_modules",
