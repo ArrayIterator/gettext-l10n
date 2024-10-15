@@ -2,6 +2,7 @@
 
 import {
     is_array_buffer_like_or_view,
+    is_integer,
     is_object,
     is_string
 } from './Helper';
@@ -33,7 +34,7 @@ export default class StreamBuffer implements ClearableInterface {
      *     buffer: ArrayBufferLike
      * }} content the content
      */
-    public constructor(content: string | ArrayBufferLike | StreamBuffer) {
+    public constructor(content: string | ArrayBufferLike | StreamBuffer = '') {
         if (!(content instanceof StreamBuffer)) {
             if (is_object(content)
                 && 'buffer' in content
@@ -59,11 +60,173 @@ export default class StreamBuffer implements ClearableInterface {
     /**
      * Append a string
      *
-     * @param {string} string the string to append
+     * @param {string|ArrayBuffer} string the string to append
+     * @return {StreamBuffer} the buffer
      */
-    public write(string: string): void {
-        const buffer = new TextEncoder().encode(string);
+    public write(string: string|ArrayBuffer|Uint8Array): this {
+        const buffer = is_string(string)
+            ? new TextEncoder().encode(string)
+            : (string instanceof ArrayBuffer ? new Uint8Array(string) : string);
         this._buffer = new Uint8Array([...this._buffer, ...buffer]);
+        return this;
+    }
+
+    /**
+     * Write a 8-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint8(value: number): this {
+        if (!is_integer(value) || value < 0 || value > 255) {
+            throw new InvalidArgumentException(
+                `The value must be an integer between 0 and 255, ${typeof value} given`
+            );
+        }
+        return this.write(new Uint8Array([value]));
+    }
+
+    /**
+     * Write a 16-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     * @param {boolean} littleEndian true if the integer is little endian, false if big endian
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint16(value: number, littleEndian: boolean = true): this {
+        if (!is_integer(value) || value < 0 || value > 65535) {
+            throw new InvalidArgumentException(
+                `The value must be an integer between 0 and 65535, ${typeof value} given`
+            );
+        }
+        const buffer = new ArrayBuffer(2);
+        new DataView(buffer).setUint16(0, value, littleEndian);
+        return this.write(new Uint8Array(buffer));
+    }
+
+    /**
+     * Write a 32-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     * @param {boolean} littleEndian true if the integer is little endian, false if big endian
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint32(value: number, littleEndian: boolean = true): this {
+        if (!is_integer(value) || value < 0 || value > 4294967295) {
+            throw new InvalidArgumentException(
+                `The value must be an integer between 0 and 4294967295, ${typeof value} given`
+            );
+        }
+        const buffer = new ArrayBuffer(4);
+        new DataView(buffer).setUint32(0, value, littleEndian);
+        return this.write(new Uint8Array(buffer));
+    }
+
+    /**
+     * Write a 64-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint64(value: number): this {
+        if (!is_integer(value) || value < 0) {
+            throw new InvalidArgumentException(
+                `The value must be an integer between 0 and 18446744073709551615, ${typeof value} given`
+            );
+        }
+        const low = value & 0xffffffff;
+        const high = (value >> 0) & 0xffffffff;
+        this.writeUint32(low);
+        return this.writeUint32(high);
+    }
+
+    /**
+     * Write a 64-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint64LE(value: number): this {
+        return this.writeUint64(value);
+    }
+
+    /**
+     * Write a 64-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint64BE(value: number): this {
+        if (!is_integer(value) || value < 0) {
+            throw new InvalidArgumentException(
+                `The value must be an integer between 0 and 18446744073709551615, ${typeof value} given`
+            );
+        }
+        const low = value & 0xffffffff;
+        const high = (value >> 0) & 0xffffffff;
+        this.writeUint32(high);
+        return this.writeUint32(low);
+    }
+
+    /**
+     * Write a 32-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint32LE(value: number): this {
+        return this.writeUint32(value);
+    }
+
+    /**
+     * Write a 32-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     *
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint32BE(value: number): this {
+        if (!is_integer(value) || value < 0 || value > 4294967295) {
+            throw new InvalidArgumentException(
+                `The value must be an integer between 0 and 4294967295, ${typeof value} given`
+            );
+        }
+        const buffer = new ArrayBuffer(4);
+        new DataView(buffer).setUint32(0, value, false);
+        return this.write(new Uint8Array(buffer));
+    }
+
+    /**
+     * Write a 16-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     */
+    public writeUint16LE(value: number): this {
+        return this.writeUint16(value);
+    }
+
+    /**
+     * Write a 16-bit unsigned integer
+     *
+     * @param {number} value the unsigned integer
+     * @return {StreamBuffer} the buffer
+     */
+    public writeUint16BE(value: number): this {
+        if (!is_integer(value) || value < 0 || value > 65535) {
+            throw new InvalidArgumentException(
+                `The value must be an integer between 0 and 65535, ${typeof value} given`
+            );
+        }
+        const buffer = new ArrayBuffer(2);
+        new DataView(buffer).setUint16(0, value, false);
+        return this.write(new Uint8Array(buffer));
     }
 
     /**
