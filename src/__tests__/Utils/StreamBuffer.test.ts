@@ -111,4 +111,44 @@ describe('StreamBuffer', () => {
         expect(buffer.size).toBe(0);
         expect(buffer.toString()).toBe('');
     });
+
+    /**
+     * Test to check if StreamBuffer writes a 32-bit unsigned integer in little-endian format.
+     */
+    test('should write a 32-bit unsigned integer in little-endian format', () => {
+        const buffer = new StreamBuffer();
+        buffer.writeUint32LE(1);
+        expect(buffer.size).toBe(4);
+        expect(buffer.readUint32(true)).toBe(1);
+    });
+
+    /**
+     * Test to check if StreamBuffer writes a 32-bit unsigned integer in big-endian format.
+     */
+    test('should write a 32-bit unsigned integer in big-endian format', () => {
+        const buffer = new StreamBuffer();
+        buffer.writeUint32BE(1);
+        expect(buffer.size).toBe(4);
+        expect(buffer.readUint32(false)).toBe(1);
+    });
+
+    /**
+     * Test to check if StreamBuffer writes a 16-bit unsigned integer in little-endian format.
+     */
+    test('should write a 16-bit unsigned integer in little-endian format', () => {
+        const buffer = new StreamBuffer();
+        buffer.writeUint16LE(1);
+        expect(buffer.size).toBe(2);
+        expect(buffer.readUint16(true)).toBe(1);
+    });
+
+    /**
+     * Test to check if StreamBuffer writes a 16-bit unsigned integer in big-endian format.
+     */
+    test('should write a 16-bit unsigned integer in big-endian format', () => {
+        const buffer = new StreamBuffer();
+        buffer.writeUint16BE(1);
+        expect(buffer.size).toBe(2);
+        expect(buffer.readUint16(false)).toBe(1);
+    });
 });
