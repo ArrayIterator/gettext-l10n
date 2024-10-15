@@ -18,7 +18,7 @@ import {
 /**
  * The translation generator for JSON files
  */
-export default class PoGenerator implements GettextGeneratorInterface {
+export default class JSONGenerator implements GettextGeneratorInterface {
     /**
      * Generate the JSON translation file content
      * @inheritDoc
