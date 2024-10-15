@@ -1,7 +1,6 @@
 import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
 import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
 import {
-    is_array_buffer_like_or_view,
     is_numeric_integer,
     is_object,
     is_string,
@@ -10,9 +9,16 @@ import {
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import GettextTranslations from '../GettextTranslations';
 import GettextTranslationInterface from '../Interfaces/GettextTranslationInterface';
+import StreamBuffer from '../../Utils/StreamBuffer';
+import {
+    define_comments,
+    define_flags,
+    define_references
+} from '../Utils/ReaderUtil';
+import RuntimeException from '../../Exceptions/RuntimeException';
 
 /**
- * Json Reader:
+ * Json Reader (example) :
  * {
  *     "title": "The translation file for the English language.",
  *     "description": "This is an example translation file for the English language.",
@@ -67,17 +73,12 @@ import GettextTranslationInterface from '../Interfaces/GettextTranslationInterfa
  *     }
  * }
  */
-export default class JsonReader implements GettextReaderInterface {
+export default class JSONReader implements GettextReaderInterface {
     /**
      * @inheritDoc
      */
     public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
-        if (!is_string(content) && !is_array_buffer_like_or_view(content)) {
-            throw new InvalidArgumentException(
-                `The content must be a string or an ArrayBufferLike, ${typeof content} given`
-            );
-        }
-        content = is_string(content) ? content : new TextDecoder().decode(content);
+        content = new StreamBuffer(content).toString();
         let object: {
             [key: string]: any;
         };
@@ -151,7 +152,12 @@ export default class JsonReader implements GettextReaderInterface {
             const msgid = translationObject.msgid;
             const msgstr = translationObject.msgstr;
             // the msgid is empty and msgstr is an array of strings
-            if (msgid === '' && Array.isArray(msgstr) && msgstr.every(is_string)) {
+            if (msgid === '' && Array.isArray(msgstr)) {
+                if (!msgstr.every(is_string)) {
+                    throw new RuntimeException(
+                        `The meta header of context translation must be an array of strings, ${typeof msgstr} given`
+                    );
+                }
                 for (let header of msgstr) {
                     header = header.trim();
                     if (header === '') {
@@ -173,80 +179,6 @@ export default class JsonReader implements GettextReaderInterface {
             }
         }
 
-        /**
-         * Parse flags
-         * @param {any} flags
-         */
-        const parse_flags = (flags: any): Array<string> => {
-            if (is_string(flags)) {
-                flags = [flags];
-            }
-            flags = Array.isArray(flags) ? flags : [];
-            // filter valid flags : /^([a-z]+([a-z-]*[a-z]+)?|range:[0-9]+-[0-9]+)$/i
-            return flags
-                .filter((flag: string) => {
-                    return (is_string(flag) && flag.trim() !== '' && flag.match(/^([a-z]+([a-z-]*[a-z]+)?|range:[0-9]+-[0-9]+)$/i) !== null)
-                });
-        }
-        /**
-         * Parse comments
-         * @param {any} comments
-         */
-        const parse_comments = (comments: any): Array<string> => {
-            if (is_string(comments)) {
-                comments = [comments];
-            }
-            comments = Array.isArray(comments) ? comments : [];
-            comments = comments.filter((comment: string) => is_string(comment) && comment.trim() !== '');
-            return comments;
-        }
-        /**
-         * Parse references
-         * @param {any} references
-         * @returns {Array<{file: string, line?: number}>}
-         */
-        const parse_references = (references: any): Array<{
-            file: string;
-            line?: number;
-        }> => {
-            if (is_string(references)) {
-                references = [references];
-            }
-            references = Array.isArray(references) ? references : [];
-            references = references.filter((ref: string) => is_string(ref) && ref.trim() !== '');
-            references = references.map((ref: string) => {
-                ref = ref.trim();
-                if (ref === '') {
-                    return false;
-                }
-                let matches;
-                let definitions: {
-                    file: string;
-                    line?: number;
-                } = {
-                    file: ref,
-                    line: undefined
-                };
-                if (ref.includes(':')) {
-                    matches = ref.match(/^(.+):([0-9]+)$/);
-                    if (!matches) {
-                        return false;
-                    }
-                    definitions.file = matches[1];
-                    definitions.line = parseInt(matches[2]);
-                } else {
-                    definitions.file = ref;
-                }
-                return {
-                    file: definitions.file,
-                    line: definitions.line
-                }
-            });
-            return references.filter((ref: {
-                file: string;
-                line?: number;
-            }) => is_object(ref) && is_string(ref.file) && ref.file.trim() !== '');
-        }
         for (let context in translationsObject) {
             if (!translationsObject.hasOwnProperty(context)) {
                 continue;
@@ -272,20 +204,21 @@ export default class JsonReader implements GettextReaderInterface {
                 if (translationObject.enable === false) {
                     gettextTranslation.enabled = false;
                 }
-            } catch (_e) {
-                // ignore
-                continue;
+            } catch (e) {
+                throw new RuntimeException(
+                    `The translation is not valid, ${(e as Error).message}`
+                );
             }
-            parse_comments(translationObject.comments).forEach((comment: string) => {
+            define_comments(translationObject.comments).forEach((comment: string) => {
                 gettextTranslation.attributes.comments.add(comment);
             });
-            parse_flags(translationObject.flags).forEach((flag: string) => {
+            define_flags(translationObject.flags).forEach((flag: string) => {
                 gettextTranslation.attributes.flags.add(flag);
             });
-            parse_comments(translationObject['extracted-comments']).forEach((comment: string) => {
+            define_comments(translationObject['extracted-comments']).forEach((comment: string) => {
                 gettextTranslation.attributes.extractedComments.add(comment);
             });
-            parse_references(translationObject.reference).forEach((ref: {
+            define_references(translationObject.reference).forEach((ref: {
                 file: string;
                 line?: number;
             }) => {
@@ -293,13 +226,13 @@ export default class JsonReader implements GettextReaderInterface {
             });
         }
         // add meta
-        parse_flags(object.flags).forEach((flag: string) => {
+        define_flags(object.flags).forEach((flag: string) => {
             translations.attributes.flags.add(flag);
         });
-        parse_comments(object.comments).forEach((comment: string) => {
+        define_comments(object.comments).forEach((comment: string) => {
             translations.attributes.comments.add(comment);
         });
-        parse_references(object.references).forEach((ref: {
+        define_references(object.references).forEach((ref: {
             file: string;
             line?: number;
         }) => {
