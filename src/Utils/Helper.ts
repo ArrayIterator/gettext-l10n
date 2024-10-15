@@ -2,6 +2,79 @@ import {Scalar} from './Type';
 
 const bigIntMax: bigint = BigInt(Number.MAX_SAFE_INTEGER);
 const bigIntMin: bigint = BigInt(Number.MIN_SAFE_INTEGER);
+export const ENTITY_REFERENCE: {
+    [key: string]: string;
+} = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#039;': '\'',
+    '&apos;': '\'',
+    '&nbsp;': ' ',
+    '&copy;': '©',
+    '&reg;': '®',
+    '&trade;': '™',
+    '&cent;': '¢',
+    '&pound;': '£',
+    '&yen;': '¥',
+    '&euro;': '€',
+    '&sect;': '§',
+    '&para;': '¶',
+    '&mdash;': '—',
+    '&ndash;': '–',
+    '&hellip;': '…',
+    '&laquo;': '«',
+    '&raquo;': '»',
+    '&lsaquo;': '‹',
+    '&rsaquo;': '›',
+    '&ldquo;': '“',
+    '&rdquo;': '”',
+    '&bdquo;': '„',
+    '&lsquo;': '‘',
+    '&rsquo;': '’',
+    '&sbquo;': '‚',
+    '&iexcl;': '¡',
+    '&iquest;': '¿',
+    '&brvbar;': '¦',
+    '&uml;': '¨',
+    '&macr;': '¯',
+    '&acute;': '´',
+    '&cedil;': '¸',
+    '&circ;': 'ˆ',
+    '&tilde;': '˜',
+    '&deg;': '°',
+    '&ordf;': 'ª',
+    '&ordm;': 'º',
+    '&sup1;': '¹',
+    '&sup2;': '²',
+    '&sup3;': '³',
+    '&frac14;': '¼',
+    '&frac12;': '½',
+    '&frac34;': '¾',
+    '&times;': '×',
+    '&divide;': '÷',
+    '&micro;': 'µ',
+    '&middot;': '·',
+    '&bull;': '•',
+    '&dagger;': '†',
+    '&Dagger;': '‡',
+    '&permil;': '‰',
+    '&prime;': '′',
+    '&Prime;': '″',
+    '&oline;': '‾',
+    '&curren;': '¤',
+    '&brkbar;': '¦',
+};
+const HTML_ENTITY_REFERENCE_FLIPPED: {
+    [key: string]: string;
+} = {};
+Object.freeze(ENTITY_REFERENCE); // freeze
+
+/**
+ * Regular expression for entity reference
+ */
+const REGEX_ENTITY_REFERENCE :RegExp = new RegExp(Object.keys(ENTITY_REFERENCE).join('|') + '|&#[0-9]{1,3};', 'g');
 
 /**
  * Normalize Header name
@@ -24,7 +97,7 @@ export const normalizeHeaderName = (name: string): string => {
         return p1 + p2.toUpperCase();
     });
     // po, pot & mime to uppercase
-    name = name.replace(/^(mime|pot?)-/i, (m, p1) => {
+    name = name.replace(/^(mime|pot?)-/i, (_m, p1) => {
         return p1.toUpperCase() + '-';
     });
     return name;
@@ -57,6 +130,47 @@ export const normalizeHeaderValue = (value: any): string => {
         value = value.replaceAll(key, replacer[key])
     }
     return value;
+}
+
+/**
+ * Unescape the string
+ *
+ * @param {string} str
+ */
+export const decode_entities = (str: string): string => {
+    str = str + '';
+    if (!str.match(/&([a-z]+|#[0-9]{1,3});/)) {
+        return str;
+    }
+    return str.replace(REGEX_ENTITY_REFERENCE, (m :string) : string => {
+        if (m.substring(0, 2) === '&#') {
+            let code = parseInt(m.substring(2, m.length - 1), 10);
+            return String.fromCharCode(code);
+        }
+        return ENTITY_REFERENCE[m] || m;
+    });
+}
+
+/**
+ * Escape the string
+ * @param {string} str
+ *
+ * @return {string}
+ */
+export const encode_entities = (str: string): string => {
+    str = decode_entities(str);
+    if (!str.match(/[&<>"']/)) {
+        return str;
+    }
+    if (Object.keys(HTML_ENTITY_REFERENCE_FLIPPED).length === 0) {
+        for (let key in ENTITY_REFERENCE) {
+            HTML_ENTITY_REFERENCE_FLIPPED[ENTITY_REFERENCE[key]] = key;
+        }
+    }
+    const RegExpEntityReference = new RegExp(Object.keys(HTML_ENTITY_REFERENCE_FLIPPED).join('|'), 'g');
+    return str.replace(RegExpEntityReference, (m :string) : string => {
+        return HTML_ENTITY_REFERENCE_FLIPPED[m] || m;
+    });
 }
 
 /**
