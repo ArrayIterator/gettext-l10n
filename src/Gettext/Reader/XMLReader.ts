@@ -329,12 +329,17 @@ export default class XMLReader implements GettextReaderInterface {
             // noinspection TypeScriptUnresolvedReference
             // @ts-expect-error ignore
             let _require = require || null;
-            let jsDom = (_require ? _require('jsdom') : null)?.JSDOM;
-            domParser = (typeof jsDom === 'function' ? (jsDom as {
-                window: {
-                    DOMParser: typeof DOMParser
-                }
-            })?.window.DOMParser : null) as { new(): DOMParser; prototype: DOMParser; };
+            let jsDom;
+            try {
+                jsDom = (_require ? _require('jsdom') : null)?.JSDOM;
+                domParser = (typeof jsDom === 'function' ? (jsDom as {
+                    window: {
+                        DOMParser: typeof DOMParser
+                    }
+                })?.window.DOMParser : null) as { new(): DOMParser; prototype: DOMParser; };
+            } catch (_e) {
+                // ignore
+            }
         }
         if (typeof domParser.prototype?.parseFromString === 'function') {
             const dom = new domParser();
