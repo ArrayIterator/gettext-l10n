@@ -25,7 +25,7 @@ import {
 /**
  * The translation generator for PO files
  */
-export default class PoGenerator implements GettextGeneratorInterface {
+export default class POGenerator implements GettextGeneratorInterface {
     /**
      * Generate the PO file content
      * @inheritDoc
