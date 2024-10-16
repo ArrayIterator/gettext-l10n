@@ -1,7 +1,4 @@
-// noinspection JSUnusedGlobalSymbols
-
 import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
-import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
 import GettextTranslations from '../GettextTranslations';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import IterableArray from '../../Utils/IterableArray';
@@ -17,25 +14,30 @@ import {
     ATTRIBUTE_REFERENCES
 } from '../Definitions/AttributeDefinitions';
 import StreamBuffer from '../../Utils/StreamBuffer';
-import GettextTranslationInterface from '../Interfaces/GettextTranslationInterface';
+import {
+    GettextTranslationsType,
+    GettextTranslationType
+} from '../../Utils/Type';
+import {is_string} from '../../Utils/Helper';
 
 /**
  * The gettext po reader
  */
-export default class POReader<
-    Translation extends GettextTranslationInterface,
-    Translations extends GettextTranslationsInterface<Translation, Translations>
-> implements GettextReaderInterface<Translation, Translations> {
+export default class POReader implements GettextReaderInterface {
 
     /**
      * @inheritDoc
      */
-    public read(content: string | ArrayBufferLike): Translations {
+    public read(content: string | ArrayBufferLike): GettextTranslationsType {
         content = (new StreamBuffer(content))
             .toString()
             .trim()
             .replace(/\r\n/g, '\n'); // trim and normalize line endings
-        const translations = new GettextTranslations() as unknown as Translations;
+        if (content === '') {
+            throw new InvalidArgumentException('The content is empty');
+        }
+
+        const translations = new GettextTranslations<GettextTranslationType, GettextTranslationsType>();
         const lines = new IterableArray(content.split('\n'));
         let line = lines.current();
         let translation = translations.createTranslation('', '');
@@ -44,10 +46,11 @@ export default class POReader<
         let msgidCount = 0;
         let stillMeta = true;
         let hasMsgstr = false;
+        let hasHeader = false;
         while (line !== false) {
             line = line.trim();
             let nextLine: string | false = lines.next();
-            nextLine = nextLine === false ? false : nextLine.trim();
+            nextLine = ! is_string(nextLine) ? false : nextLine.trim();
             const originalLine: string = line;
             // Multiline
             while (line.endsWith('"')
@@ -147,7 +150,7 @@ export default class POReader<
                     // msgid ""
                     // msgstr ""
                     // only allow comment & meta before msgid ""
-                    if (msgidCount === 1 && (!stillMeta || originalLine !== '""')) {
+                    if (msgidCount === 1 && (!stillMeta || trans !== '""')) {
                         throw new InvalidArgumentException(
                             `Po file should start with msgid "" and msgstr "", ${originalLine} given`
                         );
@@ -181,6 +184,7 @@ export default class POReader<
                     }
                     // everything before msgid "" is header
                     if (msgidCount === 1) { // determine is header
+                        hasHeader = true;
                         let headers = line.split(':', 2).map((v) => v.trim());
                         if (headers.length === 2) {
                             headers[0] = headers[0].trim();
@@ -200,6 +204,9 @@ export default class POReader<
             line = nextLine;
         }
         lines.clear();
+        if (!hasMsgstr || !hasHeader || msgidCount === 0) {
+            throw new InvalidArgumentException('Invalid po file');
+        }
         return translations;
     }
 

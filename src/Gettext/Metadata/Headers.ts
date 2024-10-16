@@ -42,27 +42,27 @@ export default class Headers implements GettextHeadersInterface {
      *
      * @private
      */
-    private readonly _headers: HeaderRecords = DEFAULT_HEADERS;
+    readonly #headers: HeaderRecords = DEFAULT_HEADERS;
 
     /**
      * Plural form
      *
      * @private
      */
-    private _pluralForm?: PluralForm;
+    #pluralForm?: PluralForm;
 
     /**
      * The fallback language
      *
-     * @protected
+     * @private
      */
-    protected _fallbackLanguage: string = 'en';
+    #fallbackLanguage: string = 'en';
 
     /**
      * Headers constructor.
      */
     public constructor(headers?: HeaderRecords) {
-        this._headers = {};
+        this.#headers = {};
         headers = !headers || typeof headers !== 'object' ? {} : headers;
         if (is_object(headers)) {
             for (let key in headers) {
@@ -75,7 +75,7 @@ export default class Headers implements GettextHeadersInterface {
      * @inheritDoc
      */
     public getFallbackLanguage(): string {
-        return this._fallbackLanguage;
+        return this.#fallbackLanguage;
     }
 
     /**
@@ -91,7 +91,7 @@ export default class Headers implements GettextHeadersInterface {
     public setFallbackLanguage(language: string): void {
         let locale = normalizeLocale(language);
         if (locale) {
-            this._fallbackLanguage = language;
+            this.#fallbackLanguage = language;
         }
     }
 
@@ -107,7 +107,7 @@ export default class Headers implements GettextHeadersInterface {
      */
     public getHeaders(): HeaderRecords {
         // clone to prevent modification
-        return Object.assign({}, this._headers);
+        return Object.assign({}, this.#headers);
     }
 
     /**
@@ -121,19 +121,19 @@ export default class Headers implements GettextHeadersInterface {
      * @inheritDoc
      */
     public getPluralForm(): PluralForm {
-        if (!is_undefined(this._pluralForm)) {
-            return this._pluralForm;
+        if (!is_undefined(this.#pluralForm)) {
+            return this.#pluralForm;
         }
         let locale: LocaleItem | null = getLocaleInfo(this.language);
-        this._pluralForm = locale ? new PluralForm(
+        this.#pluralForm = locale ? new PluralForm(
             locale.count,
             locale.expression
         ) : DefaultPluralForm;
-        this._headers[HEADER_PLURAL_KEY] = this._pluralForm.header;
+        this.#headers[HEADER_PLURAL_KEY] = this.#pluralForm.header;
         if (locale && !this.has(HEADER_LANGUAGE_KEY)) {
             this.set(HEADER_LANGUAGE_KEY, locale.id);
         }
-        return this._pluralForm;
+        return this.#pluralForm;
     }
 
     /**
@@ -147,7 +147,7 @@ export default class Headers implements GettextHeadersInterface {
      * @inheritDoc
      */
     public setPluralForm(pluralForm: PluralForm | any): void {
-        this._pluralForm = pluralForm instanceof PluralForm ? pluralForm : this._pluralForm;
+        this.#pluralForm = pluralForm instanceof PluralForm ? pluralForm : this.#pluralForm;
     }
 
     /**
@@ -274,8 +274,8 @@ export default class Headers implements GettextHeadersInterface {
      */
     public getHeader(): string {
         let header: string = '';
-        for (let key in this._headers) {
-            header += `"${key}: ${this._headers[key]}"\n`;
+        for (let key in this.#headers) {
+            header += `"${key}: ${this.#headers[key]}"\n`;
         }
         return header;
     }
@@ -323,27 +323,27 @@ export default class Headers implements GettextHeadersInterface {
                         pluralParser.expression ?? DEFAULT_PLURAL_EXPRESSION
                     );
                 }
-                this._headers[normalizedName] = this.pluralForm.header;
+                this.#headers[normalizedName] = this.pluralForm.header;
                 break;
             case HEADER_LANGUAGE_KEY:
                 let locale = normalizeLocale(value);
                 if (locale) {
                     let info = getLocaleInfo(locale);
-                    this._headers[normalizedName] = info ? info.id : locale;
+                    this.#headers[normalizedName] = info ? info.id : locale;
                     if (info) {
-                        this._headers[HEADER_LANGUAGE_NAME_KEY] = info.name;
+                        this.#headers[HEADER_LANGUAGE_NAME_KEY] = info.name;
                     }
                 }
                 break;
             case HEADER_LANGUAGE_NAME_KEY:
                 // normalize
-                this._headers[HEADER_LANGUAGE_NAME_KEY] = value;
+                this.#headers[HEADER_LANGUAGE_NAME_KEY] = value;
                 let lowerValue = value.toLowerCase();
                 for (let locale in Locale) {
                     let item = Locale[locale];
                     if (item.name.toLowerCase() === lowerValue) {
-                        this._headers[HEADER_LANGUAGE_KEY] = item.id;
-                        this._headers[HEADER_LANGUAGE_NAME_KEY] = item.name;
+                        this.#headers[HEADER_LANGUAGE_KEY] = item.id;
+                        this.#headers[HEADER_LANGUAGE_NAME_KEY] = item.name;
                         break;
                     }
                 }
@@ -352,19 +352,19 @@ export default class Headers implements GettextHeadersInterface {
                 value = value.trim().toLowerCase();
                 const transferEncodings = ['7bit', '8bit', 'binary', 'quoted-printable', 'base64'];
                 if (transferEncodings.includes(value)) {
-                    this._headers[normalizedName] = value;
+                    this.#headers[normalizedName] = value;
                 }
                 break;
             case 'Creation-Date':
                 // normalize
-                this._headers['POT-Creation-Date'] = value;
+                this.#headers['POT-Creation-Date'] = value;
                 break;
             case 'Revision-Date':
                 // normalize
-                this._headers['PO-Revision-Date'] = value;
+                this.#headers['PO-Revision-Date'] = value;
                 break;
             default:
-                this._headers[normalizedName] = value.trim();
+                this.#headers[normalizedName] = value.trim();
         }
         return this;
     }
@@ -374,14 +374,14 @@ export default class Headers implements GettextHeadersInterface {
      */
     public get(name: string): string | undefined {
         name = normalizeHeaderName(name);
-        return this._headers.hasOwnProperty(name) ? this._headers[name] : undefined;
+        return this.#headers.hasOwnProperty(name) ? this.#headers[name] : undefined;
     }
 
     /**
      * @inheritDoc
      */
     public has(name: string): boolean {
-        return this._headers.hasOwnProperty(normalizeHeaderName(name));
+        return this.#headers.hasOwnProperty(normalizeHeaderName(name));
     }
 
     /**
@@ -395,9 +395,9 @@ export default class Headers implements GettextHeadersInterface {
         if (name === '') {
             return this;
         }
-        delete this._headers[name];
+        delete this.#headers[name];
         if (name === HEADER_PLURAL_KEY) {
-            this._pluralForm = undefined;
+            this.#pluralForm = undefined;
         }
         return this;
     }
@@ -406,8 +406,8 @@ export default class Headers implements GettextHeadersInterface {
      * @inheritDoc
      */
     public forEach(callback: (value: string, key: string, headers: HeaderRecords) => void): void {
-        for (let key in this._headers) {
-            callback(this._headers[key], key, this._headers);
+        for (let key in this.#headers) {
+            callback(this.#headers[key], key, this.#headers);
         }
     }
 

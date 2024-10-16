@@ -19,65 +19,63 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * Determines whether the translation is enabled
      * The disabled translation is a comment, default is true or as translation enabled
      *
-     * @protected
+     * @private
      */
-    protected _enabled: boolean = true;
+    #enabled: boolean = true;
 
     /**
-     * Translation identifier
-     *
-     * @protected
+     * @inheritDoc
      */
-    private readonly _id: string;
+    public readonly id: string;
 
     /**
      * Plural form
      *
-     * @protected
+     * @private
      */
-    protected _pluralForm: GettextPluralFormInterface = DefaultPluralForm;
+    #pluralForm: GettextPluralFormInterface = DefaultPluralForm;
 
     /**
      * Translation Attributes
      *
-     * @protected
+     * @private
      */
-    private readonly _attributes: GettextTranslationAttributesInterface;
+    readonly #attributes: GettextTranslationAttributesInterface;
 
     /**
      * Translation context
      *
-     * @protected
+     * @private
      */
-    private readonly _context: string|undefined;
+    readonly #context: string|undefined;
 
     /**
      * Original translation
      *
-     * @protected
+     * @private
      */
-    private readonly _original: string;
+    readonly #original: string;
 
     /**
      * Plural translation
      *
-     * @protected
+     * @private
      */
-    protected _plural?: string;
+    #plural?: string;
 
     /**
      * Singular translation
      *
-     * @protected
+     * @private
      */
-    protected _translation?: string;
+    #translation?: string;
 
     /**
      * Plural translations
      *
-     * @protected
+     * @private
      */
-    protected _pluralTranslations: string[] = [];
+    #pluralTranslations: string[] = [];
 
     /**
      * Translation constructor
@@ -117,10 +115,10 @@ export default class TranslationEntry implements TranslationEntryInterface {
                 );
             }
         }
-        this._context = context;
-        this._original = original;
-        this._id = generateTranslationId(original, context);
-        this._attributes = new TranslationAttributes();
+        this.#context = context;
+        this.#original = original;
+        this.id = generateTranslationId(original, context);
+        this.#attributes = new TranslationAttributes();
         this.setPlural(plural);
         this.setTranslation(translation);
         this.setPluralForm(pluralForm);
@@ -130,7 +128,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * @inheritDoc
      */
     public isEnabled(): boolean {
-        return this._enabled;
+        return this.#enabled;
     }
 
     /**
@@ -144,7 +142,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * @inheritDoc
      */
     public setEnabled(enabled: boolean) : void {
-        this._enabled = enabled;
+        this.#enabled = enabled;
     }
 
     /**
@@ -158,70 +156,63 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * @inheritDoc
      */
     public getId(): string {
-        return this._id;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public get id(): string {
-        return this._id;
+        return this.id;
     }
 
     /**
      * @inheritDoc
      */
     public getAttributes(): GettextTranslationAttributesInterface {
-        return this._attributes;
+        return this.#attributes;
     }
 
     /**
      * @inheritDoc
      */
     public get attributes(): GettextTranslationAttributesInterface {
-        return this._attributes;
+        return this.#attributes;
     }
 
     /**
      * @inheritDoc
      */
     public getContext(): string | undefined {
-        return this._context;
+        return this.#context;
     }
 
     /**
      * @inheritDoc
      */
     public get context(): string | undefined {
-        return this._context;
+        return this.#context;
     }
 
     /**
      * @inheritDoc
      */
     public getOriginal(): string {
-        return this._original;
+        return this.#original;
     }
 
     /**
      * @inheritDoc
      */
     public get original(): string {
-        return this._original;
+        return this.#original;
     }
 
     /**
      * @inheritDoc
      */
     public getPlural(): string | undefined {
-        return this._plural;
+        return this.#plural;
     }
 
     /**
      * @inheritDoc
      */
     public get plural(): string | undefined {
-        return this._plural;
+        return this.#plural;
     }
 
     /**
@@ -231,7 +222,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
         // convert null to undefined
         plural = typeof plural === null ? undefined : plural;
         if (is_undefined(plural) || is_string(plural)) {
-            this._plural = plural;
+            this.#plural = plural;
         }
     }
 
@@ -246,7 +237,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * @inheritDoc
      */
     public getTranslation(): string | undefined {
-        return this._translation;
+        return this.#translation;
     }
 
     /**
@@ -261,7 +252,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      */
     public setTranslation(translation: string | undefined) : void {
         if (is_undefined(translation) || is_string(translation)) {
-            this._translation = translation;
+            this.#translation = translation;
         }
     }
 
@@ -276,7 +267,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * @inheritDoc
      */
     public getPluralTranslations(): Array<string> {
-        return [...this._pluralTranslations];
+        return [...this.#pluralTranslations];
     }
 
     /**
@@ -291,7 +282,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      */
     public setPluralTranslations(pluralTranslations: string[]) : void {
         if (Array.isArray(pluralTranslations)) {
-            this._pluralTranslations = Array.from(pluralTranslations);
+            this.#pluralTranslations = Array.from(pluralTranslations);
         }
     }
 
@@ -306,7 +297,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * @inheritDoc
      */
     public getPluralForm(): GettextPluralFormInterface {
-        return this._pluralForm;
+        return this.#pluralForm;
     }
 
     /**
@@ -321,7 +312,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      */
     public setPluralForm(pluralForm: GettextPluralFormInterface) : void {
         if (pluralForm instanceof PluralForm) {
-            this._pluralForm = pluralForm;
+            this.#pluralForm = pluralForm;
         }
     }
 
@@ -336,7 +327,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      * @inheritDoc
      */
     public getPluralTranslationIndex(index: number): string | undefined {
-        return this._pluralTranslations[index];
+        return this.#pluralTranslations[index];
     }
 
     /**
@@ -344,7 +335,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      */
     public get translationIndex(): (n: number) => string | undefined
     {
-        return (n: number) => this._pluralTranslations[n];
+        return (n: number) => this.#pluralTranslations[n];
     }
 
     /**

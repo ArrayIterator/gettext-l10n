@@ -49,7 +49,7 @@ export default class Translator<
      *
      * @private
      */
-    private _translatorEntries: {
+    #translatorEntries: {
         [domain: string]: {
             [language: string]: Translations
         }
@@ -60,14 +60,14 @@ export default class Translator<
      *
      * @private
      */
-    private _originalLanguage = DEFAULT_LANGUAGE;
+    #originalLanguage = DEFAULT_LANGUAGE;
 
     /**
      * The current set language
      *
      * @private
      */
-    private _language: string = DEFAULT_LANGUAGE;
+    #language: string = DEFAULT_LANGUAGE;
 
     /**
      * Translator constructor
@@ -86,7 +86,7 @@ export default class Translator<
         if (!locale) {
             return undefined;
         }
-        this._originalLanguage = locale;
+        this.#originalLanguage = locale;
         return locale;
     }
 
@@ -101,7 +101,7 @@ export default class Translator<
      * @inheritDoc
      */
     public getOriginalLanguage(): string {
-        return this._originalLanguage;
+        return this.#originalLanguage;
     }
 
     /**
@@ -119,7 +119,7 @@ export default class Translator<
         if (!locale) {
             return undefined;
         }
-        this._language = locale;
+        this.#language = locale;
         return locale;
     }
 
@@ -134,7 +134,7 @@ export default class Translator<
      * @inheritDoc
      */
     public getLanguage(): string {
-        return this._language;
+        return this.#language;
     }
 
     /**
@@ -168,18 +168,18 @@ export default class Translator<
             return false;
         }
         // exists skipped
-        if (this._translatorEntries[domain]
-            && this._translatorEntries[domain][locale]
+        if (this.#translatorEntries[domain]
+            && this.#translatorEntries[domain][locale]
         ) {
             return false;
         }
-        if (!this._translatorEntries[domain]) {
-            this._translatorEntries[domain] = {};
+        if (!this.#translatorEntries[domain]) {
+            this.#translatorEntries[domain] = {};
         }
-        if (!this._translatorEntries[domain][locale]) {
-            this._translatorEntries[domain][locale] = new TranslationEntries() as unknown as Translations;
+        if (!this.#translatorEntries[domain][locale]) {
+            this.#translatorEntries[domain][locale] = new TranslationEntries() as unknown as Translations;
         }
-        this._translatorEntries[domain][locale].mergeWith(translations);
+        this.#translatorEntries[domain][locale].mergeWith(translations);
         return true;
     }
 
@@ -190,12 +190,12 @@ export default class Translator<
         if (!is_string(domain)) {
             return false;
         }
-        let result : boolean = (this._translatorEntries[domain] && Object.keys(this._translatorEntries).length > 0);
+        let result : boolean = (this.#translatorEntries[domain] && Object.keys(this.#translatorEntries).length > 0);
         if (!is_string(language)) {
             if (language) {
                 return false;
             }
-            delete this._translatorEntries[domain];
+            delete this.#translatorEntries[domain];
             return result;
         }
         if (!result) {
@@ -205,11 +205,11 @@ export default class Translator<
         if (!language) {
             return false;
         }
-        result = this._translatorEntries[domain] ? !!(this._translatorEntries[domain][language]) : false;
+        result = this.#translatorEntries[domain] ? !!(this.#translatorEntries[domain][language]) : false;
         if (result) {
-            delete this._translatorEntries[domain][language];
-            if (Object.keys(this._translatorEntries[domain]).length === 0) {
-                delete this._translatorEntries[domain];
+            delete this.#translatorEntries[domain][language];
+            if (Object.keys(this.#translatorEntries[domain]).length === 0) {
+                delete this.#translatorEntries[domain];
             }
         }
         return result;
@@ -222,7 +222,7 @@ export default class Translator<
         if (!is_string(domain)) {
             return false;
         }
-        let result : boolean = (this._translatorEntries[domain] && Object.keys(this._translatorEntries).length > 0);
+        let result : boolean = (this.#translatorEntries[domain] && Object.keys(this.#translatorEntries).length > 0);
         if (!is_string(language)) {
             if (language) {
                 return false;
@@ -236,9 +236,9 @@ export default class Translator<
         if (!language) {
             return false;
         }
-        result = this._translatorEntries[domain] ? !!(this._translatorEntries[domain][language]) : false;
-        if (result && Object.keys(this._translatorEntries[domain]).length === 0) {
-            delete this._translatorEntries[domain];
+        result = this.#translatorEntries[domain] ? !!(this.#translatorEntries[domain][language]) : false;
+        if (result && Object.keys(this.#translatorEntries[domain]).length === 0) {
+            delete this.#translatorEntries[domain];
         }
         return result;
     }
@@ -338,8 +338,8 @@ export default class Translator<
         if (!is_string(domain) || !is_string(language)) {
             return undefined;
         }
-        return this._translatorEntries[domain] && this._translatorEntries[domain][language]
-            ? this._translatorEntries[domain][language]
+        return this.#translatorEntries[domain] && this.#translatorEntries[domain][language]
+            ? this.#translatorEntries[domain][language]
             : undefined;
     }
 
@@ -348,6 +348,6 @@ export default class Translator<
      */
     public clear(): void {
         // emptying
-        this._translatorEntries = {};
+        this.#translatorEntries = {};
     }
 }

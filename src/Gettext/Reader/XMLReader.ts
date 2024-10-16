@@ -1,5 +1,4 @@
 import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
-import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
 import StreamBuffer from '../../Utils/StreamBuffer';
 import {
     decode_entities,
@@ -16,15 +15,19 @@ import {
 import GettextTranslationInterface from '../Interfaces/GettextTranslationInterface';
 import {
     SimpleDocumentFragment,
-    ReadonlySimpleElement
+    SimpleElement
 } from '../../Utils/SimpleDocument';
+import {
+    GettextTranslationsType,
+    GettextTranslationType
+} from '../../Utils/Type';
 
 /**
  * XML Reader (example) :
  * <?xml version="1.0" encoding="UTF-8"?>
  * <translation
  *         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- *         xsi:noNamespaceSchemaLocation="gettext-l10n/src/Schema/translation.xsd"
+ *         xsi:noNamespaceSchemaLocation="../src/Schema/translation.xsd"
  *         revision="1"
  * >
  *     <flags>
@@ -45,13 +48,17 @@ import {
  *         <creation-date>2023-10-01 12:00+0000</creation-date>
  *         <revision-date>2023-10-01 12:00+0000</revision-date>
  *         <last-translator>John Doe &lt;john.doe@example.com&gt;</last-translator>
- *         <language-team>English &lt;en@example.com&gt;</language-team>
- *         <language>en</language>
+ *         <language>id</language>
+ *         <language-name>Bahasa Indonesia</language-name>
+ *         <language-team>Indonesia &lt;en@example.com&gt;</language-team>
  *         <mime-version>1.0</mime-version>
  *         <content-type>text/plain; charset=UTF-8</content-type>
  *         <content-transfer-encoding>8bit</content-transfer-encoding>
  *         <plural-forms>nplurals=2; plural=(n != 1);</plural-forms>
- *         <header key="custom-header">custom header value</header>
+ *         <custom-header>
+ *             <item name="custom-header">Custom Header</item>
+ *             <item name="custom-header2">Custom Header 2</item>
+ *         </custom-header>
  *     </headers>
  *     <translations>
  *         <context name="">
@@ -62,7 +69,9 @@ import {
  *                 <disabled/>
  *                 <msgid>as a key reference</msgid>
  *                 <msgid_plural/>
- *                 <msgstr/>
+ *                 <msgstr>
+ *                     <item>sebagai referensi kunci</item>
+ *                 </msgstr>
  *             </item>
  *             <item>
  *                 <comments/>
@@ -71,8 +80,8 @@ import {
  *                 <msgid/>
  *                 <msgid_plural>Hello, worlds!</msgid_plural>
  *                 <msgstr>
- *                     <item>Hello, world!</item>
- *                     <item>Hello, worlds!</item>
+ *                     <item>Halo, dunia!</item>
+ *                     <item>Halo, dunia!</item>
  *                 </msgstr>
  *             </item>
  *             <item>
@@ -89,8 +98,8 @@ import {
  *                 <msgid>The Cat</msgid>
  *                 <msgid_plural>The Cats</msgid_plural>
  *                 <msgstr>
- *                     <item>The Cat</item>
- *                     <item>The Cats</item>
+ *                     <item>Kucing</item>
+ *                     <item>Kucing</item>
  *                 </msgstr>
  *             </item>
  *             <item>
@@ -108,32 +117,29 @@ import {
  *                 <enable>false</enable>
  *                 <msgid>Hello, world!</msgid>
  *                 <msgstr>
- *                     <item>Hello, world!</item>
+ *                     <item>Halo, dunia!</item>
  *                 </msgstr>
  *             </item>
  *         </context>
  *     </translations>
  * </translation>
  */
-export default class XMLReader<
-    Translation extends GettextTranslationInterface,
-    Translations extends GettextTranslationsInterface<Translation, Translations>
-> implements GettextReaderInterface<Translation, Translations> {
+export default class XMLReader implements GettextReaderInterface{
     /**
      * @inheritDoc
      *
      * @throws {RuntimeException} if the content is not valid
      */
-    public read(content: string | ArrayBufferLike): Translations {
+    public read(content: string | ArrayBufferLike): GettextTranslationsType {
         content = new StreamBuffer(content).toString();
         let rootElement = this.parseFromString(content)?.documentElement;
-        if (rootElement?.tagName !== 'translation') {
+        if (rootElement?.tagName.toLowerCase() !== 'translation') {
             throw new RuntimeException(
                 `The root element must be <translation> but <${rootElement?.tagName}> given`
             );
         }
 
-        type ElementMixed = ReadonlySimpleElement|Element;
+        type ElementMixed = SimpleElement|Element;
         type ElementsMixed = HTMLCollection|ElementMixed[];
 
         /**
@@ -151,8 +157,8 @@ export default class XMLReader<
          * <selector> > <item>+
          */
         const rootItems = <T extends ElementMixed>(tagName: string, children: ElementsMixed) : T[] => {
-            return rootFilter('item', (rootFilter(tagName, children).shift() as Element|ReadonlySimpleElement)?.children)
-                .filter((node) => is_object(node) && is_string((node as ReadonlySimpleElement|Element).textContent)) as T[];
+            return rootFilter('item', (rootFilter(tagName, children).shift() as ElementMixed)?.children)
+                .filter((node) => is_object(node) && is_string((node as ElementMixed).textContent)) as T[];
         }
 
         const revision = rootElement.getAttribute('revision')?.trim() || '0';
@@ -168,7 +174,7 @@ export default class XMLReader<
                 'The <translations> element is required'
             );
         }
-        const translations = new GettextTranslations(parseInt(revision + '')) as unknown as Translations;
+        const translations = new GettextTranslations<GettextTranslationType, GettextTranslationsType>(parseInt(revision + ''));
 
         rootFilter('headers', rootElement.children).forEach((headerElement) : void => {
             for (let child in headerElement.children) {
@@ -176,23 +182,25 @@ export default class XMLReader<
                 if (!is_object(node)) {
                     continue;
                 }
-                if (node.tagName === 'header') {
-                    let attrName = (node as ReadonlySimpleElement).getAttribute('name');
-                    if (!is_string(attrName) || attrName.trim() === '') {
-                        continue;
-                    }
-                    attrName = attrName.trim();
-                    if (!attrName.match(/^[a-zA-Z0-9_-]+$/)) {
-                        throw new RuntimeException(
-                            `The header is not valid, attribute name should match pattern: [a-zA-Z0-9_-]+?, ${attrName} given`
-                        );
-                    }
-                    const value = this.cleanData(node.textContent || '');
-                    translations.headers.set(attrName, value);
+                if (node.tagName === 'custom-header') {
+                    rootFilter('item', node.children).forEach((node) => {
+                        let attrName = (node as SimpleElement).getAttribute('name');
+                        if (!is_string(attrName) || attrName.trim() === '') {
+                            return;
+                        }
+                        attrName = attrName.trim();
+                        if (!attrName.match(/^[a-zA-Z0-9_-]+$/)) {
+                            throw new RuntimeException(
+                                `The header is not valid, attribute name should match pattern: [a-zA-Z0-9_-]+?, ${attrName} given`
+                            );
+                        }
+                        const value = this.cleanData(node.textContent || '');
+                        translations.headers.set(attrName, value);
+                    });
                     continue;
                 }
                 translations.headers.set(
-                    (node as ReadonlySimpleElement).tagName,
+                    (node as SimpleElement).tagName,
                     this.cleanData(node.textContent || '')
                 );
             }
@@ -258,7 +266,7 @@ export default class XMLReader<
                         );
                     }
                     // append translation
-                    translations.add(gettextTranslation as Translation);
+                    translations.add(gettextTranslation);
                     // <comments> > <item>+
                     define_comments(
                         rootItems('comments', itemElement?.children)
@@ -357,23 +365,7 @@ export default class XMLReader<
      * @private
      */
     private parseFromString(content: string) : SimpleDocumentFragment|Document {
-        let domParser : typeof DOMParser = (window?.DOMParser);
-        if (!domParser) {
-            // noinspection TypeScriptUnresolvedReference
-            // @ts-expect-error ignore
-            let _require = require || null;
-            let jsDom;
-            try {
-                jsDom = (_require ? _require('jsdom') : null)?.JSDOM;
-                domParser = (typeof jsDom === 'function' ? (jsDom as {
-                    window: {
-                        DOMParser: typeof DOMParser
-                    }
-                })?.window.DOMParser : null) as { new(): DOMParser; prototype: DOMParser; };
-            } catch (_e) {
-                // ignore
-            }
-        }
+        let domParser : typeof DOMParser = ((window||{})?.DOMParser);
         if (typeof domParser.prototype?.parseFromString === 'function') {
             const dom = new domParser();
             return dom.parseFromString(content, 'text/xml');

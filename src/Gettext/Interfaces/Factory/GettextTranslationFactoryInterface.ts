@@ -5,6 +5,7 @@ export default interface GettextTranslationFactoryInterface {
 
     /**
      * Create a new translation
+     *
      * @param {string|undefined} context
      * @param {string} original
      * @param {string|undefined} plural

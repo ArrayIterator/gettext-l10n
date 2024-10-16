@@ -16,16 +16,16 @@ export default class StreamBuffer implements ClearableInterface {
     /**
      * The buffer
      *
-     * @protected
+     * @private
      */
-    protected _buffer: Uint8Array;
+    #buffer: Uint8Array;
 
     /**
      * The offset
      *
-     * @protected
+     * @private
      */
-    protected _offset: number = 0;
+    #offset: number = 0;
 
     /**
      * StreamBuffer constructor
@@ -48,12 +48,12 @@ export default class StreamBuffer implements ClearableInterface {
                 );
             }
             if (is_string(content)) {
-                this._buffer = new TextEncoder().encode(content);
+                this.#buffer = new TextEncoder().encode(content);
             } else {
-                this._buffer = new Uint8Array(content);
+                this.#buffer = new Uint8Array(content);
             }
         } else {
-            this._buffer = new Uint8Array(content.buffer); // copy
+            this.#buffer = new Uint8Array(content.buffer); // copy
         }
     }
 
@@ -67,7 +67,7 @@ export default class StreamBuffer implements ClearableInterface {
         const buffer = is_string(string)
             ? new TextEncoder().encode(string)
             : (string instanceof ArrayBuffer ? new Uint8Array(string) : string);
-        this._buffer = new Uint8Array([...this._buffer, ...buffer]);
+        this.#buffer = new Uint8Array([...this.#buffer, ...buffer]);
         return this;
     }
 
@@ -235,7 +235,7 @@ export default class StreamBuffer implements ClearableInterface {
      * @return {number} the size of the buffer
      */
     public get size(): number {
-        return this._buffer.byteLength;
+        return this.#buffer.byteLength;
     }
 
     /**
@@ -244,9 +244,9 @@ export default class StreamBuffer implements ClearableInterface {
      * @param {number} offset the offset
      */
     public seek(offset: number): boolean {
-        this._offset = offset;
-        if (this._offset > this.size) {
-            this._offset = this.size;
+        this.#offset = offset;
+        if (this.#offset > this.size) {
+            this.#offset = this.size;
             return false;
         }
         return true;
@@ -258,8 +258,8 @@ export default class StreamBuffer implements ClearableInterface {
      * @param {number} bytes the number of bytes to read
      */
     public read(bytes: number): string {
-        const buffer = this._buffer.slice(this._offset, this._offset + bytes);
-        this._offset += bytes;
+        const buffer = this.#buffer.slice(this.#offset, this.#offset + bytes);
+        this.#offset += bytes;
         return new TextDecoder().decode(buffer);
     }
 
@@ -269,7 +269,7 @@ export default class StreamBuffer implements ClearableInterface {
      * @return {number} the 8-bit unsigned integer
      */
     public readUint8(): number {
-        return this._buffer[this._offset++];
+        return this.#buffer[this.#offset++];
     }
 
     /**
@@ -278,8 +278,8 @@ export default class StreamBuffer implements ClearableInterface {
      * @param {boolean} littleEndian true if the integer is little endian, false if big endian
      */
     public readUint16(littleEndian: boolean = true): number {
-        const value = new DataView(this._buffer.buffer, this._offset, 2).getUint16(0, littleEndian);
-        this._offset += 2;
+        const value = new DataView(this.#buffer.buffer, this.#offset, 2).getUint16(0, littleEndian);
+        this.#offset += 2;
         return value;
     }
 
@@ -289,8 +289,8 @@ export default class StreamBuffer implements ClearableInterface {
      * @param {boolean} littleEndian true if the integer is little endian, false if big endian
      */
     public readUint32(littleEndian: boolean = true): number {
-        const value = new DataView(this._buffer.buffer, this._offset, 4).getUint32(0, littleEndian);
-        this._offset += 4;
+        const value = new DataView(this.#buffer.buffer, this.#offset, 4).getUint32(0, littleEndian);
+        this.#offset += 4;
         return value;
     }
 
@@ -311,7 +311,7 @@ export default class StreamBuffer implements ClearableInterface {
      * @return {string} the content
      */
     public toString(): string {
-        return new TextDecoder().decode(this._buffer);
+        return new TextDecoder().decode(this.#buffer);
     }
 
     /**
@@ -320,7 +320,16 @@ export default class StreamBuffer implements ClearableInterface {
      * @return {Uint8Array} the buffer
      */
     public get buffer(): Uint8Array {
-        return this._buffer;
+        return this.#buffer;
+    }
+
+    /**
+     * Get the offset
+     *
+     * @return {number} the offset
+     */
+    public get offset(): number {
+        return this.#offset;
     }
 
     /**
@@ -329,7 +338,7 @@ export default class StreamBuffer implements ClearableInterface {
      * @return {void}
      */
     public clear(): void {
-        this._buffer = new Uint8Array();
-        this._offset = 0;
+        this.#buffer = new Uint8Array();
+        this.#offset = 0;
     }
 }

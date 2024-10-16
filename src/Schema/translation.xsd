@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1" elementFormDefault="qualified" version="1.1">
     <xs:annotation>
         <xs:documentation>
             The Gettext XML Schema is used to validate the structure of a Gettext translation file.
@@ -48,13 +48,19 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-
+    <xs:complexType name="HeaderType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:NCName" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
     <!-- start translation / root -->
     <xs:element name="translation">
         <xs:complexType>
-            <xs:sequence>
+            <xs:all>
                 <xs:element name="flags" type="FlagsType" minOccurs="0">
-                    <xs:unique name="translationUniqueFlag">
+                    <xs:unique name="uniqueFlag">
                         <xs:selector xpath="item"/>
                         <xs:field xpath="."/>
                     </xs:unique>
@@ -62,9 +68,10 @@
                 <xs:element name="references" type="ReferencesType" minOccurs="0"/>
                 <xs:element name="comments" type="CommentsType" minOccurs="0"/>
                 <xs:element name="extracted-comments" type="CommentsType" minOccurs="0"/>
+                <!-- headers -->
                 <xs:element name="headers" minOccurs="0">
                     <xs:complexType>
-                        <xs:sequence>
+                        <xs:all>
                             <xs:element name="project-id-version" type="xs:string" minOccurs="0">
                                 <xs:annotation>
                                     <xs:documentation>The project-id-version key is the name and version of the project.</xs:documentation>
@@ -85,16 +92,6 @@
                                     <xs:documentation>The last-translator key is the name and email address of the last translator.</xs:documentation>
                                 </xs:annotation>
                             </xs:element>
-                            <xs:element name="language-team" type="xs:string" minOccurs="0">
-                                <xs:annotation>
-                                    <xs:documentation>The language-team key is the language and email address of the translation team.</xs:documentation>
-                                </xs:annotation>
-                            </xs:element>
-                            <xs:element name="language-name" type="xs:string" minOccurs="0">
-                                <xs:annotation>
-                                    <xs:documentation>The language-name key is the name of the language.</xs:documentation>
-                                </xs:annotation>
-                            </xs:element>
                             <xs:element name="language" type="xs:string">
                                 <xs:annotation>
                                     <xs:documentation>The language key is the language code of the translation.</xs:documentation>
@@ -104,6 +101,16 @@
                                         <xs:pattern value="[a-zA-Z]+([a-zA-Z0-9_-]*[a-zA-Z0-9])?"/>
                                     </xs:restriction>
                                 </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="language-name" type="xs:string" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>The language-name key is the name of the language.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="language-team" type="xs:string" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>The language-team key is the language and email address of the translation team.</xs:documentation>
+                                </xs:annotation>
                             </xs:element>
                             <xs:element name="mime-version" type="xs:string" minOccurs="0">
                                 <xs:annotation>
@@ -144,25 +151,25 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
-                            <xs:element name="header" minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="custom-header" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
-                                    <xs:simpleContent>
-                                        <xs:extension base="xs:string">
-                                            <xs:attribute name="name" type="xs:NCName" use="required"/>
-                                        </xs:extension>
-                                    </xs:simpleContent>
+                                    <xs:sequence>
+                                        <xs:element name="item" type="HeaderType" maxOccurs="unbounded"/>
+                                    </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                        </xs:sequence>
+                        </xs:all>
                     </xs:complexType>
-                    <xs:unique name="uniqueHeaderKey">
-                        <xs:selector xpath="header"/>
-                        <xs:field xpath="@key"/>
+                    <xs:unique name="headersUnique">
+                        <xs:selector xpath="custom-header/item"/>
+                        <xs:field xpath="@name"/>
                     </xs:unique>
                 </xs:element>
+
+                <!-- translations -->
                 <xs:element name="translations">
                     <xs:complexType>
-                        <xs:sequence>
+                        <xs:all>
                             <xs:element name="context" minOccurs="0">
                                 <xs:annotation>
                                     <xs:documentation>The context of the translation file.</xs:documentation>
@@ -211,11 +218,10 @@
                                     </xs:attribute>
                                 </xs:complexType>
                             </xs:element>
-                        </xs:sequence>
+                        </xs:all>
                     </xs:complexType>
                 </xs:element>
-            </xs:sequence>
-
+            </xs:all>
             <!-- attributes -->
             <xs:attribute name="revision" type="xs:integer" default="0" xml:space="preserve">
                 <xs:annotation>

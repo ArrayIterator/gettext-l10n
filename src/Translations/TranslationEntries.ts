@@ -27,28 +27,28 @@ export default class TranslationEntries<
      *
      * @private
      */
-    protected _revision: number;
+    #revision: number;
 
     /**
      * The header
      *
      * @private
      */
-    protected readonly _headers: GettextHeadersInterface;
+    readonly #headers: GettextHeadersInterface;
 
     /**
      * The attributes
      *
      * @private
      */
-    protected readonly _attributes: GettextTranslationAttributesInterface;
+    readonly #attributes: GettextTranslationAttributesInterface;
 
     /**
      * Translations
      *
      * @private
      */
-    protected _translations: Record<string, Translation> = {};
+    #translations: Record<string, Translation> = {};
 
     /**
      * Constructor
@@ -64,9 +64,9 @@ export default class TranslationEntries<
         attributes?: GettextTranslationAttributesInterface,
         ...translations: Translation[]
     ) {
-        this._revision = !is_numeric_integer(revision) ? 0 : parseInt(revision + '');
-        this._headers = headers instanceof Headers ? headers : new Headers();
-        this._attributes = attributes instanceof TranslationAttributes ? attributes : new TranslationAttributes();
+        this.#revision = !is_numeric_integer(revision) ? 0 : parseInt(revision + '');
+        this.#headers = headers instanceof Headers ? headers : new Headers();
+        this.#attributes = attributes instanceof TranslationAttributes ? attributes : new TranslationAttributes();
         translations.forEach((translation) : void => {
             this.add(translation);
         });
@@ -83,7 +83,7 @@ export default class TranslationEntries<
      * @inheritDoc
      */
     public getRevision(): number {
-        return this._revision;
+        return this.#revision;
     }
 
     /**
@@ -97,7 +97,7 @@ export default class TranslationEntries<
      * @inheritDoc
      */
     public setRevision(revision: number) : void {
-        this._revision = is_numeric_integer(revision) ? parseInt(revision + '') : this._revision;
+        this.#revision = is_numeric_integer(revision) ? parseInt(revision + '') : this.#revision;
     }
 
     /**
@@ -111,7 +111,7 @@ export default class TranslationEntries<
      * @inheritDoc
      */
     public getHeaders(): GettextHeadersInterface {
-        return this._headers;
+        return this.#headers;
     }
 
     /**
@@ -125,7 +125,7 @@ export default class TranslationEntries<
      * @inheritDoc
      */
     public getAttributes(): GettextTranslationAttributesInterface {
-        return this._attributes;
+        return this.#attributes;
     }
 
     /**
@@ -167,7 +167,7 @@ export default class TranslationEntries<
      * @inheritDoc
      */
     public getTranslations(): Record<string, Translation> {
-        return Object.assign({}, this._translations);
+        return Object.assign({}, this.#translations);
     }
 
     /**
@@ -203,21 +203,21 @@ export default class TranslationEntries<
             return undefined;
         }
         const id = this.generateId(original, context);
-        return this._translations[id] || undefined;
+        return this.#translations[id] || undefined;
     }
 
     /**
      * @inheritDoc
      */
     public get length(): number {
-        return Object.keys(this._translations).length;
+        return Object.keys(this.#translations).length;
     }
 
     /**
      * @inheritDoc
      */
     public clear(): void {
-        this._translations = {};
+        this.#translations = {};
     }
 
     /**
@@ -250,7 +250,7 @@ export default class TranslationEntries<
     public add(translation: Translation): boolean {
         if (translation instanceof TranslationEntry) {
             const id = this.generateId(translation.original, translation.context);
-            this._translations[id] = translation;
+            this.#translations[id] = translation;
             return true;
         }
         return false;
@@ -280,7 +280,7 @@ export default class TranslationEntries<
         if (!is_string(id)) {
             return;
         }
-        return this._translations[id as string];
+        return this.#translations[id as string];
     }
 
     /**
@@ -299,7 +299,7 @@ export default class TranslationEntries<
             return false;
         }
         id = this.generateId(translation.original, translation.context);
-        delete this._translations[id];
+        delete this.#translations[id];
         return true;
     }
 

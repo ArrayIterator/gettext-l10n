@@ -16,9 +16,9 @@ export default class References implements GettextReferencesInterface {
      *
      * @type {Map<string, number[]>}
      *
-     * @protected
+     * @private
      */
-    protected _references: Map<string, number[]> = new Map<string, number[]>();
+    #references: Map<string, number[]> = new Map<string, number[]>();
 
     /**
      * @inheritDoc
@@ -36,8 +36,8 @@ export default class References implements GettextReferencesInterface {
      */
     public add(file: string, line: number | undefined | null = undefined): void {
         if (line === null || line === undefined) {
-            if (!this._references.has(file)) {
-                this._references.set(file, []);
+            if (!this.#references.has(file)) {
+                this.#references.set(file, []);
             }
             return;
         }
@@ -48,32 +48,32 @@ export default class References implements GettextReferencesInterface {
         if (is_bigint(line) || line < 1) {
             return; // ignore invalid line number
         }
-        const reference: Array<number> = this._references.has(file)
-            ? (this._references.get(file) || [])
+        const reference: Array<number> = this.#references.has(file)
+            ? (this.#references.get(file) || [])
             : [];
         reference.push(line);
-        this._references.set(file, reference);
+        this.#references.set(file, reference);
     }
 
     /**
      * @inheritDoc
      */
     public remove(file: string): void {
-        this._references.delete(file);
+        this.#references.delete(file);
     }
 
     /**
      * @inheritDoc
      */
     public has(file: string): boolean {
-        return this._references.has(file);
+        return this.#references.has(file);
     }
 
     /**
      * @inheritDoc
      */
     public entries(): MapIterator<[string, number[]]> {
-        return this._references.entries();
+        return this.#references.entries();
     }
 
     /**
@@ -110,14 +110,14 @@ export default class References implements GettextReferencesInterface {
      * @inheritDoc
      */
     public [Symbol.iterator](): Iterator<[string, number[]]> {
-        return this._references[Symbol.iterator]() as Iterator<[string, number[]]>;
+        return this.#references[Symbol.iterator]() as Iterator<[string, number[]]>;
     }
 
     /**
      * @inheritDoc
      */
     public get length(): number {
-        return this._references.size as number;
+        return this.#references.size as number;
     }
 
     /**

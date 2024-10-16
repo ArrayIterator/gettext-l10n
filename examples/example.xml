@@ -22,13 +22,17 @@
         <creation-date>2023-10-01 12:00+0000</creation-date>
         <revision-date>2023-10-01 12:00+0000</revision-date>
         <last-translator>John Doe &lt;john.doe@example.com&gt;</last-translator>
-        <language-team>English &lt;en@example.com&gt;</language-team>
-        <language>en</language>
+        <language>id</language>
+        <language-name>Bahasa Indonesia</language-name>
+        <language-team>Indonesia &lt;en@example.com&gt;</language-team>
         <mime-version>1.0</mime-version>
         <content-type>text/plain; charset=UTF-8</content-type>
         <content-transfer-encoding>8bit</content-transfer-encoding>
         <plural-forms>nplurals=2; plural=(n != 1);</plural-forms>
-        <header name="custom-header">custom header value</header>
+        <custom-header>
+            <item name="custom-header">Custom Header</item>
+            <item name="custom-header2">Custom Header 2</item>
+        </custom-header>
     </headers>
     <translations>
         <context name="">
@@ -39,7 +43,9 @@
                 <disabled/>
                 <msgid>as a key reference</msgid>
                 <msgid_plural/>
-                <msgstr/>
+                <msgstr>
+                    <item>sebagai referensi kunci</item>
+                </msgstr>
             </item>
             <item>
                 <comments/>
@@ -48,8 +54,8 @@
                 <msgid/>
                 <msgid_plural>Hello, worlds!</msgid_plural>
                 <msgstr>
-                    <item>Hello, world!</item>
-                    <item>Hello, worlds!</item>
+                    <item>Halo, dunia!</item>
+                    <item>Halo, dunia!</item>
                 </msgstr>
             </item>
             <item>
@@ -66,8 +72,8 @@
                 <msgid>The Cat</msgid>
                 <msgid_plural>The Cats</msgid_plural>
                 <msgstr>
-                    <item>The Cat</item>
-                    <item>The Cats</item>
+                    <item>Kucing</item>
+                    <item>Kucing</item>
                 </msgstr>
             </item>
             <item>
@@ -85,7 +91,7 @@
                 <enable>false</enable>
                 <msgid>Hello, world!</msgid>
                 <msgstr>
-                    <item>Hello, world!</item>
+                    <item>Halo, dunia!</item>
                 </msgstr>
             </item>
         </context>

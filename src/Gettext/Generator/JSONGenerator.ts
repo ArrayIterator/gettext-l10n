@@ -13,18 +13,18 @@ import {
     ATTRIBUTE_MESSAGE_ID_PLURAL,
     ATTRIBUTE_MESSAGE_STR
 } from '../Definitions/AttributeDefinitions';
-import TranslationEntryInterface from '../../Translations/Interfaces/TranslationEntryInterface';
+import {TranslationsType} from '../../Utils/Type';
 
 /**
  * The translation generator for JSON files
  */
-export default class JSONGenerator<Translations extends TranslationEntryInterface> implements GettextGeneratorInterface<Translations> {
+export default class JSONGenerator implements GettextGeneratorInterface {
     /**
      * Generate the JSON translation file content
      * @inheritDoc
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    public generate(translations: Translations): StreamBuffer {
+    public generate(translations: TranslationsType): StreamBuffer {
         // noinspection SuspiciousTypeOfGuard
         if (!(translations instanceof TranslationEntries)) {
             throw new InvalidArgumentException(

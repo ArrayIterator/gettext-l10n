@@ -14,9 +14,9 @@
         "creation-date": "2023-10-01 12:00+0000",
         "revision-date": "2023-10-01 12:00+0000",
         "last-translator": "John Doe <john.doe@example.com>",
-        "language-team": "English <en@example.com>",
-        "language": "en",
-        "language-name": "English",
+        "language-team": "Indonesia <en@example.com>",
+        "language": "id",
+        "language-name": "Bahasa Indonesia",
         "mime-version": "1.0",
         "content-type": "text/plain; charset=UTF-8",
         "content-transfer-encoding": "8bit",
@@ -44,8 +44,8 @@
                 "msgid": "Hello, world!",
                 "msgid_plural": "Hello, worlds!",
                 "msgstr": [
-                    "Hello, world!",
-                    "Hello, worlds!"
+                    "Halo, dunia!",
+                    "Halo, dunia!"
                 ],
                 "comments": "This is a comment for the translator as a string.",
                 "references": ["src/file.js:10"],
@@ -57,8 +57,8 @@
                 "msgid": "The Cat",
                 "msgid_plural": "The Cats",
                 "msgstr": [
-                    "The Cat",
-                    "The Cats"
+                    "Kucing",
+                    "Kucing"
                 ],
                 "comments": [
                     "the key is the msgid",
@@ -69,7 +69,7 @@
             },
             "Hello, world!": {
                 "msgid": "Hello, world!",
-                "msgstr": ["Hello, world!"],
+                "msgstr": ["Halo, dunia!"],
                 "enable": false,
                 "comments": [
                     "this translation is disabled or just as commented translation like po file with: #~ msgid \"Hello, world!\""

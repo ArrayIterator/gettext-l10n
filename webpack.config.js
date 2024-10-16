@@ -9,7 +9,7 @@ const libName = 'gettextL10n';
  */
 const createConfig = (libraryTarget, minify) => ({
     mode: 'production',
-    entry: './src/gettext-l10n.ts',
+    entry: './src/gettextL10n.ts',
     module: {
         rules: [
             {

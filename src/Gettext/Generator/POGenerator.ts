@@ -20,18 +20,18 @@ import {
     DEFAULT_HEADERS,
     HEADER_CONTENT_TYPE_KEY
 } from '../Definitions/HeaderDefinitions';
-import TranslationEntryInterface from '../../Translations/Interfaces/TranslationEntryInterface';
+import {TranslationsType} from '../../Utils/Type';
 
 /**
  * The translation generator for PO files
  */
-export default class POGenerator<Translations extends TranslationEntryInterface> implements GettextGeneratorInterface<Translations> {
+export default class POGenerator implements GettextGeneratorInterface {
     /**
      * Generate the PO file content
      * @inheritDoc
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    public generate(translations: Translations): StreamBuffer {
+    public generate(translations: TranslationsType): StreamBuffer {
         // noinspection SuspiciousTypeOfGuard
         if (!(translations instanceof TranslationEntries)) {
             throw new InvalidArgumentException(

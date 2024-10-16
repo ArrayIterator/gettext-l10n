@@ -11,7 +11,7 @@ import TranslationEntries from '../Translations/TranslationEntries';
  */
 export default class GettextTranslations<
     Translation extends GettextTranslationInterface,
-    Translations extends GettextTranslations<Translation, Translations>
+    Translations extends GettextTranslationsInterface<Translation, Translations>
 > extends TranslationEntries<Translation, Translations> implements GettextTranslationsInterface<Translation, Translations> {
 
     /**
@@ -19,7 +19,7 @@ export default class GettextTranslations<
      *
      * @private
      */
-    private _translationFactory: GettextTranslationFactoryInterface;
+    #translationFactory: GettextTranslationFactoryInterface;
 
     /**
      * Constructor
@@ -38,21 +38,21 @@ export default class GettextTranslations<
         ...translations: Translation[]
     ) {
         super(revision, headers, attributes, ...translations);
-        this._translationFactory = translationFactory instanceof GettextTranslationFactory ? translationFactory : new GettextTranslationFactory();
+        this.#translationFactory = translationFactory instanceof GettextTranslationFactory ? translationFactory : new GettextTranslationFactory();
     }
 
     /**
      * @inheritDoc
      */
     public get translationFactory(): GettextTranslationFactoryInterface {
-        return this._translationFactory;
+        return this.#translationFactory;
     }
 
     /**
      * @inheritDoc
      */
     public set translationFactory(factory: GettextTranslationFactoryInterface) {
-        this._translationFactory = factory;
+        this.#translationFactory = factory;
     }
 
     /**

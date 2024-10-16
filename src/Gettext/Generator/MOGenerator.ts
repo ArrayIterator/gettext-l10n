@@ -4,17 +4,18 @@ import TranslationEntries from '../../Translations/TranslationEntries';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import TranslationEntryInterface from '../../Translations/Interfaces/TranslationEntryInterface';
 import {is_string} from '../../Utils/Helper';
+import {TranslationsType} from '../../Utils/Type';
 
 /**
  * The translation generator for MO files
  */
-export default class MOGenerator<Translations extends TranslationEntryInterface> implements GettextGeneratorInterface<Translations> {
+export default class MOGenerator implements GettextGeneratorInterface {
     /**
      * Generate the MO file content
      * @inheritDoc
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    public generate(translations: Translations): StreamBuffer {
+    public generate(translations: TranslationsType): StreamBuffer {
         // noinspection SuspiciousTypeOfGuard
         if (!(translations instanceof TranslationEntries)) {
             throw new InvalidArgumentException(

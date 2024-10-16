@@ -13,23 +13,23 @@ export default class IterableArray<TValue extends any> implements ClearableInter
     /**
      * Items
      *
-     * @protected
+     * @private
      */
-    protected items: Array<TValue> = [];
+    #items: Array<TValue> = [];
 
     /**
      * Current index
      *
-     * @protected
+     * @private
      */
-    protected _current: number = 0;
+    #current: number = 0;
 
     /**
      * Constructor
      * @param {Array<TValue>} items the items
      */
     public constructor(items: Array<TValue>) {
-        this.items = Array.from(items);
+        this.#items = Array.from(items);
     }
 
     /**
@@ -38,7 +38,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {number} the length of the array
      */
     public get length(): number {
-        return this.items.length;
+        return this.#items.length;
     }
 
     /**
@@ -47,7 +47,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {boolean} true if the current index is valid, false otherwise
      */
     public valid(): boolean {
-        return this._current >= 0 && this._current < this.length;
+        return this.#current >= 0 && this.#current < this.length && this.length > 0;
     }
 
     /**
@@ -56,10 +56,10 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {false | TValue} the current item or false if the current index is invalid
      */
     public current(): false | TValue {
-        if (!this.valid) {
+        if (!this.valid()) {
             return false;
         }
-        return this.items[this._current];
+        return this.#items[this.#current];
     }
 
     /**
@@ -68,7 +68,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {false | TValue} the first item or false if the array is empty
      */
     public reset(): false | TValue {
-        this._current = 0;
+        this.#current = 0;
         return this.current();
     }
 
@@ -81,7 +81,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
         if (this.length === 0) {
             return false;
         }
-        this._current = this.length - 1;
+        this.#current = this.length - 1;
         return this.current();
     }
 
@@ -92,9 +92,9 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      */
     public key(): number | false {
         if (this.valid()) {
-            return this._current;
+            return this.#current;
         }
-        return this._current;
+        return this.#current;
     }
 
     /**
@@ -103,8 +103,8 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {false | TValue} the next item or false if the current index is invalid
      */
     public prev(): TValue | false {
-        if (this._current >= 0) {
-            this._current--;
+        if (this.#current >= 0) {
+            this.#current--;
         }
         return this.current();
     }
@@ -115,8 +115,8 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {false | TValue} the next item or false if the current index is invalid
      */
     public next(): TValue | false {
-        if (this._current < this.length) {
-            this._current++;
+        if (this.#current < this.length) {
+            this.#current++;
         }
         return this.current();
     }
@@ -127,7 +127,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @param {number} index
      */
     public seek(index: number): TValue | false {
-        this._current = index;
+        this.#current = index;
         if (this.valid()) {
             return this.current();
         }
@@ -140,7 +140,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {Array<TValue>} the copy of the array
      */
     public getArrayCopy(): Array<TValue> {
-        return Array.from(this.items);
+        return Array.from(this.#items);
     }
 
     /**
@@ -149,14 +149,14 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {IterableArray<TValue>} the copy of the iterable array
      */
     public clone(): IterableArray<TValue> {
-        return new IterableArray(this.items);
+        return new IterableArray(this.#items);
     }
 
     /**
      * @inheritDoc
      */
     public [Symbol.iterator](): Iterator<TValue> {
-        return this.items[Symbol.iterator]();
+        return this.#items[Symbol.iterator]();
     }
 
     /**
@@ -166,7 +166,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @param {any} thisArg
      */
     public forEach(callback: (value: TValue, index: number, array: TValue[]) => void, thisArg?: any): void {
-        this.items.forEach(callback, thisArg);
+        this.#items.forEach(callback, thisArg);
     }
 
     /**
@@ -176,7 +176,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @param {any} thisArg
      */
     public map<U>(callback: (value: TValue, index: number, array: TValue[]) => U, thisArg?: any): U[] {
-        return this.items.map(callback, thisArg);
+        return this.#items.map(callback, thisArg);
     }
 
     /**
@@ -186,7 +186,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @param {any} thisArg
      */
     public filter(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): TValue[] {
-        return this.items.filter(callback, thisArg);
+        return this.#items.filter(callback, thisArg);
     }
 
     /**
@@ -196,7 +196,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @param {TValue} initialValue
      */
     public reduce(callback: (previousValue: TValue, currentValue: TValue, currentIndex: number, array: TValue[]) => TValue, initialValue: TValue): TValue {
-        return this.items.reduce(callback, initialValue);
+        return this.#items.reduce(callback, initialValue);
     }
 
     /**
@@ -208,7 +208,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {TValue}
      */
     public find(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): TValue {
-        return this.items.find(callback, thisArg) as TValue;
+        return this.#items.find(callback, thisArg) as TValue;
     }
 
     /**
@@ -220,7 +220,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {boolean}
      */
     public some(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): boolean {
-        return this.items.some(callback, thisArg);
+        return this.#items.some(callback, thisArg);
     }
 
     /**
@@ -232,7 +232,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {boolean}
      */
     public every(callback: (value: TValue, index: number, array: TValue[]) => boolean, thisArg?: any): boolean {
-        return this.items.every(callback, thisArg);
+        return this.#items.every(callback, thisArg);
     }
 
     /**
@@ -241,7 +241,7 @@ export default class IterableArray<TValue extends any> implements ClearableInter
      * @return {void}
      */
     public clear(): void {
-        this.items = [];
-        this._current = 0;
+        this.#items = [];
+        this.#current = 0;
     }
 }

@@ -1,23 +1,24 @@
 import GettextGeneratorInterface from '../Interfaces/Generator/GettextGeneratorInterface';
 import TranslationEntries from '../../Translations/TranslationEntries';
-import InvalidArgumentException from 'src/Exceptions/InvalidArgumentException';
+import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import StreamBuffer from '../../Utils/StreamBuffer';
 import {
     encode_entities,
     is_string
 } from '../../Utils/Helper';
 import TranslationEntryInterface from '../../Translations/Interfaces/TranslationEntryInterface';
+import {TranslationsType} from '../../Utils/Type';
 
 /**
  * The translation generator for XML files
  */
-export default class XMLGenerator<Translations extends TranslationEntryInterface> implements GettextGeneratorInterface<Translations> {
+export default class XMLGenerator implements GettextGeneratorInterface {
     /**
      * Generate the XML file content
      * @inheritDoc
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    public generate(translations: Translations): StreamBuffer {
+    public generate(translations: TranslationsType): StreamBuffer {
         // noinspection SuspiciousTypeOfGuard
         if (!(translations instanceof TranslationEntries)) {
             throw new InvalidArgumentException(
@@ -86,9 +87,9 @@ export default class XMLGenerator<Translations extends TranslationEntryInterface
             'creation-date',
             'revision-date',
             'last-translator',
-            'language-team',
             'language',
             'language-name',
+            'language-team',
             'mime-version',
             'content-type',
             'content-transfer-encoding',
@@ -96,6 +97,7 @@ export default class XMLGenerator<Translations extends TranslationEntryInterface
         ];
         if (Object.keys(translations.headers).length > 0) {
             let content: string[] = [`${spaces}<headers>`];
+            const customs: [string, string][] = [];
             translations.headers.forEach((header, key) => {
                 header = encode_entities(header);
                 key = encode_entities(key.toLowerCase());
@@ -108,11 +110,22 @@ export default class XMLGenerator<Translations extends TranslationEntryInterface
                         break;
                 }
                 if (!allowed_header_keys.includes(key)) {
-                    content.push(`${spaces.repeat(2)}<header name="${key}">${header}</header>`);
+                    customs.push([key, header]);
                     return;
                 }
                 content.push(`${spaces.repeat(2)}<${key}>${header}</${key}>`);
             });
+            if (customs.length > 0) {
+                content.push(`${spaces.repeat(2)}<custom-header>`);
+                customs.forEach(([key, header]) => {
+                    if (header === '') {
+                        content.push(`${spaces.repeat(3)}<item name="${key}"/>`);
+                        return;
+                    }
+                    content.push(`${spaces.repeat(3)}<item name="${key}"/>${header}</item>`);
+                });
+                content.push(`${spaces.repeat(2)}</custom-header>`);
+            }
             content.push(`${spaces}</headers>`);
             stream.write(content.join('\n') + '\n');
         }

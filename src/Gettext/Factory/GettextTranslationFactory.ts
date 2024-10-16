@@ -1,7 +1,7 @@
 import GettextPluralFormInterface from 'src/Gettext/Interfaces/Metadata/GettextPluralFormInterface';
-import GettextTranslationInterface from 'src/Gettext/Interfaces/GettextTranslationInterface';
 import GettextTranslationFactoryInterface from '../Interfaces/Factory/GettextTranslationFactoryInterface';
 import GettextTranslation from '../GettextTranslation';
+import {GettextTranslationType} from '../../Utils/Type';
 
 /**
  * Factory to create GettextTranslation
@@ -17,7 +17,7 @@ export default class GettextTranslationFactory implements GettextTranslationFact
         translation?: string,
         pluralForm?: GettextPluralFormInterface,
         ...pluralTranslations: string[]
-    ): GettextTranslationInterface {
+    ): GettextTranslationType {
         return new GettextTranslation(
             context,
             original,

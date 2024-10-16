@@ -16,30 +16,30 @@ export default class TranslationAttributes implements GettextTranslationAttribut
     /**
      * Gettext flags
      *
-     * @protected
+     * @private
      */
-    protected _flags: GettextFlagsInterface;
+    readonly #flags: GettextFlagsInterface;
 
     /**
      * Comments
      *
-     * @protected
+     * @private
      */
-    protected _comments: GettextCommentsInterface;
+    readonly #comments: GettextCommentsInterface;
 
     /**
      * Extracted comments
      *
-     * @protected
+     * @private
      */
-    protected _extractedComments: GettextExtractedCommentsInterface;
+    readonly #extractedComments: GettextExtractedCommentsInterface;
 
     /**
      * References
      *
-     * @protected
+     * @private
      */
-    protected _references: GettextReferencesInterface;
+    readonly #references: GettextReferencesInterface;
 
     /**
      * Constructor
@@ -55,17 +55,17 @@ export default class TranslationAttributes implements GettextTranslationAttribut
         extractedComments?: GettextExtractedCommentsInterface,
         references?: GettextReferencesInterface
     ) {
-        this._flags = flags || new Flags();
-        this._comments = comments || new Comments();
-        this._extractedComments = extractedComments || new ExtractedComments();
-        this._references = references || new References();
+        this.#flags = flags || new Flags();
+        this.#comments = comments || new Comments();
+        this.#extractedComments = extractedComments || new ExtractedComments();
+        this.#references = references || new References();
     }
 
     /**
      * @inheritDoc
      */
     public getFlags(): GettextFlagsInterface {
-        return this._flags;
+        return this.#flags;
     }
 
     /**
@@ -79,7 +79,7 @@ export default class TranslationAttributes implements GettextTranslationAttribut
      * @inheritDoc
      */
     public getComments(): GettextCommentsInterface {
-        return this._comments;
+        return this.#comments;
     }
 
     /**
@@ -93,7 +93,7 @@ export default class TranslationAttributes implements GettextTranslationAttribut
      * @inheritDoc
      */
     public getExtractedComments(): GettextExtractedCommentsInterface {
-        return this._extractedComments;
+        return this.#extractedComments;
     }
 
     /**
@@ -107,7 +107,7 @@ export default class TranslationAttributes implements GettextTranslationAttribut
      * @inheritDoc
      */
     public getReferences(): GettextReferencesInterface {
-        return this._references;
+        return this.#references;
     }
 
     /**

@@ -1,17 +1,11 @@
-import GettextTranslationsInterface from '../GettextTranslationsInterface';
-import GettextTranslationInterface from '../GettextTranslationInterface';
+import {GettextTranslationsType} from '../../../Utils/Type';
 
-export default interface GettextReaderInterface<
-    Translation extends GettextTranslationInterface,
-    Translations extends GettextTranslationsInterface<Translation, Translations>
-> {
+export default interface GettextReaderInterface {
 
     /**
      * Read the content and return the translations
      *
-     * @param {string|ArrayBufferLike} content the content to read
-     *
-     * @return {GettextTranslationsInterface} the translations
+     * @return {GettextTranslationsType} the translations
      */
-    read(content: string | ArrayBufferLike): Translations;
+    read(content: string | ArrayBufferLike): GettextTranslationsType;
 }

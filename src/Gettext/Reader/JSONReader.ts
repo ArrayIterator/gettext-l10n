@@ -1,5 +1,4 @@
 import GettextReaderInterface from '../Interfaces/Reader/GettextReaderInterface';
-import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInterface';
 import {
     is_numeric_integer,
     is_object,
@@ -16,6 +15,10 @@ import {
     define_references
 } from '../Utils/ReaderUtil';
 import RuntimeException from '../../Exceptions/RuntimeException';
+import {
+    GettextTranslationsType,
+    GettextTranslationType
+} from '../../Utils/Type';
 
 /**
  * Json Reader (example) :
@@ -73,14 +76,11 @@ import RuntimeException from '../../Exceptions/RuntimeException';
  *     }
  * }
  */
-export default class JSONReader<
-    Translation extends GettextTranslationInterface,
-    Translations extends GettextTranslationsInterface<Translation, Translations>
-> implements GettextReaderInterface<Translation, Translations> {
+export default class JSONReader implements GettextReaderInterface {
     /**
      * @inheritDoc
      */
-    public read(content: string | ArrayBufferLike): Translations {
+    public read(content: string | ArrayBufferLike): GettextTranslationsType {
         content = new StreamBuffer(content).toString();
         let object: {
             [key: string]: any;
@@ -98,7 +98,7 @@ export default class JSONReader<
             );
         }
         let revision = is_numeric_integer(object.revision) ? normalize_number(object.revision) as number : 0;
-        const translations = new GettextTranslations(revision) as unknown as Translations;
+        const translations = new GettextTranslations<GettextTranslationType, GettextTranslationsType>(revision);
         const headers: {
             [key: string]: string;
         } = object.headers;
@@ -207,7 +207,7 @@ export default class JSONReader<
                     is_string(translation) ? translation : undefined,
                     ...msgstr
                 );
-                translations.add(gettextTranslation as Translation);
+                translations.add(gettextTranslation);
                 if (translationObject.enable === false) {
                     gettextTranslation.enabled = false;
                 }

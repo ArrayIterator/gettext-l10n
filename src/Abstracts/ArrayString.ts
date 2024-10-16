@@ -12,7 +12,7 @@ export default abstract class ArrayString implements ArrayStringInterface {
      *
      * @private
      */
-    private _strings: Array<string> = [];
+    #strings: Array<string> = [];
 
     /**
      * constructor.
@@ -40,7 +40,7 @@ export default abstract class ArrayString implements ArrayStringInterface {
      */
     public add(string: string): void {
         if (!this.unique || this.has(string)) {
-            this._strings.push(string);
+            this.#strings.push(string);
         }
     }
 
@@ -48,21 +48,21 @@ export default abstract class ArrayString implements ArrayStringInterface {
      * @inheritDoc
      */
     public remove(string: string): void {
-        this._strings = this._strings.filter(f => f !== string);
+        this.#strings = this.#strings.filter(f => f !== string);
     }
 
     /**
      * @inheritDoc
      */
     public has(string: string): boolean {
-        return this._strings.includes(string);
+        return this.#strings.includes(string);
     }
 
     /**
      * @inheritDoc
      */
     public entries(): IteratorObject<[number, string]> {
-        return this._strings.entries();
+        return this.#strings.entries();
     }
 
     /**
@@ -85,21 +85,21 @@ export default abstract class ArrayString implements ArrayStringInterface {
      * @inheritDoc
      */
     public forEach(callback: (value: string, index: number, array: Array<string>) => void) : void {
-        this._strings.forEach(callback);
+        this.#strings.forEach(callback);
     }
 
     /**
      * @inheritDoc
      */
     public [Symbol.iterator](): Iterator<string> {
-        return this._strings[Symbol.iterator]();
+        return this.#strings[Symbol.iterator]();
     }
 
     /**
      * @inheritDoc
      */
     public get all(): Array<string> {
-        return this._strings.slice();
+        return this.#strings.slice();
     }
 
     /**

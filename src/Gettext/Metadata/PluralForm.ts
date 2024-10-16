@@ -10,6 +10,7 @@ import {
     is_bigint,
     is_integer,
     is_numeric,
+    is_numeric_integer,
     is_string,
     normalize_number
 } from '../../Utils/Helper';
@@ -49,14 +50,14 @@ export default class PluralForm implements GettextPluralFormInterface {
         pluralCount: number = DEFAULT_PLURAL_COUNT,
         expression: string = DEFAULT_PLURAL_EXPRESSION
     ) {
-        if (is_integer(pluralCount)) {
+        if (!is_numeric_integer(pluralCount)) {
             throw new InvalidArgumentException(`Plural count must be an integer, ${typeof pluralCount} given`);
         }
         if (!is_string(expression)) {
             throw new InvalidArgumentException(`Plural expression must be a string, ${typeof expression} given`);
         }
 
-        this._pluralCount = pluralCount;
+        this._pluralCount = is_integer(pluralCount) ? pluralCount : parseInt(pluralCount + '');
         this._expression = expression;
     }
 
