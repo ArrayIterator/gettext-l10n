@@ -171,7 +171,11 @@
                 "language": {
                     "type": "string",
                     "description": "The language key is the language code of the translation.",
-                    "pattern": "^[a-zA-Z]+([a-zA-Z0-9_-]*[a-zA-Z0-9])?$",
+                    "pattern": "^[a-zA-Z]+([a-zA-Z0-9_-]*[a-zA-Z0-9])?$"
+                },
+                "language-name": {
+                    "type": "string",
+                    "description": "The language name key is the name of the language of the translation."
                 },
                 "mime-version": {
                     "type": "string",

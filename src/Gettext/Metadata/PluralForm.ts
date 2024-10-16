@@ -244,3 +244,8 @@ export default class PluralForm implements GettextPluralFormInterface {
         return new (this.constructor as any)(this.pluralCount, this.expression);
     }
 }
+
+export const DefaultPluralForm : PluralForm = new PluralForm(
+    DEFAULT_PLURAL_COUNT,
+    DEFAULT_PLURAL_EXPRESSION
+);

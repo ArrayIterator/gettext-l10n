@@ -58,7 +58,7 @@ describe('IterableArray', () => {
     });
 
     /**
-     * Test to check if the some method works correctly.
+     * Test to check if some method works correctly.
      */
     test('should support the some method', () => {
         const hasEven = iterableArray.some(x => x % 2 === 0);

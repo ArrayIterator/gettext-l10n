@@ -1,18 +1,27 @@
-name: Run Tests
+name: Continues Integration
 
 on: [
   push,
   pull_request
 ]
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+# for ovs
+permissions:
+  # Required to upload SARIF file to CodeQL. See: https://github.com/github/codeql-action/issues/2117
+  actions: read
+  # Require writing security events to upload SARIF file to security tab
+  security-events: write
+  # Only need to read contents
+  contents: read
 
+jobs:
+  scan-pr: # osv scan
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml"
+  test: # test
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
@@ -20,14 +29,11 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-
       - name: Install dependencies
         run: npm install
-
       - name: Run tests
         run: npm run test

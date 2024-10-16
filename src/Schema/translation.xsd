@@ -90,6 +90,11 @@
                                     <xs:documentation>The language-team key is the language and email address of the translation team.</xs:documentation>
                                 </xs:annotation>
                             </xs:element>
+                            <xs:element name="language-name" type="xs:string" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>The language-name key is the name of the language.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
                             <xs:element name="language" type="xs:string">
                                 <xs:annotation>
                                     <xs:documentation>The language key is the language code of the translation.</xs:documentation>

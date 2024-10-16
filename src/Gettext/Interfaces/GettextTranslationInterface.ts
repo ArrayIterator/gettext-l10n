@@ -11,27 +11,18 @@ export default interface GettextTranslationInterface extends TranslationEntryInt
      * @param {?string} plural - the plural form
      * @param {?GettextPluralFormInterface} pluralForm - the plural form
      *
-     * @return {GettextTranslationInterface} new translation (cloned) with context
+     * @return {this} new translation (cloned) with context
      */
-    with(context: string|undefined, original?: string, plural?: string, pluralForm?: GettextPluralFormInterface): GettextTranslationInterface;
-
-    /**
-     * Create new translation with plural form
-     *
-     * @param {GettextPluralFormInterface} pluralForm - the plural form
-     *
-     * @return {GettextTranslationInterface} new translation (cloned) with plural form
-     */
-    withPluralForm(pluralForm: GettextPluralFormInterface): GettextTranslationInterface;
+    with(context: string|undefined, original?: string, plural?: string, pluralForm?: GettextPluralFormInterface): this;
 
     /**
      * Create new translation with context
      *
      * @param {string|undefined} context - the context
      *
-     * @return {GettextTranslationInterface} new translation (cloned) with context
+     * @return {this} new translation (cloned) with context
      */
-    withContext(context: string|undefined): GettextTranslationInterface;
+    withContext(context: string|undefined): this;
 
     /**
      * Create new translation with original and plural
@@ -39,12 +30,5 @@ export default interface GettextTranslationInterface extends TranslationEntryInt
      * @param {string} original - the original translation
      * @param {string|undefined} plural - the plural translation
      */
-    withOriginal(original: string, plural?: string | undefined): GettextTranslationInterface;
-
-    /**
-     * Create new translation with original
-     *
-     * @return {GettextTranslationInterface} new translation (cloned) with original
-     */
-    clone(): GettextTranslationInterface;
+    withOriginal(original: string, plural?: string | undefined): this;
 }

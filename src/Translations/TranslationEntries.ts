@@ -3,9 +3,11 @@ import GettextHeadersInterface from '../Gettext/Interfaces/Metadata/GettextHeade
 import GettextTranslationAttributesInterface from '../Gettext/Interfaces/Metadata/GettextTranslationAttributesInterface';
 import TranslationEntryInterface from './Interfaces/TranslationEntryInterface';
 import {
+    generateTranslationId,
     is_numeric_integer,
     is_object,
-    is_string
+    is_string,
+    is_undefined
 } from '../Utils/Helper';
 import TranslationAttributes from '../Gettext/Metadata/TranslationAttributes';
 import Headers from '../Gettext/Metadata/Headers';
@@ -15,7 +17,10 @@ import GettextPluralFormInterface from '../Gettext/Interfaces/Metadata/GettextPl
 /**
  * Translation entries
  */
-export default class TranslationEntries implements TranslationEntriesInterface {
+export default class TranslationEntries<
+    Translation extends TranslationEntryInterface,
+    Translations extends TranslationEntriesInterface<Translation, Translations>
+> implements TranslationEntriesInterface<Translation, Translations> {
 
     /**
      * The revision
@@ -43,7 +48,7 @@ export default class TranslationEntries implements TranslationEntriesInterface {
      *
      * @private
      */
-    protected _translations: Record<string, TranslationEntryInterface> = {};
+    protected _translations: Record<string, Translation> = {};
 
     /**
      * Constructor
@@ -57,7 +62,7 @@ export default class TranslationEntries implements TranslationEntriesInterface {
         revision?: number,
         headers?: GettextHeadersInterface,
         attributes?: GettextTranslationAttributesInterface,
-        ...translations: TranslationEntryInterface[]
+        ...translations: Translation[]
     ) {
         this._revision = !is_numeric_integer(revision) ? 0 : parseInt(revision + '');
         this._headers = headers instanceof Headers ? headers : new Headers();
@@ -65,6 +70,13 @@ export default class TranslationEntries implements TranslationEntriesInterface {
         translations.forEach((translation) : void => {
             this.add(translation);
         });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public generateId(original:string, context?:string) : string {
+        return generateTranslationId(original, context);
     }
 
     /**
@@ -154,29 +166,44 @@ export default class TranslationEntries implements TranslationEntriesInterface {
     /**
      * @inheritDoc
      */
-    public getTranslations(): Record<string, TranslationEntryInterface> {
+    public getTranslations(): Record<string, Translation> {
         return Object.assign({}, this._translations);
     }
 
     /**
      * @inheritDoc
      */
-    public get translations(): Record<string, TranslationEntryInterface> {
+    public get translations(): Record<string, Translation> {
         return this.getTranslations();
     }
 
     /**
      * @inheritDoc
      */
-    public getEntries(): [string, TranslationEntryInterface][] {
+    public getEntries(): [string, Translation][] {
         return Object.entries(this.getTranslations());
     }
 
     /**
      * @inheritDoc
      */
-    public get entries(): [string, TranslationEntryInterface][] {
+    public get entries(): [string, Translation][] {
         return this.getEntries();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getTranslation(original: string, context?: string) : Translation|undefined
+    {
+        if (!is_string(original)) {
+            return undefined;
+        }
+        if (!is_string(context) && !is_undefined(context)) {
+            return undefined;
+        }
+        const id = this.generateId(original, context);
+        return this._translations[id] || undefined;
     }
 
     /**
@@ -196,12 +223,10 @@ export default class TranslationEntries implements TranslationEntriesInterface {
     /**
      * @inheritDoc
      */
-    public merge(...translations: TranslationEntryInterface[]): number {
+    public merge(...translations: Translation[]): number {
         let number = 0;
         translations.forEach((translation) => {
-            translation = translation.clone();
-            if (this.add(translation)) {
-                translation.setPluralForm(this.headers.pluralForm);
+            if (this.add(translation.withPluralForm(this.headers.pluralForm))) {
                 number++;
             }
         });
@@ -211,9 +236,21 @@ export default class TranslationEntries implements TranslationEntriesInterface {
     /**
      * @inheritDoc
      */
-    public add(translation: TranslationEntryInterface): boolean {
+    public mergeWith(translations: Translations): number {
+        // noinspection SuspiciousTypeOfGuard
+        if (!(translations instanceof TranslationEntries)) {
+            return 0;
+        }
+        return this.merge(...Object.values(translations.translations));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public add(translation: Translation): boolean {
         if (translation instanceof TranslationEntry) {
-            this._translations[translation.id] = translation;
+            const id = this.generateId(translation.original, translation.context);
+            this._translations[id] = translation;
             return true;
         }
         return false;
@@ -222,16 +259,23 @@ export default class TranslationEntries implements TranslationEntriesInterface {
     /**
      * @inheritDoc
      */
-    public entry(entry: TranslationEntryInterface | string): TranslationEntryInterface | undefined {
+    public entry(entry: Translation | string): Translation | undefined {
         return this.get(entry);
     }
 
     /**
      * @inheritDoc
      */
-    public get(id: string | TranslationEntryInterface): TranslationEntryInterface | undefined {
+    public get(id: string | Translation): Translation | undefined {
         if (is_object(id)) {
-            id = id.id as string;
+            if (!is_string(id.original)) {
+                return undefined;
+            }
+            const context = id.context;
+            if (!is_string(context) && !is_undefined(context)) {
+                return undefined;
+            }
+            id = this.generateId(id.original, context);
         }
         if (!is_string(id)) {
             return;
@@ -242,19 +286,20 @@ export default class TranslationEntries implements TranslationEntriesInterface {
     /**
      * @inheritDoc
      */
-    public has(id: string | TranslationEntryInterface): boolean {
+    public has(id: string | Translation): boolean {
         return this.get(id) !== undefined;
     }
 
     /**
      * @inheritDoc
      */
-    public remove(id: string | TranslationEntryInterface): boolean {
+    public remove(id: string | Translation): boolean {
         let translation = this.get(id);
         if (!translation) {
             return false;
         }
-        delete this._translations[translation.id];
+        id = this.generateId(translation.original, translation.context);
+        delete this._translations[id];
         return true;
     }
 
@@ -276,7 +321,7 @@ export default class TranslationEntries implements TranslationEntriesInterface {
     /**
      * @inheritDoc
      */
-    public clone(): TranslationEntriesInterface {
+    public clone(): this {
         return new (this.constructor as any)(
             this.revision,
             this.headers.clone(),

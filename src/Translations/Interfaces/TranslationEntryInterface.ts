@@ -189,33 +189,42 @@ export default interface TranslationEntryInterface extends CloneableInterface {
     /**
      * Gets the plural form metadata.
      *
-     * @return {GettextPluralFormInterface | undefined} The plural form metadata.
+     * @return {GettextPluralFormInterface} The plural form metadata.
      */
-    getPluralForm(): GettextPluralFormInterface | undefined;
+    getPluralForm(): GettextPluralFormInterface;
 
     /**
      * Gets or sets the plural form metadata.
      */
-    get pluralForm(): GettextPluralFormInterface | undefined;
+    get pluralForm(): GettextPluralFormInterface;
 
     /**
      * Sets the plural form metadata.
      *
      * @param {GettextPluralFormInterface | undefined} pluralForm - The plural form metadata.
      */
-    setPluralForm(pluralForm: GettextPluralFormInterface | undefined): void;
+    setPluralForm(pluralForm: GettextPluralFormInterface): void;
 
     /**
      * Sets the plural form metadata.
      *
      * @param {GettextPluralFormInterface | undefined} pluralForm - The plural form metadata.
      */
-    set pluralForm(pluralForm: GettextPluralFormInterface | undefined);
+    set pluralForm(pluralForm: GettextPluralFormInterface);
+
+    /**
+     * Create new translation with plural form
+     *
+     * @param {GettextPluralFormInterface} pluralForm - the plural form
+     *
+     * @return {this} new translation (cloned) with plural form
+     */
+    withPluralForm(pluralForm: GettextPluralFormInterface): this;
 
     /**
      * Create new translation with original
      *
-     * @return {TranslationEntryInterface} new translation (cloned) with original
+     * @return {this} new translation (cloned) with original
      */
-    clone(): TranslationEntryInterface;
+    clone(): this;
 }

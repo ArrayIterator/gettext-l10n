@@ -1,4 +1,4 @@
-import PluralForm from './PluralForm';
+import PluralForm, {DefaultPluralForm} from './PluralForm';
 import {
     is_numeric,
     is_object,
@@ -8,7 +8,7 @@ import {
     normalizeHeaderName,
     normalizeHeaderValue
 } from '../../Utils/Helper';
-import {
+import Locale, {
     getLocaleInfo,
     LocaleItem,
     normalizeLocale
@@ -22,6 +22,7 @@ import {
     HEADER_DOMAIN_KEY,
     HEADER_GENERATOR_KEY,
     HEADER_LANGUAGE_KEY,
+    HEADER_LANGUAGE_NAME_KEY,
     HEADER_PLURAL_KEY,
     HEADER_PROJECT_ID_VERSION_KEY,
     HeaderRecords
@@ -127,7 +128,11 @@ export default class Headers implements GettextHeadersInterface {
         this._pluralForm = locale ? new PluralForm(
             locale.count,
             locale.expression
-        ) : new PluralForm();
+        ) : DefaultPluralForm;
+        this._headers[HEADER_PLURAL_KEY] = this._pluralForm.header;
+        if (locale && !this.has(HEADER_LANGUAGE_KEY)) {
+            this.set(HEADER_LANGUAGE_KEY, locale.id);
+        }
         return this._pluralForm;
     }
 
@@ -303,26 +308,45 @@ export default class Headers implements GettextHeadersInterface {
         const normalizedName = normalizeHeaderName(name);
         value = normalizeHeaderValue(value);
         switch (normalizedName) {
-            case HEADER_LANGUAGE_KEY:
+            case HEADER_PLURAL_KEY:
                 let pluralParser = parsePluralForm(value);
-                let language = this.language;
-                if (!pluralParser?.expression && language) {
-                    let info = getLocaleInfo(language);
-                    if (info) {
-                        this.pluralForm = new PluralForm(info.count, info.expression);
-                    } else {
-                        this.pluralForm = new PluralForm(
-                            DEFAULT_PLURAL_COUNT,
-                            DEFAULT_PLURAL_EXPRESSION
-                        );
-                    }
+                if (!pluralParser) {
+                    return this;
+                }
+                let language     = this.language;
+                let info: LocaleItem | null;
+                if (language && !pluralParser.expression && (info = getLocaleInfo(language))) {
+                    this.pluralForm = new PluralForm(info.count, info.expression);
                 } else {
                     this.pluralForm = new PluralForm(
-                        pluralParser?.count ?? DEFAULT_PLURAL_COUNT,
-                        pluralParser?.expression ?? DEFAULT_PLURAL_EXPRESSION
+                        pluralParser.count ?? DEFAULT_PLURAL_COUNT,
+                        pluralParser.expression ?? DEFAULT_PLURAL_EXPRESSION
                     );
                 }
                 this._headers[normalizedName] = this.pluralForm.header;
+                break;
+            case HEADER_LANGUAGE_KEY:
+                let locale = normalizeLocale(value);
+                if (locale) {
+                    let info = getLocaleInfo(locale);
+                    this._headers[normalizedName] = info ? info.id : locale;
+                    if (info) {
+                        this._headers[HEADER_LANGUAGE_NAME_KEY] = info.name;
+                    }
+                }
+                break;
+            case HEADER_LANGUAGE_NAME_KEY:
+                // normalize
+                this._headers[HEADER_LANGUAGE_NAME_KEY] = value;
+                let lowerValue = value.toLowerCase();
+                for (let locale in Locale) {
+                    let item = Locale[locale];
+                    if (item.name.toLowerCase() === lowerValue) {
+                        this._headers[HEADER_LANGUAGE_KEY] = item.id;
+                        this._headers[HEADER_LANGUAGE_NAME_KEY] = item.name;
+                        break;
+                    }
+                }
                 break;
             case HEADER_CONTENT_TRANSFER_ENCODING_KEY:
                 value = value.trim().toLowerCase();
@@ -331,14 +355,14 @@ export default class Headers implements GettextHeadersInterface {
                     this._headers[normalizedName] = value;
                 }
                 break;
-            // case 'Creation-Date':
-            //     // normalize
-            //     this._headers['POT-Creation-Date'] = value;
-            //     break;
-            // case 'Revision-Date':
-            //     // normalize
-            //     this._headers['PO-Revision-Date'] = value;
-            //     break;
+            case 'Creation-Date':
+                // normalize
+                this._headers['POT-Creation-Date'] = value;
+                break;
+            case 'Revision-Date':
+                // normalize
+                this._headers['PO-Revision-Date'] = value;
+                break;
             default:
                 this._headers[normalizedName] = value.trim();
         }

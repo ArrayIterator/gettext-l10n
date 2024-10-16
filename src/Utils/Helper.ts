@@ -77,6 +77,21 @@ Object.freeze(ENTITY_REFERENCE); // freeze
 const REGEX_ENTITY_REFERENCE :RegExp = new RegExp(Object.keys(ENTITY_REFERENCE).join('|') + '|&#[0-9]{1,3};', 'g');
 
 /**
+ * Generate translation id
+ *
+ * @param {string} original the original
+ * @param {string|undefined} context the context
+ */
+export const generateTranslationId = (original:string, context?:string) : string => {
+    original = original + '';
+    context = is_string(context) ? context : undefined;
+    if (context === undefined) {
+        return original;
+    }
+    return `${context}\x04${original}`;
+}
+
+/**
  * Normalize Header name
  */
 export const normalizeHeaderName = (name: string): string => {
@@ -88,7 +103,8 @@ export const normalizeHeaderName = (name: string): string => {
         return '';
     }
     name = name.replace(/[\s\-_]+/g, '-');
-    name = name.replace(/(^-|-$)/g, '');
+    name = name.replace(/(^-|-$)/g, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '');
     if (name === '') {
         return '';
     }

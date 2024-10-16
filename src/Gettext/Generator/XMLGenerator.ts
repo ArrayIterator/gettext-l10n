@@ -1,7 +1,6 @@
 import GettextGeneratorInterface from '../Interfaces/Generator/GettextGeneratorInterface';
 import TranslationEntries from '../../Translations/TranslationEntries';
 import InvalidArgumentException from 'src/Exceptions/InvalidArgumentException';
-import TranslationEntriesInterface from '../../Translations/Interfaces/TranslationEntriesInterface';
 import StreamBuffer from '../../Utils/StreamBuffer';
 import {
     encode_entities,
@@ -12,13 +11,14 @@ import TranslationEntryInterface from '../../Translations/Interfaces/Translation
 /**
  * The translation generator for XML files
  */
-export default class XMLGenerator implements GettextGeneratorInterface {
+export default class XMLGenerator<Translations extends TranslationEntryInterface> implements GettextGeneratorInterface<Translations> {
     /**
      * Generate the XML file content
      * @inheritDoc
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    public generate(translations: TranslationEntriesInterface): StreamBuffer {
+    public generate(translations: Translations): StreamBuffer {
+        // noinspection SuspiciousTypeOfGuard
         if (!(translations instanceof TranslationEntries)) {
             throw new InvalidArgumentException(
                 `The translations must be an instance of ${TranslationEntries.name}, ${typeof translations} given`
@@ -81,20 +81,37 @@ export default class XMLGenerator implements GettextGeneratorInterface {
             stream.write(content.join('\n') + '\n');
         }
 
+        const allowed_header_keys : string[] = [
+            'project-id-version',
+            'creation-date',
+            'revision-date',
+            'last-translator',
+            'language-team',
+            'language',
+            'language-name',
+            'mime-version',
+            'content-type',
+            'content-transfer-encoding',
+            'plural-forms'
+        ];
         if (Object.keys(translations.headers).length > 0) {
             let content: string[] = [`${spaces}<headers>`];
             translations.headers.forEach((header, key) => {
                 header = encode_entities(header);
-                key = key.toLowerCase();
-                if (key === 'header') {
-                    if (header === '') {
-                        content.push(`${spaces.repeat(2)}<header name="${key}"/>`);
-                    } else {
-                        content.push(`${spaces.repeat(2)}<header name="${key}">${header}</header>`);
-                    }
-                } else {
-                    content.push(`${spaces.repeat(2)}<${key}>${header}</${key}>`);
+                key = encode_entities(key.toLowerCase());
+                switch (key) {
+                    case 'pot-creation-date':
+                        key = 'creation-date';
+                        break;
+                    case 'po-revision-date':
+                        key = 'revision-date';
+                        break;
                 }
+                if (!allowed_header_keys.includes(key)) {
+                    content.push(`${spaces.repeat(2)}<header name="${key}">${header}</header>`);
+                    return;
+                }
+                content.push(`${spaces.repeat(2)}<${key}>${header}</${key}>`);
             });
             content.push(`${spaces}</headers>`);
             stream.write(content.join('\n') + '\n');

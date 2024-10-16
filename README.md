@@ -2,7 +2,6 @@
 
 Gettext L10n is a translation library that provides localization support using the gettext format. It allows you to manage translations and plural forms efficiently.
 
-
 ## TODO
 
 ### DONE
@@ -21,9 +20,9 @@ Gettext L10n is a translation library that provides localization support using t
   - [x] MO Example
   - [x] JSON Example
   - [x] XML Example
+- [x] Add global translator
 
 ### PROGRESS
-- [ ] Add global translator
 - [ ] Add support for more formats
 - [ ] Add tests (unit tests, integration tests, etc.)
   - [ ] Unit Tests

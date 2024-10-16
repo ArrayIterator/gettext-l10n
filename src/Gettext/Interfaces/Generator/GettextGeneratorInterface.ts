@@ -1,7 +1,7 @@
-import TranslationEntriesInterface from '../../../Translations/Interfaces/TranslationEntriesInterface';
 import StreamBuffer from '../../../Utils/StreamBuffer';
+import TranslationEntryInterface from '../../../Translations/Interfaces/TranslationEntryInterface';
 
-export default interface GettextGeneratorInterface {
+export default interface GettextGeneratorInterface<Translations extends TranslationEntryInterface>  {
 
     /**
      * Generate the content from translations
@@ -11,5 +11,5 @@ export default interface GettextGeneratorInterface {
      * @return {StreamBuffer} the generated content
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    generate(translations: TranslationEntriesInterface): StreamBuffer;
+    generate(translations: Translations): StreamBuffer;
 }

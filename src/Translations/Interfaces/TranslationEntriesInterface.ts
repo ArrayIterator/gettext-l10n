@@ -1,15 +1,27 @@
 import LengthInterface from '../../Interfaces/LengthInterface';
-import TranslationEntryInterface from './TranslationEntryInterface';
 import CloneableInterface from '../../Interfaces/CloneableInterface';
 import ClearableInterface from '../../Interfaces/ClearableInterface';
 import GettextPluralFormInterface from '../../Gettext/Interfaces/Metadata/GettextPluralFormInterface';
 import GettextHeadersInterface from '../../Gettext/Interfaces/Metadata/GettextHeadersInterface';
 import GettextTranslationAttributesInterface from '../../Gettext/Interfaces/Metadata/GettextTranslationAttributesInterface';
+import TranslationEntryInterface from './TranslationEntryInterface';
 
 /**
  * Interface representing a collection of translation entries.
  */
-export default interface TranslationEntriesInterface extends CloneableInterface, LengthInterface, ClearableInterface {
+export default interface TranslationEntriesInterface<
+    Translation extends TranslationEntryInterface,
+    Translations extends TranslationEntriesInterface<Translation, Translations>
+> extends CloneableInterface, LengthInterface, ClearableInterface {
+
+    /**
+     * Generate id
+     *
+     * @param {string} original
+     * @param {?string} context
+     */
+    generateId(original:string, context?:string) : string;
+
     /**
      * The revision
      *
@@ -100,7 +112,7 @@ export default interface TranslationEntriesInterface extends CloneableInterface,
      * @param {TranslationEntryInterface} entry - The translation entry to add.
      * @return {boolean} True if the entry was added successfully, false otherwise.
      */
-    add(entry: TranslationEntryInterface): boolean;
+    add(entry: Translation): boolean;
 
     /**
      * Checks if a translation entry exists in the collection.
@@ -108,7 +120,7 @@ export default interface TranslationEntriesInterface extends CloneableInterface,
      * @param {TranslationEntryInterface | string} entry - The translation entry or its ID.
      * @return {boolean} True if the entry exists, false otherwise.
      */
-    has(entry: TranslationEntryInterface | string): boolean;
+    has(entry: Translation | string): boolean;
 
     /**
      * Removes a translation entry from the collection.
@@ -116,7 +128,7 @@ export default interface TranslationEntriesInterface extends CloneableInterface,
      * @param {TranslationEntryInterface | string} entry - The translation entry or its ID.
      * @return {boolean} True if the entry was removed successfully, false otherwise.
      */
-    remove(entry: TranslationEntryInterface | string): boolean;
+    remove(entry: Translation | string): boolean;
 
     /**
      * Merges multiple translation entries into the collection.
@@ -124,7 +136,16 @@ export default interface TranslationEntriesInterface extends CloneableInterface,
      * @param {...TranslationEntryInterface} entries - The translation entries to merge.
      * @return {number} The number of entries added successfully.
      */
-    merge(...entries: TranslationEntryInterface[]): number;
+    merge(...entries: Translation[]): number;
+
+    /**
+     * Merge with translation entries
+     *
+     * @param {TranslationEntriesInterface} translations the translations to be merged
+     *
+     * @return {number} The number of entries added successfully.
+     */
+    mergeWith(translations: Translations): number;
 
     /**
      * Retrieves a translation entry from the collection.
@@ -132,21 +153,21 @@ export default interface TranslationEntriesInterface extends CloneableInterface,
      * @param {TranslationEntryInterface | string} entry - The translation entry or its ID.
      * @return {TranslationEntryInterface | undefined} The translation entry, or null if not found.
      */
-    entry(entry: TranslationEntryInterface | string): TranslationEntryInterface | undefined;
+    entry(entry: Translation | string): Translation | undefined;
 
     /**
      * Gets all translation entries in the collection.
      *
      * @return {Record<string, TranslationEntryInterface>} An array of all translation entries.
      */
-    getTranslations(): Record<string, TranslationEntryInterface>;
+    getTranslations(): Record<string, Translation>;
 
     /**
      * Gets all translation entries in the collection.
      *
      * @return {Record<string, TranslationEntryInterface>} An array of all translation entries.
      */
-    get translations(): Record<string, TranslationEntryInterface>;
+    get translations(): Record<string, Translation>;
 
     /**
      * Get all entries
@@ -154,7 +175,7 @@ export default interface TranslationEntriesInterface extends CloneableInterface,
      *
      * @return {[string, TranslationEntryInterface][]} All entries
      */
-    getEntries(): [string, TranslationEntryInterface][];
+    getEntries(): [string, Translation][];
 
     /**
      * Get all entries
@@ -162,7 +183,17 @@ export default interface TranslationEntriesInterface extends CloneableInterface,
      *
      * @return {[string, TranslationEntryInterface][]} All entries
      */
-    get entries(): [string, TranslationEntryInterface][];
+    get entries(): [string, Translation][];
+
+    /**
+     * Get translation
+     *
+     * @param {string} original
+     * @param {?context} context
+     *
+     * @return {TranslationEntryInterface|undefined} the translation entry if found, otherwise undefined
+     */
+    getTranslation(original: string, context?: string) : Translation|undefined;
 
     /**
      * Set translations plural form - update all translations

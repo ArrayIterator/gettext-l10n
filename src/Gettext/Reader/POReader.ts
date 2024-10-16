@@ -17,21 +17,25 @@ import {
     ATTRIBUTE_REFERENCES
 } from '../Definitions/AttributeDefinitions';
 import StreamBuffer from '../../Utils/StreamBuffer';
+import GettextTranslationInterface from '../Interfaces/GettextTranslationInterface';
 
 /**
  * The gettext po reader
  */
-export default class POReader implements GettextReaderInterface {
+export default class POReader<
+    Translation extends GettextTranslationInterface,
+    Translations extends GettextTranslationsInterface<Translation, Translations>
+> implements GettextReaderInterface<Translation, Translations> {
 
     /**
      * @inheritDoc
      */
-    public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
+    public read(content: string | ArrayBufferLike): Translations {
         content = (new StreamBuffer(content))
             .toString()
             .trim()
             .replace(/\r\n/g, '\n'); // trim and normalize line endings
-        const translations = new GettextTranslations();
+        const translations = new GettextTranslations() as unknown as Translations;
         const lines = new IterableArray(content.split('\n'));
         let line = lines.current();
         let translation = translations.createTranslation('', '');
@@ -179,6 +183,10 @@ export default class POReader implements GettextReaderInterface {
                     if (msgidCount === 1) { // determine is header
                         let headers = line.split(':', 2).map((v) => v.trim());
                         if (headers.length === 2) {
+                            headers[0] = headers[0].trim();
+                            if (!headers[0] || !headers[0].match(/^[a-zA-Z0-9_-]+$/)) {
+                                break;
+                            }
                             lastHeaderKey = headers[0];
                             translations.headers.set(headers[0], headers[1]);
                         } else if (lastHeaderKey) {

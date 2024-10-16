@@ -11,7 +11,7 @@ export default class GettextTranslation extends TranslationEntry implements Gett
     /**
      * @inheritDoc
      */
-    public with(context: string|undefined, original?: string, plural?: string, pluralForm?: GettextPluralFormInterface): GettextTranslationInterface {
+    public with(context: string|undefined, original?: string, plural?: string, pluralForm?: GettextPluralFormInterface): this {
         return new (this.constructor as any)(
             context,
             is_undefined(original) ? this.original : original,
@@ -25,28 +25,28 @@ export default class GettextTranslation extends TranslationEntry implements Gett
     /**
      * @inheritDoc
      */
-    public withPluralForm(pluralForm: GettextPluralFormInterface): GettextTranslationInterface {
+    public withPluralForm(pluralForm: GettextPluralFormInterface): this {
         return this.with(this.context, this.original, this.plural, pluralForm);
     }
 
     /**
      * @inheritDoc
      */
-    public withContext(context: string|undefined): GettextTranslationInterface {
+    public withContext(context: string|undefined): this {
         return this.with(context, this.original, this.plural, this.pluralForm);
     }
 
     /**
      * @inheritDoc
      */
-    public withOriginal(original: string, plural: string | undefined | null = null): GettextTranslationInterface {
+    public withOriginal(original: string, plural: string | undefined | null = null): this {
         return this.with(this.context, original, plural === null ? this.plural : plural, this.pluralForm);
     }
 
     /**
      * @inheritDoc
      */
-    public clone(): GettextTranslationInterface {
+    public clone(): this {
         return this.with(this.context, this.original, this.plural, this.pluralForm?.clone());
     }
 }

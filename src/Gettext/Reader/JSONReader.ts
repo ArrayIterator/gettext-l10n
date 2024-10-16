@@ -73,11 +73,14 @@ import RuntimeException from '../../Exceptions/RuntimeException';
  *     }
  * }
  */
-export default class JSONReader implements GettextReaderInterface {
+export default class JSONReader<
+    Translation extends GettextTranslationInterface,
+    Translations extends GettextTranslationsInterface<Translation, Translations>
+> implements GettextReaderInterface<Translation, Translations> {
     /**
      * @inheritDoc
      */
-    public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
+    public read(content: string | ArrayBufferLike): Translations {
         content = new StreamBuffer(content).toString();
         let object: {
             [key: string]: any;
@@ -95,7 +98,7 @@ export default class JSONReader implements GettextReaderInterface {
             );
         }
         let revision = is_numeric_integer(object.revision) ? normalize_number(object.revision) as number : 0;
-        const translations = new GettextTranslations(revision);
+        const translations = new GettextTranslations(revision) as unknown as Translations;
         const headers: {
             [key: string]: string;
         } = object.headers;
@@ -114,6 +117,10 @@ export default class JSONReader implements GettextReaderInterface {
                         break;
                 }
                 const value = headers[key];
+                key = key.trim();
+                if (!key.match(/^[a-zA-Z0-9_-]+$/)) {
+                    continue;
+                }
                 translations.headers.set(key, value);
             }
         }
@@ -165,7 +172,7 @@ export default class JSONReader implements GettextReaderInterface {
                     }
                     // should start with a letter and can contain letters, numbers, and hyphens
                     // and end with a letter or number
-                    let match = header.match(/^([a-z]+([a-z0-9-]*[a-z0-9]+))\s*:(.+)$/i);
+                    let match = header.match(/^([a-zA-Z0-9_-]+)\s*:(.+)$/i);
                     if (!match) {
                         continue;
                     }
@@ -200,7 +207,7 @@ export default class JSONReader implements GettextReaderInterface {
                     is_string(translation) ? translation : undefined,
                     ...msgstr
                 );
-                translations.add(gettextTranslation);
+                translations.add(gettextTranslation as Translation);
                 if (translationObject.enable === false) {
                     gettextTranslation.enabled = false;
                 }

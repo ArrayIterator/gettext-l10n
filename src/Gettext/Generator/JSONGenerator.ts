@@ -1,5 +1,4 @@
 import GettextGeneratorInterface from '../Interfaces/Generator/GettextGeneratorInterface';
-import TranslationEntriesInterface from '../../Translations/Interfaces/TranslationEntriesInterface';
 import StreamBuffer from '../../Utils/StreamBuffer';
 import TranslationEntries from '../../Translations/TranslationEntries';
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
@@ -14,17 +13,19 @@ import {
     ATTRIBUTE_MESSAGE_ID_PLURAL,
     ATTRIBUTE_MESSAGE_STR
 } from '../Definitions/AttributeDefinitions';
+import TranslationEntryInterface from '../../Translations/Interfaces/TranslationEntryInterface';
 
 /**
  * The translation generator for JSON files
  */
-export default class JSONGenerator implements GettextGeneratorInterface {
+export default class JSONGenerator<Translations extends TranslationEntryInterface> implements GettextGeneratorInterface<Translations> {
     /**
      * Generate the JSON translation file content
      * @inheritDoc
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    public generate(translations: TranslationEntriesInterface): StreamBuffer {
+    public generate(translations: Translations): StreamBuffer {
+        // noinspection SuspiciousTypeOfGuard
         if (!(translations instanceof TranslationEntries)) {
             throw new InvalidArgumentException(
                 `The translations must be an instance of ${TranslationEntries.name}, ${typeof translations} given`

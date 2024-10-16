@@ -11,7 +11,6 @@ import {
     ATTRIBUTE_MESSAGE_STR,
     ATTRIBUTE_REFERENCES
 } from '../Definitions/AttributeDefinitions';
-import TranslationEntriesInterface from '../../Translations/Interfaces/TranslationEntriesInterface';
 import TranslationEntries from '../../Translations/TranslationEntries';
 import GettextTranslationAttributesInterface from '../Interfaces/Metadata/GettextTranslationAttributesInterface';
 import POReader from '../Reader/POReader';
@@ -21,17 +20,19 @@ import {
     DEFAULT_HEADERS,
     HEADER_CONTENT_TYPE_KEY
 } from '../Definitions/HeaderDefinitions';
+import TranslationEntryInterface from '../../Translations/Interfaces/TranslationEntryInterface';
 
 /**
  * The translation generator for PO files
  */
-export default class POGenerator implements GettextGeneratorInterface {
+export default class POGenerator<Translations extends TranslationEntryInterface> implements GettextGeneratorInterface<Translations> {
     /**
      * Generate the PO file content
      * @inheritDoc
      * @throws {InvalidArgumentException} if the translations are not an instance of TranslationEntries
      */
-    public generate(translations: TranslationEntriesInterface): StreamBuffer {
+    public generate(translations: Translations): StreamBuffer {
+        // noinspection SuspiciousTypeOfGuard
         if (!(translations instanceof TranslationEntries)) {
             throw new InvalidArgumentException(
                 `The translations must be an instance of ${TranslationEntries.name}, ${typeof translations} given`
@@ -121,7 +122,7 @@ export default class POGenerator implements GettextGeneratorInterface {
             const translations = entry.getPluralTranslations();
             if (translations.length > 0) {
                 contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR}[0] "${POReader.escapeValue(translation === undefined ? '' : translation)}"`);
-                translations.forEach((translation, index) => {
+                translations.forEach((translation: string, index: number) => {
                     contents.push(`${prefix}${ATTRIBUTE_MESSAGE_STR}[${index + 1}] "${POReader.escapeValue(translation)}"`);
                 });
             } else {

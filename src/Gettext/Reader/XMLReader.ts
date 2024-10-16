@@ -115,13 +115,16 @@ import {
  *     </translations>
  * </translation>
  */
-export default class XMLReader implements GettextReaderInterface {
+export default class XMLReader<
+    Translation extends GettextTranslationInterface,
+    Translations extends GettextTranslationsInterface<Translation, Translations>
+> implements GettextReaderInterface<Translation, Translations> {
     /**
      * @inheritDoc
      *
      * @throws {RuntimeException} if the content is not valid
      */
-    public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
+    public read(content: string | ArrayBufferLike): Translations {
         content = new StreamBuffer(content).toString();
         let rootElement = this.parseFromString(content)?.documentElement;
         if (rootElement?.tagName !== 'translation') {
@@ -165,7 +168,35 @@ export default class XMLReader implements GettextReaderInterface {
                 'The <translations> element is required'
             );
         }
-        const translations = new GettextTranslations(parseInt(revision + ''));
+        const translations = new GettextTranslations(parseInt(revision + '')) as unknown as Translations;
+
+        rootFilter('headers', rootElement.children).forEach((headerElement) : void => {
+            for (let child in headerElement.children) {
+                const node = headerElement.children[child];
+                if (!is_object(node)) {
+                    continue;
+                }
+                if (node.tagName === 'header') {
+                    let attrName = (node as ReadonlySimpleElement).getAttribute('name');
+                    if (!is_string(attrName) || attrName.trim() === '') {
+                        continue;
+                    }
+                    attrName = attrName.trim();
+                    if (!attrName.match(/^[a-zA-Z0-9_-]+$/)) {
+                        throw new RuntimeException(
+                            `The header is not valid, attribute name should match pattern: [a-zA-Z0-9_-]+?, ${attrName} given`
+                        );
+                    }
+                    const value = this.cleanData(node.textContent || '');
+                    translations.headers.set(attrName, value);
+                    continue;
+                }
+                translations.headers.set(
+                    (node as ReadonlySimpleElement).tagName,
+                    this.cleanData(node.textContent || '')
+                );
+            }
+        });
 
         // <context name="xs:string"> > <item>+
         rootFilter('context', translationRoot.children).forEach((contextElement) : void => {
@@ -195,7 +226,7 @@ export default class XMLReader implements GettextReaderInterface {
                             }
                             // should start with a letter and can contain letters, numbers, and hyphens
                             // and end with a letter or number
-                            let match = header.match(/^([a-z]+([a-z0-9-]*[a-z0-9]+))\s*:(.+)$/i);
+                            let match = header.match(/^([a-zA-Z0-9_-]+)\s*:(.+)$/);
                             if (!match) {
                                 continue;
                             }
@@ -227,7 +258,7 @@ export default class XMLReader implements GettextReaderInterface {
                         );
                     }
                     // append translation
-                    translations.add(gettextTranslation);
+                    translations.add(gettextTranslation as Translation);
                     // <comments> > <item>+
                     define_comments(
                         rootItems('comments', itemElement?.children)

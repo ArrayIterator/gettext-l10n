@@ -2,7 +2,10 @@ import GettextTranslationInterface from './GettextTranslationInterface';
 import GettextTranslationFactoryInterface from './Factory/GettextTranslationFactoryInterface';
 import TranslationEntriesInterface from '../../Translations/Interfaces/TranslationEntriesInterface';
 
-export default interface GettextTranslationsInterface extends TranslationEntriesInterface {
+export default interface GettextTranslationsInterface<
+    Translation extends GettextTranslationInterface,
+    Translations extends GettextTranslationsInterface<Translation, Translations>,
+> extends TranslationEntriesInterface<Translation, Translations> {
     /**
      * Get the translation factory
      *
@@ -16,16 +19,6 @@ export default interface GettextTranslationsInterface extends TranslationEntries
      * @param {GettextTranslationFactoryInterface} factory Translation factory
      */
     set translationFactory(factory: GettextTranslationFactoryInterface);
-
-    /**
-     * @inheritDoc
-     */
-    getEntries(): [string, GettextTranslationInterface][];
-
-    /**
-     * @inheritDoc
-     */
-    get entries(): [string, GettextTranslationInterface][];
 
     /**
      * Create a new translation
@@ -42,51 +35,5 @@ export default interface GettextTranslationsInterface extends TranslationEntries
         plural?: string,
         translation?: string,
         ...pluralTranslations: string[]
-    ): GettextTranslationInterface;
-
-    /**
-     * Merge translations
-     *
-     * @param {GettextTranslationInterface<string, TFile, NonNegativeInteger[]} translations Translations
-     * @return {number} total translations added
-     */
-    merge(...translations: GettextTranslationInterface[]): number;
-
-    /**
-     * Add a translation
-     *
-     * @param {GettextTranslationInterface} translation Translation
-     */
-    add(translation: GettextTranslationInterface): boolean;
-
-    /**
-     * Find a translation
-     *
-     * @param {string} id Translation identifier
-     *
-     * @return {GettextTranslationInterface|undefined} Translation
-     */
-    get(id: string | GettextTranslationInterface): GettextTranslationInterface | undefined;
-
-    /**
-     * Check if a translation exists
-     *
-     * @param {string} id Translation identifier
-     */
-    has(id: string | GettextTranslationInterface): boolean;
-
-    /**
-     * Remove a translation
-     *
-     * @param {string} id Translation identifier
-     * @return {boolean} true if success
-     */
-    remove(id: string | GettextTranslationInterface): boolean;
-
-    /**
-     * Create deep clone of translations
-     *
-     * @return {GettextTranslationsInterface} Cloned translations
-     */
-    clone(): GettextTranslationsInterface;
+    ): Translation;
 }

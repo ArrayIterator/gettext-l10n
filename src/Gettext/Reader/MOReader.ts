@@ -5,6 +5,7 @@ import GettextTranslationsInterface from '../Interfaces/GettextTranslationsInter
 import InvalidArgumentException from '../../Exceptions/InvalidArgumentException';
 import GettextTranslations from '../GettextTranslations';
 import StreamBuffer from '../../Utils/StreamBuffer';
+import GettextTranslationInterface from '../Interfaces/GettextTranslationInterface';
 
 /**
  * low endian
@@ -18,13 +19,16 @@ const MAGIC2 = 0xde120495;
 /**
  * The gettext mo reader
  */
-export default class MOReader implements GettextReaderInterface {
+export default class MOReader<
+    Translation extends GettextTranslationInterface,
+    Translations extends GettextTranslationsInterface<Translation, Translations>
+> implements GettextReaderInterface<Translation, Translations> {
     /**
      * Read the content and return the translations
      *
      * @param {string|ArrayBufferLike} content the content to read
      */
-    public read(content: string | ArrayBufferLike): GettextTranslationsInterface {
+    public read(content: string | ArrayBufferLike): Translations {
         let stream: StreamBuffer = new StreamBuffer(content);
         const magic = this.readInt(stream);
         let format: 'V' | 'N';
@@ -49,7 +53,7 @@ export default class MOReader implements GettextReaderInterface {
         let originalTable = this.readIntArray(stream, format, total * 2);
         stream.seek(translationOffset);
         let translationTable = this.readIntArray(stream, format, total * 2);
-        const translations = new GettextTranslations();
+        const translations = new GettextTranslations() as unknown as Translations;
 
         translations.revision = revision;
         let pluralForm = translations.headers.pluralForm;

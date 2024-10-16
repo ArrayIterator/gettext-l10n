@@ -4,7 +4,7 @@ export default interface ArrayStringInterface extends LengthInterface, Iterable<
 
     /**
      * Use unique string data
-     * Represented by getter of the data is unique
+     * Represented by current storage item & the data are unique values
      *
      * @return {boolean} true if unique
      */
@@ -46,6 +46,8 @@ export default interface ArrayStringInterface extends LengthInterface, Iterable<
      * Merge with another instance
      *
      * @param {ArrayStringInterface} instance - another instance
+     *
+     * @return {ArrayStringInterface} new instance of merged data
      * @throws {InvalidArgumentException} if data is not valid
      */
     mergeWith(instance: ArrayStringInterface): ArrayStringInterface;

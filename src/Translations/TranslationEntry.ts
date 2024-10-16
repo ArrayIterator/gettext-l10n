@@ -2,13 +2,13 @@ import TranslationEntryInterface from './Interfaces/TranslationEntryInterface';
 import GettextPluralFormInterface from '../Gettext/Interfaces/Metadata/GettextPluralFormInterface';
 import GettextTranslationAttributesInterface from '../Gettext/Interfaces/Metadata/GettextTranslationAttributesInterface';
 import {
+    generateTranslationId,
     is_string,
     is_undefined
 } from '../Utils/Helper';
 import InvalidArgumentException from '../Exceptions/InvalidArgumentException';
 import TranslationAttributes from '../Gettext/Metadata/TranslationAttributes';
-import PluralForm from '../Gettext/Metadata/PluralForm';
-import GettextTranslationInterface from '../Gettext/Interfaces/GettextTranslationInterface';
+import PluralForm, {DefaultPluralForm} from '../Gettext/Metadata/PluralForm';
 
 /**
  * The TranslationEntry class
@@ -35,7 +35,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
      *
      * @protected
      */
-    protected _pluralForm?: GettextPluralFormInterface;
+    protected _pluralForm: GettextPluralFormInterface = DefaultPluralForm;
 
     /**
      * Translation Attributes
@@ -94,7 +94,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
         original: string,
         plural?: string,
         translation?: string,
-        pluralForm?: GettextPluralFormInterface,
+        pluralForm: GettextPluralFormInterface = DefaultPluralForm,
         ...pluralTranslations: string[]
     ) {
         // the context must be a string
@@ -119,7 +119,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
         }
         this._context = context;
         this._original = original;
-        this._id = `${context === undefined ? '' : context}\x04${original}` as string;
+        this._id = generateTranslationId(original, context);
         this._attributes = new TranslationAttributes();
         this.setPlural(plural);
         this.setTranslation(translation);
@@ -305,22 +305,22 @@ export default class TranslationEntry implements TranslationEntryInterface {
     /**
      * @inheritDoc
      */
-    public getPluralForm(): GettextPluralFormInterface | undefined {
+    public getPluralForm(): GettextPluralFormInterface {
         return this._pluralForm;
     }
 
     /**
      * @inheritDoc
      */
-    public get pluralForm(): GettextPluralFormInterface | undefined {
+    public get pluralForm(): GettextPluralFormInterface {
         return this.getPluralForm();
     }
 
     /**
      * @inheritDoc
      */
-    public setPluralForm(pluralForm: GettextPluralFormInterface | undefined) : void {
-        if (is_undefined(pluralForm) || pluralForm instanceof PluralForm) {
+    public setPluralForm(pluralForm: GettextPluralFormInterface) : void {
+        if (pluralForm instanceof PluralForm) {
             this._pluralForm = pluralForm;
         }
     }
@@ -328,7 +328,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
     /**
      * @inheritDoc
      */
-    public set pluralForm(pluralForm: GettextPluralFormInterface | undefined) {
+    public set pluralForm(pluralForm: GettextPluralFormInterface) {
         this.setPluralForm(pluralForm);
     }
 
@@ -350,7 +350,7 @@ export default class TranslationEntry implements TranslationEntryInterface {
     /**
      * @inheritDoc
      */
-    public with(context: string|undefined, original?: string, plural?: string, pluralForm?: GettextPluralFormInterface): GettextTranslationInterface {
+    public with(context: string|undefined, original?: string, plural?: string, pluralForm?: GettextPluralFormInterface): this {
         return new (this.constructor as any)(
             context,
             is_undefined(original) ? this.original : original,
@@ -362,9 +362,21 @@ export default class TranslationEntry implements TranslationEntryInterface {
     }
 
     /**
+     * Create new translation with plural form
+     *
+     * @param {GettextPluralFormInterface} pluralForm - the plural form
+     *
+     * @return {GettextTranslationInterface} new translation (cloned) with plural form
+     */
+    public withPluralForm(pluralForm: GettextPluralFormInterface): this
+    {
+        return this.with(this.context, this.original, this.plural, pluralForm);
+    }
+
+    /**
      * @inheritDoc
      */
-    public clone(): GettextTranslationInterface {
+    public clone(): this {
         return this.with(this.context, this.original, this.plural, this.pluralForm?.clone());
     }
 }

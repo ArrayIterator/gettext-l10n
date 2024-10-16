@@ -21,6 +21,7 @@ export type HeaderRecords = {
 };
 
 export const HEADER_LANGUAGE_KEY = 'Language';
+export const HEADER_LANGUAGE_NAME_KEY = 'Language-Name';
 export const HEADER_PLURAL_KEY = PLURAL_HEADER_KEY;
 export const HEADER_DOMAIN_KEY = 'X-Domain';
 export const HEADER_PROJECT_ID_VERSION_KEY = 'Project-Id-Version';
