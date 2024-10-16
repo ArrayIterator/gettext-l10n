@@ -45,6 +45,5 @@ jobs:
       scan-args: |-
         --recursive
         --skip-git=true
-        --lockfile ${{ github.workspace }}/package-lock.json
+        --lockfile test/package-lock.json
         ./
-    working-directory: ${{ github.workspace }}
