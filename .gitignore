@@ -81,7 +81,6 @@ sftp-config.json
 
 # ignore npm lock
 package-lock.json
-pnpm-lock.yaml
 
 # ignore node modules
 node_modules/
