@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   scan-pr: # osv scan
-    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml"
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v1.8.5"
   test: # test
     runs-on: ubuntu-latest
     steps:
