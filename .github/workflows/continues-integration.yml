@@ -33,8 +33,10 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
+        working-directory: ${{ github.workspace }}
       - name: Run tests
         run: npm run test
+        working-directory: ${{ github.workspace }}
 
   scan-pr: # scan-pr
     uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v1.9.0
@@ -45,3 +47,4 @@ jobs:
         --skip-git=true
         --lockfile ${{ github.workspace }}/package-lock.json
         ./
+    working-directory: ${{ github.workspace }}
