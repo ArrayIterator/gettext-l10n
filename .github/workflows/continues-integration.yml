@@ -15,7 +15,18 @@ permissions:
   contents: read
 
 jobs:
+  scan-pr: # scan-pr
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v1.9.0
+    with:
+      scan-args: |-
+        --recursive
+        --skip-git=true
+        --lockfile pnpm-lock.yaml
+        ./
+
   test: # test
+    needs: scan-pr
+    if: success()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -37,13 +48,3 @@ jobs:
       - name: Run tests
         run: npm run test
         working-directory: ${{ github.workspace }}
-
-  scan-pr: # scan-pr
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v1.9.0
-    needs: test
-    with:
-      scan-args: |-
-        --recursive
-        --skip-git=true
-        --lockfile pnpm-lock.yaml
-        ./
