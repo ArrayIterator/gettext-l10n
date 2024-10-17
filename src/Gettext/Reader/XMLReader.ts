@@ -55,10 +55,6 @@ import {
  *         <content-type>text/plain; charset=UTF-8</content-type>
  *         <content-transfer-encoding>8bit</content-transfer-encoding>
  *         <plural-forms>nplurals=2; plural=(n != 1);</plural-forms>
- *         <custom-header>
- *             <item name="custom-header">Custom Header</item>
- *             <item name="custom-header2">Custom Header 2</item>
- *         </custom-header>
  *     </headers>
  *     <translations>
  *         <context name="">
@@ -66,7 +62,7 @@ import {
  *                 <comments>
  *                     <item>This is a comment for the translator as a string.</item>
  *                 </comments>
- *                 <disabled/>
+ *                 <enable/>
  *                 <msgid>as a key reference</msgid>
  *                 <msgid_plural/>
  *                 <msgstr>
@@ -175,7 +171,14 @@ export default class XMLReader implements GettextReaderInterface{
             );
         }
         const translations = new GettextTranslations<GettextTranslationType, GettextTranslationsType>(parseInt(revision + ''));
-
+        let title = rootFilter('title', rootElement.children).map((node) => node.textContent)[0];
+        if (is_string(title)) {
+            translations.attributes.comments.add('<title>' + this.cleanData(title) + '</title>');
+        }
+        let description = rootFilter('description', rootElement.children).map((node) => node.textContent)[0];
+        if (is_string(description)) {
+            translations.attributes.comments.add('<description>' + this.cleanData(description) + '</description>');
+        }
         rootFilter('headers', rootElement.children).forEach((headerElement) : void => {
             for (let child in headerElement.children) {
                 const node = headerElement.children[child];
@@ -264,6 +267,14 @@ export default class XMLReader implements GettextReaderInterface{
                         throw new RuntimeException(
                             `The translation is not valid, ${(e as Error).message}`
                         );
+                    }
+
+                    let disabled = rootFilter('enable', itemElement?.children).map((node) => node.textContent)[0];
+                    if (is_string(disabled)) {
+                        disabled = disabled.trim().toLowerCase();
+                        if (disabled === 'false' || disabled === '0') {
+                            gettextTranslation.setEnabled(false);
+                        }
                     }
                     // append translation
                     translations.add(gettextTranslation);

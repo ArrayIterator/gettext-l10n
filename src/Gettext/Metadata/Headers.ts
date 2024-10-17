@@ -89,9 +89,9 @@ export default class Headers implements GettextHeadersInterface {
      * @inheritDoc
      */
     public setFallbackLanguage(language: string): void {
-        let locale = normalizeLocale(language);
-        if (locale) {
-            this.#fallbackLanguage = language;
+        let info = getLocaleInfo(language);
+        if (info) {
+            this.#fallbackLanguage = info.id;
         }
     }
 
@@ -326,12 +326,14 @@ export default class Headers implements GettextHeadersInterface {
                 this.#headers[normalizedName] = this.pluralForm.header;
                 break;
             case HEADER_LANGUAGE_KEY:
-                let locale = normalizeLocale(value);
-                if (locale) {
-                    let info = getLocaleInfo(locale);
-                    this.#headers[normalizedName] = info ? info.id : locale;
-                    if (info) {
-                        this.#headers[HEADER_LANGUAGE_NAME_KEY] = info.name;
+                let localeInfo = getLocaleInfo(value);
+                if (localeInfo) {
+                    this.#headers[normalizedName] = localeInfo.id;
+                    this.#headers[HEADER_LANGUAGE_NAME_KEY] = localeInfo.name;
+                } else {
+                    let language = normalizeLocale(value);
+                    if (language) {
+                        this.#headers[normalizedName] = language;
                     }
                 }
                 break;

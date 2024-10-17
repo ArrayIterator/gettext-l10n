@@ -29,10 +29,6 @@
         <content-type>text/plain; charset=UTF-8</content-type>
         <content-transfer-encoding>8bit</content-transfer-encoding>
         <plural-forms>nplurals=2; plural=(n != 1);</plural-forms>
-        <custom-header>
-            <item name="custom-header">Custom Header</item>
-            <item name="custom-header2">Custom Header 2</item>
-        </custom-header>
     </headers>
     <translations>
         <context name="">
@@ -40,7 +36,7 @@
                 <comments>
                     <item>This is a comment for the translator as a string.</item>
                 </comments>
-                <disabled/>
+                <enable/>
                 <msgid>as a key reference</msgid>
                 <msgid_plural/>
                 <msgstr>

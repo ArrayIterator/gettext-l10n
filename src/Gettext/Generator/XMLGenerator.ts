@@ -34,11 +34,38 @@ export default class XMLGenerator implements GettextGeneratorInterface {
 <!--        revision="${translations.revision}"-->
 <!-->-->
 <translation revision="${translations.revision}">
-<title>Translation for language : ${translations.language}</title>
-<description>Translation for language : ${translations.language}</description>
 \n`);
         const spaces = ' '.repeat(4);
 
+        let comments = translations.attributes.comments.all;
+        let title : string = `Translation for language : ${translations.language}`;
+        let description : string = `The translation for the language : ${translations.language}`;
+        for (let i = 0; i < comments.length; i++) {
+            if (comments[i].startsWith('<title>')) {
+                let match = comments[i].match(/^<title>(.*)<\/title>/);
+                if (match) {
+                    title = match[1].trim() || title;
+                } else {
+                    //strip the title tag
+                    title = comments[i].replace(/<[^>]+>/g, '').trim() || title;
+                }
+                comments.splice(i, 1);
+                continue;
+            }
+            if (comments[i].startsWith('<description>')) {
+                let match = comments[i].match(/^<description>(.*)<\/description>/);
+                if (match) {
+                    description = match[1].trim() || description;
+                } else {
+                    //strip the description tag
+                    description = comments[i].replace(/<[^>]+>/g, '').trim() || description;
+                }
+                comments.splice(i, 1);
+            }
+        }
+
+        stream.write(`${spaces}<title>${encode_entities(title)}</title>\n`);
+        stream.write(`${spaces}<description>${encode_entities(description)}</description>\n`);
         if (translations.attributes.flags.length > 0) {
             let content: string[] = [`${spaces}<flags>`];
             translations.attributes.flags.forEach((flag: string) => {
@@ -63,7 +90,7 @@ export default class XMLGenerator implements GettextGeneratorInterface {
             content.push(`${spaces}</references>`);
             stream.write(content.join('\n') + '\n');
         }
-        if (translations.attributes.comments.length > 0) {
+        if (comments.length > 0) {
             let content: string[] = [`${spaces}<comments>`];
             translations.attributes.comments.forEach((comment: string) => {
                 comment = encode_entities(comment);

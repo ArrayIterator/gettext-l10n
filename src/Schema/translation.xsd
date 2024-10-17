@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1" elementFormDefault="qualified" version="1.1">
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
     <xs:annotation>
         <xs:documentation>
             The Gettext XML Schema is used to validate the structure of a Gettext translation file.
@@ -9,7 +9,7 @@
     <!-- attribute flags -->
     <xs:complexType name="FlagsType">
         <xs:sequence>
-            <xs:element name="item" type="xs:string" maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="item" maxOccurs="unbounded" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>The flags used to mark the translation file. The flag is case-insensitive.</xs:documentation>
                 </xs:annotation>
@@ -25,13 +25,13 @@
     <!-- attribute references -->
     <xs:complexType name="ReferencesType">
         <xs:sequence>
-            <xs:element name="item" type="xs:string" maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="item" maxOccurs="unbounded" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>The references used to identify the original source of the translations.</xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
-                        <xs:pattern value="^[^:]+(:(?:0|[1-9][0-9]*))?"/>
+                        <xs:pattern value="[^:]+(:(0|[0-9][0-9])*)?"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
@@ -41,13 +41,15 @@
     <!-- attribute comments -->
     <xs:complexType name="CommentsType">
         <xs:sequence>
-            <xs:element name="item" type="xs:string" maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="item" maxOccurs="unbounded" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>The comments used to provide additional information about the translation file.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
+
+    <!-- attribute header -->
     <xs:complexType name="HeaderType">
         <xs:simpleContent>
             <xs:extension base="xs:string">
@@ -55,10 +57,22 @@
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+
     <!-- start translation / root -->
     <xs:element name="translation">
         <xs:complexType>
             <xs:all>
+                <xs:element name="title" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>The title of the translation file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="description" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>The domain of the translation file.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <!-- attributes -->
                 <xs:element name="flags" type="FlagsType" minOccurs="0">
                     <xs:unique name="uniqueFlag">
                         <xs:selector xpath="item"/>
@@ -68,6 +82,7 @@
                 <xs:element name="references" type="ReferencesType" minOccurs="0"/>
                 <xs:element name="comments" type="CommentsType" minOccurs="0"/>
                 <xs:element name="extracted-comments" type="CommentsType" minOccurs="0"/>
+
                 <!-- headers -->
                 <xs:element name="headers" minOccurs="0">
                     <xs:complexType>
@@ -92,7 +107,7 @@
                                     <xs:documentation>The last-translator key is the name and email address of the last translator.</xs:documentation>
                                 </xs:annotation>
                             </xs:element>
-                            <xs:element name="language" type="xs:string">
+                            <xs:element name="language">
                                 <xs:annotation>
                                     <xs:documentation>The language key is the language code of the translation.</xs:documentation>
                                 </xs:annotation>
@@ -117,7 +132,7 @@
                                     <xs:documentation>The mime-version key is the MIME version of the translation file.</xs:documentation>
                                 </xs:annotation>
                             </xs:element>
-                            <xs:element name="content-type" type="xs:string" minOccurs="0">
+                            <xs:element name="content-type" minOccurs="0">
                                 <xs:annotation>
                                     <xs:documentation>The content-type key is the content type of the translation file.</xs:documentation>
                                 </xs:annotation>
@@ -127,7 +142,7 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
-                            <xs:element name="content-transfer-encoding" type="xs:string" minOccurs="0">
+                            <xs:element name="content-transfer-encoding" minOccurs="0">
                                 <xs:annotation>
                                     <xs:documentation>The content-transfer-encoding key is the content transfer encoding of the translation file.</xs:documentation>
                                 </xs:annotation>
@@ -141,7 +156,7 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
-                            <xs:element name="plural-forms" type="xs:string" minOccurs="0">
+                            <xs:element name="plural-forms" minOccurs="0">
                                 <xs:annotation>
                                     <xs:documentation>The plural-forms key is the plural forms of the translation file.</xs:documentation>
                                 </xs:annotation>
@@ -151,7 +166,7 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
-                            <xs:element name="custom-header" minOccurs="0" maxOccurs="1">
+                            <xs:element name="custom-header" minOccurs="0">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="item" type="HeaderType" maxOccurs="unbounded"/>
@@ -178,7 +193,7 @@
                                     <xs:sequence>
                                         <xs:element name="item" maxOccurs="unbounded">
                                             <xs:complexType>
-                                                <xs:sequence>
+                                                <xs:all>
                                                     <xs:element name="comments" type="CommentsType" minOccurs="0"/>
                                                     <xs:element name="extracted-comments" minOccurs="0">
                                                         <xs:complexType>
@@ -194,10 +209,11 @@
                                                             <xs:field xpath="."/>
                                                         </xs:unique>
                                                     </xs:element>
-                                                    <xs:choice>
-                                                        <xs:element name="enable" minOccurs="0"/>
-                                                        <xs:element name="disabled" minOccurs="0"/>
-                                                    </xs:choice>
+                                                    <xs:element name="enable" minOccurs="0" type="xs:boolean" default="true">
+                                                        <xs:annotation>
+                                                            <xs:documentation>The enable key is used to enable or disable the translation.</xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:element>
                                                     <xs:element name="msgid" type="xs:string"/>
                                                     <xs:element name="msgid_plural" type="xs:string" minOccurs="0"/>
                                                     <xs:element name="msgstr">
@@ -207,7 +223,7 @@
                                                             </xs:sequence>
                                                         </xs:complexType>
                                                     </xs:element>
-                                                </xs:sequence>
+                                                </xs:all>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
@@ -223,7 +239,7 @@
                 </xs:element>
             </xs:all>
             <!-- attributes -->
-            <xs:attribute name="revision" type="xs:integer" default="0" xml:space="preserve">
+            <xs:attribute name="revision" type="xs:unsignedInt" default="0" xml:space="preserve">
                 <xs:annotation>
                     <xs:documentation>The revision number of the translation file.</xs:documentation>
                 </xs:annotation>

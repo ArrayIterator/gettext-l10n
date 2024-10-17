@@ -1,7 +1,8 @@
 import {
     getLocaleInfo,
     normalizeLocale,
-    LocaleItem
+    LocaleItem,
+    normalizeLocaleName
 } from '../../Utils/Locale';
 import Locales from '../../Utils/locales.json'
 
@@ -29,7 +30,7 @@ describe('locales.json', () => {
     });
 });
 
-describe('normalizeLocale', () => {
+describe('normalizeLocaleName', () => {
     /**
      * Test to check if normalizeLocale returns null for non-string input.
      */
@@ -40,28 +41,59 @@ describe('normalizeLocale', () => {
     });
 
     /**
-     * Test to check if normalizeLocale returns null for invalid locale strings.
+     * Test to check if normalizeLocaleName returns null for non-string input.
      */
-    test('should return null for invalid locale strings', () => {
-        expect(normalizeLocale('')).toBeNull();
-        expect(normalizeLocale('.invalid')).toBeNull();
-        expect(normalizeLocale('a')).toBeNull();
-        expect(normalizeLocale('thisisaverylonglocalename')).toBeNull();
+    test('should return null for non-string input', () => {
+        expect(normalizeLocaleName(123 as any)).toBeNull();
+        expect(normalizeLocaleName(null as any)).toBeNull();
+        expect(normalizeLocaleName(undefined as any)).toBeNull();
     });
 
     /**
-     * Test to check if normalizeLocale returns the correct normalized locale for valid locale strings.
+     * Test to check normalizeLocale returns null for invalid locale strings.
+     */
+    test('should return null for invalid locale strings', () => {
+        /**
+         * @see https://tools.ietf.org/html/rfc5646
+         */
+        expect(normalizeLocale('    ')).toBeNull(); // whitespace should be trimmed and not allowed
+        expect(normalizeLocale('.invalid')).toBeNull(); // invalid characters
+        expect(normalizeLocale('a')).toBeNull(); // too short
+        expect(normalizeLocale('thisisaverylonglocalename')).toBeNull() // invalid length
+        expect(normalizeLocale('en')).toEqual('en');
+        expect(normalizeLocale('en_')).toEqual('en');
+        expect(normalizeLocale('en-US')).toEqual('en_US');
+        expect(normalizeLocale('de-CH-1996')).toEqual('de_CH_1996');
+        expect(normalizeLocale('de-AB-ab')).toBeNull(); // invalid variant
+        expect(normalizeLocale('de-ABC-ab')).toEqual('de_ABC_AB');
+        expect(normalizeLocale('de-AB-abc')).toBeNull(); // invalid variant
+        expect(normalizeLocale('de-ABC-abc')).toEqual('de_ABC_ABC');
+        expect(normalizeLocale('de-AB-ab1')).toBeNull(); // invalid variant
+    });
+
+    /**
+     * Test to check if normalizeLocaleName returns null for invalid locale strings.
+     */
+    test('should return null for invalid locale strings', () => {
+        expect(normalizeLocaleName('')).toBeNull();
+        expect(normalizeLocaleName('.invalid')).toBeNull();
+        expect(normalizeLocaleName('a')).toBeNull();
+        expect(normalizeLocaleName('thisisaverylonglocalename')).toBeNull();
+    });
+
+    /**
+     * Test to check if normalizeLocaleName returns the correct normalized locale for valid locale strings.
      */
     test('should return the correct normalized locale for valid locale strings', () => {
         const localeKey = Object.keys(Locales)[0];
-        expect(normalizeLocale(localeKey)).toEqual(localeKey);
+        expect(normalizeLocaleName(localeKey)).toEqual(localeKey);
     });
 
     /**
-     * Test to check if normalizeLocale returns null for non-existent locale strings.
+     * Test to check if normalizeLocaleName returns null for non-existent locale strings.
      */
     test('should return null for non-existent locale strings', () => {
-        expect(normalizeLocale('nonexistent')).toBeNull();
+        expect(normalizeLocaleName('nonexistent')).toBeNull();
     });
 });
 

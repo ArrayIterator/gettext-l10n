@@ -3,7 +3,6 @@ import TranslationEntriesInterface from './Interfaces/TranslationEntriesInterfac
 import {
     DEFAULT_DOMAIN,
     DEFAULT_LANGUAGE,
-    getLocaleInfo,
     normalizeLocale
 } from '../Utils/Locale';
 import {
@@ -15,26 +14,6 @@ import {
 import TranslationEntryInterface from './Interfaces/TranslationEntryInterface';
 import TranslationEntries from './TranslationEntries';
 import GettextTranslationInterface from '../Gettext/Interfaces/GettextTranslationInterface';
-
-/**
- * Filter the language
- *
- * @param language
- */
-export const filter_language = (language: string): string | null => {
-    if (!is_string(language)) {
-        return null;
-    }
-    let info = getLocaleInfo(language);
-    if (info) {
-        return info.id;
-    }
-    let locale = normalizeLocale(language);
-    if (locale) {
-        return locale;
-    }
-    return null;
-}
 
 /**
  * The translator
@@ -82,7 +61,7 @@ export default class Translator<
      * @inheritDoc
      */
     public setOriginalLanguage(language: string): string | undefined {
-        let locale = filter_language(language);
+        let locale = normalizeLocale(language);
         if (!locale) {
             return undefined;
         }
@@ -115,7 +94,7 @@ export default class Translator<
      * @inheritDoc
      */
     public setLanguage(language: string) : string|undefined {
-        let locale = filter_language(language);
+        let locale = normalizeLocale(language);
         if (!locale) {
             return undefined;
         }
@@ -163,7 +142,7 @@ export default class Translator<
         if (!language) {
             language = translations.headers.language;
         }
-        let locale = filter_language(language);
+        let locale = normalizeLocale(language);
         if (!locale) { // empty skipped
             return false;
         }
