@@ -34,7 +34,7 @@ export default class StreamBuffer implements ClearableInterface {
      *     buffer: ArrayBufferLike
      * }} content the content
      */
-    public constructor(content: string | ArrayBufferLike | StreamBuffer = '') {
+    public constructor(content: string | ArrayBufferLike | StreamBuffer | Uint8Array = '') {
         if (!(content instanceof StreamBuffer)) {
             if (is_object(content)
                 && 'buffer' in content
@@ -49,6 +49,8 @@ export default class StreamBuffer implements ClearableInterface {
             }
             if (is_string(content)) {
                 this.#buffer = new TextEncoder().encode(content);
+            } else if (content instanceof Uint8Array) {
+                this.#buffer = new Uint8Array(content.slice());
             } else {
                 this.#buffer = new Uint8Array(content);
             }
