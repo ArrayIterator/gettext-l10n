@@ -47,7 +47,8 @@ jobs:
       - name: Run Build
         run: npm run build
 
-      - name: Unpublish existing version if exists
+      - name: Publish to GitHub Package Registry if not exists exists
+        if: github.ref == 'refs/heads/main'
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
@@ -57,15 +58,10 @@ jobs:
             # echo "Package version exists. Unpublishing..."
             # npm unpublish "$PACKAGE_NAME@$PACKAGE_VERSION" --force
             echo "Package version exists. Exiting ..."
-            exit 0;
           else
-            echo "Package version does not exist. No action needed."
+            echo "Package version does not exist. Publishing."
+            npm publish
           fi
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-          
-      - name: Publish to GitHub Package Registry
-        if: github.ref == 'refs/heads/main'
-        run: npm publish
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
