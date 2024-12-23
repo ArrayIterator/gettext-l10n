@@ -47,6 +47,9 @@ jobs:
       - name: Run Build
         run: npm run build
 
+      - name: Configure .npmrc
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+
       - name: Publish to GitHub Package Registry if not exists exists
         if: github.ref == 'refs/heads/main'
         run: |
