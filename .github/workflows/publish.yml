@@ -50,22 +50,25 @@ jobs:
       - name: Configure .npmrc
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
 
-      - name: Publish to GitHub Package Registry if not exists exists
+      - name: Unpublish if exists
         if: github.ref == 'refs/heads/main'
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           echo "Checking if $PACKAGE_NAME@$PACKAGE_VERSION exists..."
-          npm info "$PACKAGE_NAME@$PACKAGE_VERSION"
+          # npm info "$PACKAGE_NAME@$PACKAGE_VERSION"
           if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" > /dev/null 2>&1; then
-            # echo "Package version exists. Unpublishing..."
-            # npm unpublish "$PACKAGE_NAME@$PACKAGE_VERSION" --force
-            echo "Package version exists. Exiting ..."
+            echo "Package version exists. Unpublishing..."
+            npm unpublish "$PACKAGE_NAME@$PACKAGE_VERSION" --force
           else
             echo "Package version does not exist. Publishing."
-            npm publish
-            # --registry=https://npm.pkg.github.com
           fi
         env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }
+
+      - name: Publish Package
+        if: github.ref == 'refs/heads/main'
+        run: npm publish
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }
 
