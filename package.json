@@ -18,7 +18,7 @@
         "type": "git",
         "url": "https://github.com/ArrayIterator/gettext-l10n.git"
     },
-    "version": "1.0.1",
+    "version": "1.0.2",
     "bugs": {
         "url": "https://github.com/ArrayIterator/gettext-l10n/issues"
     },
@@ -38,8 +38,10 @@
     "files": [
         "build",
         "dist",
+        "@types",
         "package.json",
         "!src/__tests__",
+        "!build/__tests__",
         "README.md"
     ],
     "jest": {
@@ -69,4 +71,3 @@
         "webpack-cli": "^5.1.4"
     }
 }
-
