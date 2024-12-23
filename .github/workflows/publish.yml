@@ -52,7 +52,7 @@ jobs:
 
       - name: Unpublish existing version if exists
         run: |
-          PACKAGE_NAME="@ArrayIterator/gettext-l10n"
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" > /dev/null 2>&1; then
             echo "Package version exists. Unpublishing..."
