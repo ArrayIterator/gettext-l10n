@@ -54,8 +54,10 @@ jobs:
           echo "Checking if $PACKAGE_NAME@$PACKAGE_VERSION exists..."
           npm info "$PACKAGE_NAME@$PACKAGE_VERSION"
           if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" > /dev/null 2>&1; then
-            echo "Package version exists. Unpublishing..."
-            npm unpublish "$PACKAGE_NAME@$PACKAGE_VERSION" --force
+            # echo "Package version exists. Unpublishing..."
+            # npm unpublish "$PACKAGE_NAME@$PACKAGE_VERSION" --force
+            echo "Package version exists. Exiting ..."
+            exit 0;
           else
             echo "Package version does not exist. No action needed."
           fi
