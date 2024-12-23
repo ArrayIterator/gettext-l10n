@@ -18,6 +18,9 @@
         "type": "git",
         "url": "https://github.com/ArrayIterator/gettext-l10n.git"
     },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+    },
     "version": "1.0.0",
     "bugs": {
         "url": "https://github.com/ArrayIterator/gettext-l10n/issues"
