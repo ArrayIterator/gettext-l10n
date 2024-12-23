@@ -35,6 +35,13 @@
         "test": "npm run lint && npm run jest",
         "build": "npm run test && npm run build:module && npm run build:dist && npm run build:types"
     },
+    "files": [
+        "build",
+        "dist",
+        "package.json",
+        "!src/__tests__",
+        "README.md"
+    ],
     "jest": {
         "preset": "ts-jest",
         "testMatch": [
@@ -62,3 +69,4 @@
         "webpack-cli": "^5.1.4"
     }
 }
+
