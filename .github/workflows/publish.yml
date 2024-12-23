@@ -24,7 +24,6 @@ jobs:
     needs: scan-pr
     if: success()
     runs-on: ubuntu-24.04
-    # ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,6 +46,20 @@ jobs:
 
       - name: Run Build
         run: npm run build
+
+      - name: Configure .npmrc
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+
+      - name: Unpublish existing version if exists
+        run: |
+          PACKAGE_NAME="@ArrayIterator/gettext-l10n"
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" > /dev/null 2>&1; then
+            echo "Package version exists. Unpublishing..."
+            npm unpublish "$PACKAGE_NAME@$PACKAGE_VERSION" --force
+          else
+            echo "Package version does not exist. No action needed."
+          fi
 
       - name: Publish to GitHub Package Registry
         if: github.ref == 'refs/heads/main'
