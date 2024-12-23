@@ -36,3 +36,5 @@ Gettext L10n is a translation library that provides localization support using t
 ## LICENSE
 
 The code is under [MIT License](LICENSE)
+
+### THANKS!
