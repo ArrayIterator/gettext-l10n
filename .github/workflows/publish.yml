@@ -47,9 +47,6 @@ jobs:
       - name: Run Build
         run: npm run build
 
-      - name: Configure .npmrc
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
-
       - name: Unpublish existing version if exists
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
@@ -62,7 +59,9 @@ jobs:
           else
             echo "Package version does not exist. No action needed."
           fi
-
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }
+          
       - name: Publish to GitHub Package Registry
         if: github.ref == 'refs/heads/main'
         run: npm publish
