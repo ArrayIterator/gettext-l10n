@@ -2,6 +2,8 @@ node_modules
 .tmp
 .github
 .gitignore
+.npmrc
+.npmignore
 src
 src/__tests__
 build/__tests__
