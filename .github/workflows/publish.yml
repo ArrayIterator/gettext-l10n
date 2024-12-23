@@ -60,7 +60,7 @@ jobs:
             echo "Package version does not exist. No action needed."
           fi
         env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
           
       - name: Publish to GitHub Package Registry
         if: github.ref == 'refs/heads/main'
