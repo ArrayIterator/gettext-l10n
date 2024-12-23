@@ -60,7 +60,7 @@ jobs:
             echo "Package version exists. Exiting ..."
           else
             echo "Package version does not exist. Publishing."
-            npm publish
+            npm publish --registry=https://npm.pkg.github.com
           fi
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
