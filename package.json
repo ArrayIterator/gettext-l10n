@@ -18,7 +18,7 @@
         "type": "git",
         "url": "https://github.com/ArrayIterator/gettext-l10n.git"
     },
-    "version": "1.0.3",
+    "version": "1.0.0",
     "bugs": {
         "url": "https://github.com/ArrayIterator/gettext-l10n/issues"
     },
@@ -41,7 +41,8 @@
         "@types",
         "package.json",
         "!**/__tests__",
-        "README.md"
+        "README.md",
+        "LICENSE"
     ],
     "jest": {
         "preset": "ts-jest",
@@ -52,7 +53,7 @@
     "engines": {
         "node": ">= 20"
     },
-    "main": "build/gettextL10n.js",
+    "main": "index.js",
     "types": "@types/**/*.d.ts",
     "devDependencies": {
         "@types/jest": "^29.5.13",

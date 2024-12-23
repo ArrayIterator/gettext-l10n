@@ -9,7 +9,7 @@
     "compilerOptions": {
         "baseUrl": "./",
         "target": "ESNext",
-        "module": "ESNext",
+        "module": "CommonJS",
         "outDir": "./build",
         "rootDir": "./src",
         "strict": true,
