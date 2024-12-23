@@ -20,7 +20,7 @@ jobs:
         --lockfile pnpm-lock.yaml
         ./
 
-  test:
+  publish:
     needs: scan-pr
     if: success()
     runs-on: ubuntu-latest
