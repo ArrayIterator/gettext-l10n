@@ -23,7 +23,8 @@ jobs:
   publish:
     needs: scan-pr
     if: success()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    # ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
