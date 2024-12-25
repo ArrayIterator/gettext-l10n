@@ -77,14 +77,14 @@ export default interface TranslationEntryInterface extends CloneableInterface {
     /**
      * Get singular translation
      *
-     * @return {string} returning undefined if does not have translation
+     * @return {string} returning undefined if entry does not have translation
      */
     getTranslation(): string | undefined;
 
     /**
      * Get singular translation
      *
-     * @return {string} returning undefined if does not have translation
+     * @return {string} returning undefined if entry does not have translation
      */
     get translation(): string | undefined;
 

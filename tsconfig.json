@@ -10,15 +10,15 @@
         "baseUrl": "./",
         "target": "ESNext",
         "module": "CommonJS",
-        "outDir": "./build",
-        "rootDir": "./src",
+        "outDir": "./",
+        "rootDir": "./",
         "strict": true,
         "moduleResolution": "Node",
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "tsBuildInfoFile": null,
         "lib": [
             "ESNext",
@@ -32,7 +32,8 @@
         ]
     },
     "include": [
-        "src/**/*",
+        "./index.ts",
+        "./src/**/*.ts",
         "./src/Declarations/json.d.ts"
     ],
     "exclude": [

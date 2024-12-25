@@ -88,3 +88,5 @@ dist/
 build/
 .tmp/
 @types/
+src/**/*.js
+index.js

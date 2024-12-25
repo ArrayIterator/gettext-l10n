@@ -24,23 +24,22 @@
     },
     "scripts": {
         "clean:dist": "rm -rf dist",
-        "clean:module": "rm -rf build",
-        "clean:types": "rm -rf @types",
-        "clean:all": "npm run clean:module && npm run clean:dist && npm run clean:types",
-        "build:module": "tsc --outDir build",
-        "build:types": "tsc --declaration --declarationDir @types",
+        "clean:module": "find ./src -type f -name '*.js' -exec rm -f {} \\; && rm -f ./index.js",
+        "clean:all": "npm run clean:module && npm run clean:dist",
+        "build:module": "tsc --outDir ./",
         "build:dist": "webpack --mode=production --config webpack.config.js",
         "lint": "eslint",
         "jest": "jest",
         "test": "npm run lint && npm run jest",
-        "build": "npm run test && npm run build:module && npm run build:dist && npm run build:types"
+        "build": "npm run clean:all && npm run test && npm run build:module && npm run build:dist"
     },
     "files": [
-        "build",
-        "dist",
-        "@types",
+        "src/**/*",
+        "index.ts",
+        "index.js",
         "package.json",
         "!**/__tests__",
+        "examples",
         "README.md",
         "LICENSE"
     ],
@@ -57,6 +56,7 @@
     "types": "@types/**/*.d.ts",
     "devDependencies": {
         "@types/jest": "^29.5.13",
+        "@types/node": "^22.10.2",
         "@typescript-eslint/eslint-plugin": "^8.9.0",
         "@typescript-eslint/parser": "^8.9.0",
         "eslint": "^9.12.0",

@@ -42,8 +42,14 @@ export default class MOGenerator implements GettextGeneratorInterface {
         const numEntries = Object.keys(messages).length;
         let originalsTable = '';
         let translationsTable = '';
-        let originalsIndex = [];
-        let translationsIndex = [];
+        let originalsIndex : Array<{
+            relativeOffset: number,
+            length: number
+        }> = [];
+        let translationsIndex : Array<{
+            relativeOffset: number,
+            length: number
+        }> = [];
         let pluralSize = Math.max(translations.headers.pluralForm.pluralCount - 1, 1);
         for (let [originalString, translation] of Object.entries(messages)) {
             let translationString: string;

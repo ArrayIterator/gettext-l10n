@@ -9,7 +9,9 @@ const libName = 'gettextL10n';
  */
 const createConfig = (libraryTarget, minify) => ({
     mode: 'production',
-    entry: './src/gettextL10n.ts',
+    entry: {
+        [libName]: './index.ts',
+    },
     module: {
         rules: [
             {
@@ -20,14 +22,13 @@ const createConfig = (libraryTarget, minify) => ({
         ],
     },
     resolve: {
-        extensions: ['.ts', '.js'],
+        extensions: ['.ts'],
     },
     output: {
         filename: `${baseName}.${libraryTarget}${minify ? '.min' : ''}.js`,
         path: path.resolve(__dirname, 'dist'),
         library: libName,
-        libraryTarget: libraryTarget,
-        libraryExport: 'default', // Export the default export
+        libraryTarget: libraryTarget
     },
     optimization: {
         minimize: minify,

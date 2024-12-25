@@ -123,7 +123,7 @@ describe('ArrayString', () => {
     test('should be iterable', () => {
         arrayString.add('test1');
         arrayString.add('test2');
-        const elements = [];
+        const elements : Array<string> = [];
         for (const element of arrayString) {
             elements.push(element);
         }

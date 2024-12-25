@@ -71,8 +71,8 @@ export default class MOReader implements GettextReaderInterface{
                 }
                 continue;
             }
-            let context = null;
-            let plural = null;
+            let context : string|null = null;
+            let plural : string|null = null;
             let chunks = original.split('\x04');
             if (chunks.length > 1) {
                 original = chunks[1];

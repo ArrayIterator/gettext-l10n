@@ -74,7 +74,7 @@ export default class StreamBuffer implements ClearableInterface {
     }
 
     /**
-     * Write a 8-bit unsigned integer
+     * Write an 8-bit unsigned integer
      *
      * @param {number} value the unsigned integer
      *
@@ -266,7 +266,7 @@ export default class StreamBuffer implements ClearableInterface {
     }
 
     /**
-     * Read a 8-bit unsigned integer
+     * Read an 8-bit unsigned integer
      *
      * @return {number} the 8-bit unsigned integer
      */
@@ -299,7 +299,7 @@ export default class StreamBuffer implements ClearableInterface {
     /**
      * Read a 64-bit unsigned integer
      *
-     * @return {number} the 64 bit unsigned integer
+     * @return {number} the 64-bit unsigned integer
      */
     public readUint64(): number {
         const low = this.readUint32();
