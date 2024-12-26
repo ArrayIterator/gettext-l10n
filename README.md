@@ -2,7 +2,7 @@
 
 Gettext L10n is a translation library that provides localization support using the gettext format. It allows you to manage translations and plural forms efficiently.
 
-[![Publish Package](https://github.com/ArrayIterator/gettext-l10n/actions/workflows/publish.yml/badge.svg)](https://github.com/ArrayIterator/gettext-l10n/actions/workflows/publish.yml)
+[![Continues Integration](https://github.com/ArrayIterator/gettext-l10n/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/ArrayIterator/gettext-l10n/actions/workflows/continuous-integration.yml)
 
 ## TODO
 
