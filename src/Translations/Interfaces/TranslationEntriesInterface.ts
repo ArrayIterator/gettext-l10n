@@ -10,8 +10,8 @@ import TranslationEntryInterface from './TranslationEntryInterface';
  * Interface representing a collection of translation entries.
  */
 export default interface TranslationEntriesInterface<
-    Translation extends TranslationEntryInterface,
-    Translations extends TranslationEntriesInterface<Translation, Translations>
+    Translation extends TranslationEntryInterface = TranslationEntryInterface,
+    Translations extends TranslationEntriesInterface<Translation, Translations> = TranslationEntriesInterface<Translation, any>
 > extends CloneableInterface, LengthInterface, ClearableInterface {
 
     /**

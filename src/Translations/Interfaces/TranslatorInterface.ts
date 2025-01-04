@@ -2,7 +2,10 @@ import TranslationEntryInterface from './TranslationEntryInterface';
 import TranslationEntriesInterface from './TranslationEntriesInterface';
 import ClearableInterface from '../../Interfaces/ClearableInterface';
 
-export default interface TranslatorInterface<Translation extends TranslationEntryInterface, Translations extends TranslationEntriesInterface<Translation, Translations>> extends ClearableInterface {
+export default interface TranslatorInterface<
+    Translation extends TranslationEntryInterface = TranslationEntryInterface,
+    Translations extends TranslationEntriesInterface<Translation, Translations> = TranslationEntriesInterface<Translation, any>
+> extends ClearableInterface {
     /**
      * Set original language, this will identify to disable translation when current language same with original language
      *

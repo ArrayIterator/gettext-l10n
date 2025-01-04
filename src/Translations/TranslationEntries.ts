@@ -18,8 +18,8 @@ import GettextPluralFormInterface from '../Gettext/Interfaces/Metadata/GettextPl
  * Translation entries
  */
 export default class TranslationEntries<
-    Translation extends TranslationEntryInterface,
-    Translations extends TranslationEntriesInterface<Translation, Translations>
+    Translation extends TranslationEntryInterface = TranslationEntryInterface,
+    Translations extends TranslationEntriesInterface<Translation, Translations> = TranslationEntriesInterface<Translation, any>
 > implements TranslationEntriesInterface<Translation, Translations> {
 
     /**
