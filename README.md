@@ -4,6 +4,12 @@ Gettext L10n is a translation library that provides localization support using t
 
 [![Continues Integration](https://github.com/ArrayIterator/gettext-l10n/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/ArrayIterator/gettext-l10n/actions/workflows/continuous-integration.yml)
 
+## Installation
+
+```bash
+npm i gettext-l10n
+```
+
 ## TODO
 
 ### DONE
