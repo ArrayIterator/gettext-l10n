@@ -136,10 +136,8 @@ export default class JSONReader implements GettextReaderInterface {
         };
         type MetaTranslationObject = {
             '': {
-                '': {
-                    msgid: '';
-                    msgstr: string[];
-                };
+                msgid: '';
+                msgstr: string[];
             };
         }
         type TranslationObjects = {
@@ -155,7 +153,7 @@ export default class JSONReader implements GettextReaderInterface {
         const meta = translationsObject[''] as unknown as MetaTranslationObject;
         delete translationsObject['']; // delete meta
         if (is_object(meta) && is_object(meta[''])) {
-            const translationObject = meta[''][''];
+            const translationObject = meta[''];
             const msgid = translationObject.msgid;
             const msgstr = translationObject.msgstr;
             // the msgid is empty and msgstr is an array of strings
