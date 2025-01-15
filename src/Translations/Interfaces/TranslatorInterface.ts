@@ -195,4 +195,10 @@ export default interface TranslatorInterface<
      * Clear the stored translations
      */
     clear() : void;
+
+    /**
+     * Get available languages within domain
+     * @param {string} domain - the translation domain
+     */
+    getAvailableLanguages(domain: string): string[];
 }

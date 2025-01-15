@@ -329,4 +329,24 @@ export default class Translator<
         // emptying
         this.#translatorEntries = {};
     }
+
+    /**
+     * @inheritDoc
+     */
+    public getAvailableLanguages(domain: string): string[] {
+        if (!is_string(domain)) {
+            return [];
+        }
+        let languages: string[] = [];
+        if (!this.#translatorEntries[domain]) {
+            return languages;
+        }
+        for (let language in this.#translatorEntries[domain]) {
+            if (!this.#translatorEntries[domain].hasOwnProperty(language)) {
+                continue;
+            }
+            languages.push(language);
+        }
+        return languages
+    }
 }
